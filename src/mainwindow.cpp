@@ -39,3 +39,6 @@ MainWindow::~MainWindow()
 void MainWindow::start_button_clicked() {
     ui->scrollArea->setStyleSheet("background-color : black");
 }
+void MainWindow::stop_button_clicked() {
+    ui->scrollArea->setStyleSheet("background-color : black");
+}
