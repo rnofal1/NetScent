@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QThread>
+#include "PacketCap.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

@@ -10,7 +10,10 @@ CONFIG += c++17
 
 INCLUDEPATH += include
 
+LIBS += -lpcap
+
 SOURCES += \
+    src/PacketCap.cpp \
     src/main.cpp \
     src/mainwindow.cpp
 

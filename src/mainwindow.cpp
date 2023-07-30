@@ -4,6 +4,9 @@
 #include <QScrollBar>
 #include "customlabel.h"
 
+int PacketCap::num_packets = 0;
+int PacketCap::link_header_len = 0;
+pcap_t* PacketCap::handle = nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Connect buttons
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
-
 
 
 }
