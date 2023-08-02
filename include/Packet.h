@@ -8,6 +8,7 @@
 #include <unistd.h> //Posix OS API
 #include <signal.h>
 #include <cstddef>
+#include <ctime>
 
 //3rd-party
 #include <pcap/pcap.h> //libpcap library
@@ -22,6 +23,7 @@ public:
     //virtual void print();
 
 protected:
+    std::time_t time_added;
     std::string get_ip_info();
     struct ip ip_header;
 };

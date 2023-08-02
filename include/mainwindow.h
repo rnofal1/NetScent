@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
+//#include "PacketCap.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,6 +28,7 @@ public:
     ~MainWindow();
 
     Ui::MainWindow* getUiPointer();
+    bool run_capture;
 
     static void addPacket(const struct ip& ip_header, const int& packet_num);
     static void addPacket(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num);
@@ -41,6 +43,5 @@ private slots:
 private:
     static Ui::MainWindow *ui;
     static std::unordered_map<int, Packet*> packet_map; //<Packet #, Packet Obj>
-
 };
 #endif // MAINWINDOW_H

@@ -5,7 +5,7 @@ Ui::MainWindow *MainWindow::ui = nullptr;
 std::unordered_map<int, Packet*> MainWindow::packet_map;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent), run_capture(false)
 {
     ui = new Ui::MainWindow();
     ui->setupUi(this);
@@ -16,6 +16,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Connect buttons
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
+    connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
+
+    //Misc style
+    ui->statusLabel->setStyleSheet("background-color : red");
 
 }
 
@@ -25,10 +29,12 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::start_button_clicked() {
-    ui->scrollArea->setStyleSheet("background-color : black");
+    ui->statusLabel->setStyleSheet("background-color : green");
+    run_capture = true;
 }
 void MainWindow::stop_button_clicked() {
-    ui->scrollArea->setStyleSheet("background-color : black");
+    ui->statusLabel->setStyleSheet("background-color : red");
+    run_capture = false;
 }
 
 
@@ -36,21 +42,27 @@ void MainWindow::stop_button_clicked() {
 //ToDo: WARNING/ALERT change using a void pointer to something a bit more sensible
 void MainWindow::addPacket(const struct ip& ip_header, const int& packet_num) {
     packet_map[packet_num] = new Packet(ip_header);
-    displayPacket(packet_map[packet_num]->get_info());
+    std::string info = packet_map[packet_num]->get_info();
+    displayPacket(info);
+    QTextStream(stdout) << "Added Other\n" << QString::fromStdString(info);
 }
 void MainWindow::addPacket(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num) {
-    QTextStream(stdout) << "In TCP\n";
     packet_map[packet_num] = new TCPPacket(ip_header, tcp_header);
-    displayPacket(packet_map[packet_num]->get_info());
+    std::string info = packet_map[packet_num]->get_info();
+    displayPacket(info);
+    QTextStream(stdout) << "Added TCP\n" << QString::fromStdString(info);
 }
 void MainWindow::addPacket(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num) {
-    QTextStream(stdout) << "In UDP\n";
     packet_map[packet_num] = new UDPPacket(ip_header, udp_header);
-    displayPacket(packet_map[packet_num]->get_info());
+    std::string info = packet_map[packet_num]->get_info();
+    displayPacket(info);
+    QTextStream(stdout) << "Added UDP\n" << QString::fromStdString(info);
 }
 void MainWindow::addPacket(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num) {
     packet_map[packet_num] = new ICMPPacket(ip_header, icmp_header);
-    displayPacket(packet_map[packet_num]->get_info());
+    std::string info = packet_map[packet_num]->get_info();
+    displayPacket(info);
+    QTextStream(stdout) << "Added ICMP\n" << QString::fromStdString(info);
 }
 
 void MainWindow::displayPacket(const std::string& packetText) {

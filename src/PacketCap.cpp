@@ -145,11 +145,15 @@ void PacketCap::send_to_ui(const struct ip& ip_header) {
 /*  Call-back function to parse and display the contents of each captured
 *   packet
 *
-*   Basically untouched from https://vichargrave.github.io/programming/develop-a-packet-sniffer-with-libpcap/
 */
 void PacketCap::packet_handler(u_char *user,
                                const struct pcap_pkthdr *packet_header,
                                const u_char *packet_ptr) {
+
+    if(!mainWindow->run_capture) {
+        pcap_breakloop(handle);
+    }
+
     struct ip* ip_header;
 
     // Skip the datalink layer header and get the IP header fields.
@@ -162,22 +166,24 @@ void PacketCap::packet_handler(u_char *user,
 
     switch (ip_header->ip_p) {
     case IPPROTO_TCP:
-        std::cout << "TCP\n";
+        std::cout << "In TCP packet cap\n";
         send_to_ui(*ip_header, *(struct tcphdr*)packet_ptr);
         break;
 
     case IPPROTO_UDP:
-        std::cout << "UDP\n";
+        std::cout << "In UDP packet cap\n";
         send_to_ui(*ip_header, *(struct udphdr*)packet_ptr);
         break;
 
     case IPPROTO_ICMP:
+        std::cout << "In ICMP packet cap\n";
         send_to_ui(*ip_header, *(struct icmp*)packet_ptr);
         break;
 
-    default:
-        send_to_ui(*ip_header);
-        break;
+//    default:
+//        std::cout << "In OTHER packet cap: " + (ip_header->ip_p) + "\n";
+//        send_to_ui(*ip_header);
+//        break;
     }
 }
 
@@ -197,7 +203,7 @@ void PacketCap::stop_capture(int signo) {
     }
 
     pcap_close(handle);
-    exit(0);
+    //exit(0);
 }
 
 void PacketCap::set_device(const char* network_interface) {
@@ -221,25 +227,35 @@ int PacketCap::run_packet_cap() {
     signal(SIGTERM, PacketCap::stop_capture);
     signal(SIGQUIT, PacketCap::stop_capture);
 
-    // Create packet capture handle.
-    handle = create_pcap_handle(device, filter);
-    if (handle == NULL) {
-        return -1;
+
+
+    // Start the packet capture
+    while(true) {
+        if(mainWindow->run_capture){
+            std::cout << "Starting packet capture...\n\n";
+
+            // Create packet capture handle.
+            handle = create_pcap_handle(device, filter);
+            if (handle == NULL) {
+                return -1;
+            }
+
+            // Get the type of link layer.
+            get_link_header_len(handle);
+            if (link_header_len == 0) {
+                return -1;
+            }
+
+            if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) == PCAP_ERROR) {
+                fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
+                return -1;
+            }
+            stop_capture(0);
+            std::cout << "Packet capture halted.\n\n";
+        }
     }
 
-    // Get the type of link layer.
-    get_link_header_len(handle);
-    if (link_header_len == 0) {
-        return -1;
-    }
-
-    // Start the packet capture with a set count or continually if the count is 0.
-    if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) == PCAP_ERROR) {
-        fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
-        return -1;
-    }
-
-    stop_capture(0);
+    //stop_capture(0);
 
     return 0;
 }

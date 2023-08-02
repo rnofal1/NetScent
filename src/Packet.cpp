@@ -1,14 +1,15 @@
 #include "Packet.h"
 
 Packet::Packet(const struct ip& ip_header)
-    : ip_header(ip_header){}
+    : time_added(std::time(nullptr)), ip_header(ip_header){}
 
 std::string Packet::get_ip_info() {
     std::string ip_info =  "ID:" + std::to_string(ntohs(ip_header.ip_id))
                         + " TOS:0x" + std::to_string(ip_header.ip_tos)
                         + ", TTL:" + std::to_string(ip_header.ip_ttl)
                         + " IpLen:" + std::to_string(4*ip_header.ip_hl)
-                        + " DgLen:" + std::to_string(ntohs(ip_header.ip_len));
+                        + " DgLen:" + std::to_string(ntohs(ip_header.ip_len))
+                        + " Time Added: " + std::asctime(std::localtime(&time_added));
     return ip_info;
 }
 
@@ -38,7 +39,7 @@ std::string TCPPacket::get_info() {
                 +  "Seq: 0x" + std::to_string(ntohl(tcp_header.th_seq))
                 +  " Ack: 0x" + std::to_string(ntohl(tcp_header.th_ack))
                 +  " Win: 0x" + std::to_string(ntohs(tcp_header.th_win))
-                +  "TcpLen: " + std::to_string(4*tcp_header.th_off)
+                +  " TcpLen: " + std::to_string(4*tcp_header.th_off)
                 + "\n";
 
     return tcp_info;
