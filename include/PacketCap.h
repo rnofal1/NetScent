@@ -1,19 +1,8 @@
 #ifndef PACKETCAP_H
 #define PACKETCAP_H
 
-
-//Standard
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h> //Posix OS API
-#include <signal.h>
-
-//3rd-party
-#include <pcap/pcap.h> //libpcap library
-#include <netinet/tcp.h> //TCP-specific header fields
-#include <netinet/udp.h> //UDP-specific header fields
-#include <netinet/ip_icmp.h> //ICMP-specific header fields
+//Local
+#include "mainwindow.h"
 
 //Defines
 #define PACKET_BUFF_TIMEOUT 1000 //https://www.tcpdump.org/manpages/pcap.3pcap.html
@@ -31,7 +20,7 @@
 */
 class PacketCap {
 public:
-    PacketCap();
+    PacketCap(MainWindow* mainWindowInit);
 
     pcap_t* create_pcap_handle( char* device,
                                char* filter,
@@ -40,6 +29,11 @@ public:
     int run_packet_cap();
 
     void get_link_header_len(pcap_t* handle);
+
+    template<typename T>
+    static void send_to_ui(const struct ip& ip_header, const T& network_protocol_header);
+
+    static void send_to_ui(const struct ip& ip_header);
 
     static void packet_handler( u_char *user,
                                const struct pcap_pkthdr *packet_header,
@@ -61,6 +55,8 @@ private:
     static int num_packets; //Total number of packets captured and processed
     int count; //Number of packets at which to end packet capture
     int opt;
+    static MainWindow* mainWindow;
+    static QTextBrowser* infoPane;
 };
 
 

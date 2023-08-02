@@ -2,12 +2,20 @@
 #include "PacketCap.h"
 
 
+int PacketCap::num_packets = 0;
+int PacketCap::link_header_len = 0;
+pcap_t* PacketCap::handle = nullptr;
+QTextBrowser* PacketCap::infoPane = nullptr;
+MainWindow* PacketCap::mainWindow = nullptr;
+
 /*  PacketCap constructor
 */
-PacketCap::PacketCap() {
+PacketCap::PacketCap(MainWindow* mainWindowInit) {
     count = 0;
     *device = 0;
     *filter = 0;
+    mainWindow = mainWindowInit;
+    infoPane = mainWindow->getUiPointer()->textBrowser;
 }
 
 
@@ -118,6 +126,21 @@ void PacketCap::get_link_header_len(pcap_t* handle) {
     }
 }
 
+template<typename T>
+void PacketCap::send_to_ui(const struct ip& ip_header, const T& network_protocol_header) {
+    QMetaObject::invokeMethod(mainWindow,  [=]()
+                              {
+                                  mainWindow->addPacket(ip_header, network_protocol_header, num_packets++);
+                              });
+}
+
+void PacketCap::send_to_ui(const struct ip& ip_header) {
+    QMetaObject::invokeMethod(mainWindow,  [=]()
+                              {
+                                  mainWindow->addPacket(ip_header, num_packets++);
+                              });
+}
+
 
 /*  Call-back function to parse and display the contents of each captured
 *   packet
@@ -128,62 +151,32 @@ void PacketCap::packet_handler(u_char *user,
                                const struct pcap_pkthdr *packet_header,
                                const u_char *packet_ptr) {
     struct ip* ip_header;
-    struct icmp* icmp_header;
-    struct tcphdr* tcp_header;
-    struct udphdr* udp_header;
-
-    char ip_header_info[HEADER_FIELD_CHAR_BUFF];
-    char src_ip[HEADER_FIELD_CHAR_BUFF];
-    char dst_ip[HEADER_FIELD_CHAR_BUFF];
 
     // Skip the datalink layer header and get the IP header fields.
     packet_ptr += link_header_len;
     ip_header = (struct ip*)(packet_ptr); //ToDo look into this cast
-    strcpy(src_ip, inet_ntoa(ip_header->ip_src));
-    strcpy(dst_ip, inet_ntoa(ip_header->ip_dst));
-    sprintf(ip_header_info, "ID:%d TOS:0x%x, TTL:%d IpLen:%d DgLen:%d",
-            ntohs(ip_header->ip_id), ip_header->ip_tos, ip_header->ip_ttl,
-            4*ip_header->ip_hl, ntohs(ip_header->ip_len));
 
     // Advance to the transport layer header then parse and display
     // the fields based on the type of header: tcp, udp or icmp.
     packet_ptr += 4*ip_header->ip_hl;
+
     switch (ip_header->ip_p) {
     case IPPROTO_TCP:
-        tcp_header = (struct tcphdr*)packet_ptr;
-        printf("TCP  %s:%d -> %s:%d\n", src_ip, ntohs(tcp_header->th_sport),
-               dst_ip, ntohs(tcp_header->th_dport));
-        printf("%s\n", ip_header_info);
-        printf("%c%c%c%c%c%c Seq: 0x%x Ack: 0x%x Win: 0x%x TcpLen: %d\n",
-               (tcp_header->th_flags & TH_URG ? 'U' : '*'),
-               (tcp_header->th_flags & TH_ACK ? 'A' : '*'),
-               (tcp_header->th_flags & TH_PUSH ? 'P' : '*'),
-               (tcp_header->th_flags & TH_RST ? 'R' : '*'),
-               (tcp_header->th_flags & TH_SYN ? 'S' : '*'),
-               (tcp_header->th_flags & TH_SYN ? 'F' : '*'),
-               ntohl(tcp_header->th_seq), ntohl(tcp_header->th_ack),
-               ntohs(tcp_header->th_win), 4*tcp_header->th_off);
-        printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
-        num_packets += 1;
+        std::cout << "TCP\n";
+        send_to_ui(*ip_header, *(struct tcphdr*)packet_ptr);
         break;
 
     case IPPROTO_UDP:
-        udp_header = (struct udphdr*)packet_ptr;
-        printf("UDP  %s:%d -> %s:%d\n", src_ip, ntohs(udp_header->uh_sport),
-               dst_ip, ntohs(udp_header->uh_dport));
-        printf("%s\n", ip_header_info);
-        printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
-        num_packets += 1;
+        std::cout << "UDP\n";
+        send_to_ui(*ip_header, *(struct udphdr*)packet_ptr);
         break;
 
     case IPPROTO_ICMP:
-        icmp_header = (struct icmp*)packet_ptr;
-        printf("ICMP %s -> %s\n", src_ip, dst_ip);
-        printf("%s\n", ip_header_info);
-        printf("Type:%d Code:%d ID:%d Seq:%d\n", icmp_header->icmp_type, icmp_header->icmp_code,
-               ntohs(icmp_header->icmp_hun.ih_idseq.icd_id), ntohs(icmp_header->icmp_hun.ih_idseq.icd_seq));
-        printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
-        num_packets += 1;
+        send_to_ui(*ip_header, *(struct icmp*)packet_ptr);
+        break;
+
+    default:
+        send_to_ui(*ip_header);
         break;
     }
 }
