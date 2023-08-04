@@ -9,11 +9,10 @@
 #include <QScrollBar>
 #include "customlabel.h"
 #include "ui_mainwindow.h"
-#include "Packet.h"
+//#include "Packet.h"
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
-//#include "PacketCap.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -34,7 +33,7 @@ public:
     static void addPacket(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num);
     static void addPacket(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num);
     static void addPacket(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num);
-    static void displayPacket(const std::string& packetText);
+    static void displayPacket(const std::string& packetText, Packet* packet);
 
 private slots:
     void start_button_clicked();

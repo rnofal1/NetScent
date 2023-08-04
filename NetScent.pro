@@ -13,10 +13,12 @@ INCLUDEPATH += include
 QMAKE_CXXFLAGS = -std=c++20
 
 LIBS += -lpcap
+LIBS += -lcurl
 
 SOURCES += \
     src/Packet.cpp \
     src/PacketCap.cpp \
+    src/customlabel.cpp \
     src/main.cpp \
     src/mainwindow.cpp
 

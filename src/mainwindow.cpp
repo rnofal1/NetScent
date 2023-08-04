@@ -41,33 +41,33 @@ void MainWindow::stop_button_clicked() {
 //ToDo: I swear there's a way to dynamically instantiate different subclasses (in a single line)
 //ToDo: WARNING/ALERT change using a void pointer to something a bit more sensible
 void MainWindow::addPacket(const struct ip& ip_header, const int& packet_num) {
-    packet_map[packet_num] = new Packet(ip_header);
+    packet_map[packet_num] = new Packet(ip_header, packet_num);
     std::string info = packet_map[packet_num]->get_info();
-    displayPacket(info);
+    displayPacket(info, packet_map[packet_num]);
     QTextStream(stdout) << "Added Other\n" << QString::fromStdString(info);
 }
 void MainWindow::addPacket(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num) {
-    packet_map[packet_num] = new TCPPacket(ip_header, tcp_header);
+    packet_map[packet_num] = new TCPPacket(ip_header, packet_num, tcp_header);
     std::string info = packet_map[packet_num]->get_info();
-    displayPacket(info);
+    displayPacket(info, packet_map[packet_num]);
     QTextStream(stdout) << "Added TCP\n" << QString::fromStdString(info);
 }
 void MainWindow::addPacket(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num) {
-    packet_map[packet_num] = new UDPPacket(ip_header, udp_header);
+    packet_map[packet_num] = new UDPPacket(ip_header, packet_num, udp_header);
     std::string info = packet_map[packet_num]->get_info();
-    displayPacket(info);
+    displayPacket(info, packet_map[packet_num]);
     QTextStream(stdout) << "Added UDP\n" << QString::fromStdString(info);
 }
 void MainWindow::addPacket(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num) {
-    packet_map[packet_num] = new ICMPPacket(ip_header, icmp_header);
+    packet_map[packet_num] = new ICMPPacket(ip_header, packet_num, icmp_header);
     std::string info = packet_map[packet_num]->get_info();
-    displayPacket(info);
+    displayPacket(info, packet_map[packet_num]);
     QTextStream(stdout) << "Added ICMP\n" << QString::fromStdString(info);
 }
 
-void MainWindow::displayPacket(const std::string& packetText) {
+void MainWindow::displayPacket(const std::string& packetText, Packet* packet) {
     QTextBrowser *infoPane = ui->textBrowser;
-    CustomLabel *label = new CustomLabel(infoPane);
+    CustomLabel *label = new CustomLabel(packet, infoPane);
     label->setText(QString::fromStdString(packetText));
     label->setMinimumHeight(50);
     label->setMaximumHeight(50);

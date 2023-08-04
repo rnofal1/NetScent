@@ -1,7 +1,7 @@
 #include "Packet.h"
 
-Packet::Packet(const struct ip& ip_header)
-    : time_added(std::time(nullptr)), ip_header(ip_header){}
+Packet::Packet(const struct ip& ip_header, const int& num)
+    : time_added(std::time(nullptr)), ip_header(ip_header), num(num){}
 
 std::string Packet::get_ip_info() {
     std::string ip_info =  "ID:" + std::to_string(ntohs(ip_header.ip_id))
@@ -18,8 +18,92 @@ std::string Packet::get_info() {
     return get_ip_info();
 }
 
-TCPPacket::TCPPacket(const struct ip& ip_header, const struct tcphdr& tcp_header)
-    : Packet(ip_header), tcp_header(tcp_header){}
+std::string Packet::get_src_ip() {
+    return std::string(inet_ntoa(ip_header.ip_src));
+}
+
+std::string Packet::get_dst_ip() {
+    return std::string(inet_ntoa(ip_header.ip_dst));
+}
+
+std::string Packet::get_geoloc_api_key() {
+    if(const char* env_p = std::getenv("GEO_KEY")) {
+        return std::string(env_p);
+    } else {
+        std::cout << "Geolocation API key not found\n";
+        return "";
+    }
+}
+
+size_t Packet::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
+    data->append((char*) ptr, size * nmemb);
+    return size * nmemb;
+}
+
+nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) {
+    auto curl = curl_easy_init();
+    auto key = get_geoloc_api_key();
+
+    if(curl && !key.empty()) {
+        std::string response_string;
+
+        std::string get_url = "https://api.ipgeolocation.io/ipgeo?apiKey=" + key + "&ip="+ip_addr;
+        curl_easy_setopt(curl, CURLOPT_URL, get_url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Packet::writeFunction);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+
+        curl_easy_perform(curl);
+
+        nlohmann::json json = nlohmann::json::parse(response_string);
+
+        curl_easy_cleanup(curl);
+        curl = NULL;
+
+        return json;
+    } else if(!curl) {
+        std::cout << "Could not initialize curl\n";
+    }
+
+    return NULL;
+}
+
+std::string Packet::get_json_val(const nlohmann::json& json, const std::string& key) {
+    if (json.contains(key)) {
+        return std::string(json[key]);
+    } else {
+        return "Unknown";
+    }
+}
+
+std::string Packet::parse_json(const nlohmann::json& json) {
+    std::string json_info = "IP: " +                  get_json_val(json, "ip")
+                            + "\nCountry: " +         get_json_val(json, "country_name")
+                            + "\nState/Province: " +  get_json_val(json, "state_prov")
+                            + "\nCity: " +            get_json_val(json, "city")
+                            + "\nOrganization: " +    get_json_val(json, "organization") + "\n\n";
+    return json_info;
+}
+
+std::string Packet::get_packet_geo_info() {
+    nlohmann::json src_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_dst)));
+    nlohmann::json dst_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_src)));
+
+    std::string src_info =  "Source Geographical Info:\n" + parse_json(src_json);
+    std::string dst_info =  "Destination Geographical Info:\n" + parse_json(dst_json);
+
+    return src_info + dst_info;
+}
+
+std::string Packet::get_time_added() {
+    return std::asctime(std::localtime(&time_added));
+}
+
+int Packet::get_num() {
+    return num;
+}
+
+TCPPacket::TCPPacket(const struct ip& ip_header, const int& num, const struct tcphdr& tcp_header)
+    : Packet(ip_header, num), tcp_header(tcp_header){}
 
 //ToDo: change this function (and similar functions) to use a formatting function similar to sprintf
 std::string TCPPacket::get_info() {
@@ -30,7 +114,8 @@ std::string TCPPacket::get_info() {
 
     tcp_info += get_ip_info() + "\n";
 
-    tcp_info += (tcp_header.th_flags & TH_URG ? 'U' : '*')
+    tcp_info += std::string()
+                + (tcp_header.th_flags & TH_URG ? 'U' : '*')
                 +  (tcp_header.th_flags & TH_ACK ? 'A' : '*')
                 +  (tcp_header.th_flags & TH_PUSH ? 'P' : '*')
                 +  (tcp_header.th_flags & TH_RST ? 'R' : '*')
@@ -46,8 +131,8 @@ std::string TCPPacket::get_info() {
 }
 
 
-UDPPacket::UDPPacket(const struct ip& ip_header, const struct udphdr& udp_header)
-    : Packet(ip_header), udp_header(udp_header){}
+UDPPacket::UDPPacket(const struct ip& ip_header, const int& num, const struct udphdr& udp_header)
+    : Packet(ip_header, num), udp_header(udp_header){}
 
 std::string UDPPacket::get_info() {
     std::string udp_info =  "UDP " + std::string(inet_ntoa(ip_header.ip_src))
@@ -61,8 +146,8 @@ std::string UDPPacket::get_info() {
 }
 
 
-ICMPPacket::ICMPPacket(const struct ip& ip_header, const struct icmp& icmp_header)
-    : Packet(ip_header), icmp_header(icmp_header){}
+ICMPPacket::ICMPPacket(const struct ip& ip_header, const int& num, const struct icmp& icmp_header)
+    : Packet(ip_header, num), icmp_header(icmp_header){}
 
 std::string ICMPPacket::get_info() {
     std::string icmp_info = "ICMP " + std::string(inet_ntoa(ip_header.ip_src))

@@ -3,32 +3,24 @@
 
 #include <QLabel>
 #include <QTextBrowser>
+#include "Packet.h"
+//#include <curl/curl.h>
+//#include <nlohmann/json.hpp>
+//#include <cstdlib>
 
 class CustomLabel : public QLabel
 {
     Q_OBJECT
 public:
-    CustomLabel(QWidget* infoPaneInit = nullptr, QWidget* parent = nullptr) : QLabel(parent), infoPane(infoPaneInit) { }
+    CustomLabel(Packet* packet, QTextBrowser* infoPaneInit = nullptr, QWidget* parent = nullptr);
 
 protected:
-    void enterEvent(QEvent *ev) override
-    {
-        setStyleSheet("QLabel { background-color : grey; }");
-        if(infoPane != nullptr) {
-            infoPane->setStyleSheet("QTextBrowser { background-color : blue; }");
-        }
-    }
-
-    void leaveEvent(QEvent *ev) override
-    {
-        setStyleSheet("QLabel { background-color : white; }");
-        if(infoPane != nullptr) {
-            infoPane->setStyleSheet("QTextBrowser { background-color : white; }");
-        }
-    }
+    void enterEvent(QEnterEvent *ev) override;
+    void leaveEvent(QEvent *ev) override;
 
 private:
-    QWidget* infoPane;
+    QTextBrowser* infoPane;
+    Packet* packet;
 
 };
 
