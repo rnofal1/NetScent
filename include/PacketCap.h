@@ -1,8 +1,18 @@
+/* This file contains declarations for the PacketCap class
+ * Ramsey Nofal, 08/2023
+ */
+
+
 #ifndef PACKETCAP_H
 #define PACKETCAP_H
 
+
+//3rd-Party
+#include <pcap/pcap.h>
+
 //Local
 #include "mainwindow.h"
+
 
 //Defines
 #define PACKET_BUFF_TIMEOUT 1000 //https://www.tcpdump.org/manpages/pcap.3pcap.html
@@ -14,17 +24,15 @@
 #define SIZE_PPP_HEADER 24 //http://www.tcpipguide.com/free/t_PPPMultilinkProtocolMPFrameFormat-3.htm
 
 
-/*  Top-level packet-handler class.
-*   Implementation heavily derived from:
-*   https://vichargrave.github.io/programming/develop-a-packet-sniffer-with-libpcap/
-*/
+/* Top-level packet-handler class.
+ *  Implementation heavily derived from:
+ *  https://vichargrave.github.io/programming/develop-a-packet-sniffer-with-libpcap/
+ */
 class PacketCap {
 public:
-    PacketCap(MainWindow* mainWindowInit);
+    PacketCap(MainWindow* main_window);
 
-    pcap_t* create_pcap_handle( char* device,
-                               char* filter,
-                               int promisc);
+    pcap_t* create_pcap_handle(char* device, char* filter, int promisc);
 
     int run_packet_cap();
 
@@ -40,23 +48,23 @@ public:
                                const u_char *packet_ptr);
 
     static void stop_capture(int signo);
-
-    void set_device(const char* network_interface);
-
     void set_desired_num_packets(const char* desired_num_packets);
-
+    void set_device(const char* network_interface);
     void set_filter(const int optind, const int argc, char** argv);
 
 private:
-    char device[DEFAULT_CHAR_BUFF];
-    char filter[DEFAULT_CHAR_BUFF];
+    static MainWindow* main_window;
+    static QTextBrowser* infoPane;
+
     static pcap_t* handle; //Packet capture channel identifier (used in all libpcap calls)
     static int link_header_len; //Offset to skip over datalink layer header to get to packet IP header
     static int num_packets; //Total number of packets captured and processed
+
     int count; //Number of packets at which to end packet capture
     int opt;
-    static MainWindow* mainWindow;
-    static QTextBrowser* infoPane;
+
+    char device[DEFAULT_CHAR_BUFF];
+    char filter[DEFAULT_CHAR_BUFF];
 };
 
 
