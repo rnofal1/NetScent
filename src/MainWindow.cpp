@@ -4,7 +4,7 @@
 
 
 //Local
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 
 //Static variable definitions

@@ -11,7 +11,7 @@
 #include <pcap/pcap.h>
 
 //Local
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 
 //Defines

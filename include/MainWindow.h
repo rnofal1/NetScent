@@ -22,7 +22,7 @@
 
 //Local
 #include "ui_mainwindow.h"
-#include "customlabel.h"
+#include "CustomLabel.h"
 
 
 /* The MainWindow class is derived from the QMainWindow class, with the added functionality

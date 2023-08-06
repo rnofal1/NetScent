@@ -16,17 +16,17 @@ LIBS += -lpcap
 LIBS += -lcurl
 
 SOURCES += \
+    src/CustomLabel.cpp \
+    src/MainWindow.cpp \
     src/Packet.cpp \
     src/PacketCap.cpp \
-    src/customlabel.cpp \
-    src/main.cpp \
-    src/mainwindow.cpp
+    src/main.cpp
 
 HEADERS += \
+    include/CustomLabel.h \
+    include/MainWindow.h \
     include/Packet.h \
-    include/PacketCap.h \
-    include/customlabel.h \
-    include/mainwindow.h
+    include/PacketCap.h
 
 FORMS += \
     mainwindow.ui

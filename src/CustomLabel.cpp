@@ -4,7 +4,7 @@
 
 
 //Local
-#include "customlabel.h"
+#include "CustomLabel.h"
 
 
 CustomLabel::CustomLabel(Packet* packet, QTextBrowser* info_pane_init, QWidget* parent) :
