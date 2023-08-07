@@ -13,8 +13,19 @@ This is a personal project, its main purpose is as a platform for me to use and 
 1. Ensure that you have an updated version of Linux installed*
 2. Download the latest build
 3. In a terminal, run this command (or similar): ```sudo ./<build_name>```
+4. Enter your API key for [IP geolocation](https://ipgeolocation.io/)
+5. Click start
 
 *Not guaranteed to work on all systems or configurations
+
+## Rough Roadmap
+- Improve IP geolocation 
+- Add saving of packet data to local file
+- Add more options for data analysis
+- Add proper testing framework
+- Build CI/CD pipeline (?)
+- Implement graphical improvements
+- Port to Windows
 
 ## Links
 https://ipgeolocation.io/  
