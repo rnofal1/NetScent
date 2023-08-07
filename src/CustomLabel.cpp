@@ -15,7 +15,7 @@ CustomLabel::CustomLabel(Packet* packet, QTextBrowser* info_pane_init, QWidget* 
 //ToDo: store style specifications somewhere
 void CustomLabel::enterEvent(QEnterEvent *ev) {
     Q_UNUSED(ev);
-    setStyleSheet("QLabel { background-color : grey; }");
+    setStyleSheet("background-color : grey");
 
     if(info_pane != nullptr) {
         QTextStream(stdout) << "Update Infopane\n";
@@ -31,5 +31,5 @@ void CustomLabel::enterEvent(QEnterEvent *ev) {
 
 void CustomLabel::leaveEvent(QEvent *ev) {
     Q_UNUSED(ev);
-    setStyleSheet("QLabel { background-color : white; }");
+    setStyleSheet("background-color : white");
 }

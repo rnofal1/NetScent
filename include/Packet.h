@@ -17,6 +17,9 @@
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <iostream>
+#include <filesystem>
 
 //3rd-party
 #include <pcap/pcap.h> //libpcap library
@@ -25,6 +28,10 @@
 #include <netinet/ip_icmp.h> //ICMP-specific header fields
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
+
+
+//Defines
+#define API_KEY_FILE "api_key.txt"
 
 
 /* The Packet class stores ip info and provides public methods to access

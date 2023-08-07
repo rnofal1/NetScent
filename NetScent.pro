@@ -39,3 +39,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     .gitignore \
     README.md
+
+copydata.commands = $(COPY_DIR) $$PWD/icons $$OUT_PWD
+
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+
+QMAKE_EXTRA_TARGETS += first copydata

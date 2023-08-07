@@ -31,8 +31,8 @@ std::string Packet::get_time_added() {
 
 //ToDo: split this into two functions, one for src and one for dst
 std::string Packet::get_packet_geo_info() {
-    nlohmann::json src_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_dst)));
-    nlohmann::json dst_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_src)));
+    nlohmann::json src_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_src)));
+    nlohmann::json dst_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_dst)));
 
     std::string src_info =  "Source Geographical Info:\n" + parse_json(src_json);
     std::string dst_info =  "Destination Geographical Info:\n" + parse_json(dst_json);
@@ -85,12 +85,17 @@ nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) {
 }
 
 std::string Packet::get_geoloc_api_key() {
-    if(const char* env_p = std::getenv("GEO_KEY")) {
-        return std::string(env_p);
+    std::ifstream api_key_file(API_KEY_FILE);
+    std::string ret_string;
+
+    if(api_key_file) {
+        std::getline(api_key_file, ret_string);
     } else {
         std::cout << "Geolocation API key not found\n";
-        return "";
     }
+    api_key_file.close();
+
+    return ret_string;
 }
 
 //ToDo: consider having this function take in a vector of desired json keys

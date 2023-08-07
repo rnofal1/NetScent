@@ -19,6 +19,9 @@
 #include <QMessageBox>
 #include <QThread>
 #include <QScrollBar>
+#include <QLineEdit>
+#include <QMovie>
+#include <QPixmap>
 
 //Local
 #include "ui_mainwindow.h"
@@ -35,7 +38,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+    
     Ui::MainWindow* get_ui_pointer();
 
     bool run_capture;
@@ -47,9 +50,16 @@ public:
 
     static void display_packet(const std::string& packetText, Packet* packet);
 
+    static void update_api_key_status();
+
+    static void set_status_label_active();
+    static void set_status_label_inactive();
+
 private slots:
     void start_button_clicked();
     void stop_button_clicked();
+
+    void set_api_button_clicked();
 
 private:
     static Ui::MainWindow *ui;
