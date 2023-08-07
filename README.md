@@ -4,7 +4,7 @@ NetScent is a packet analyzer/sniffer designed to monitor local network traffic.
 
 NetScent allows users to view a continuous stream of network information, including source and destination IP addresses and approximate geographic locations, for devices involved in the exchange of intercepted packets.
 
-This project is currently in an early, unfinished state, but I will continue to add features and fixes over time.
+This project is currently in an early, unfinished state, but I will continue adding features and fixes over time.
 
 ![screenshot_1](screenshots/capture_tab_running.png)
 *main menu after capturing some packets*
@@ -17,7 +17,7 @@ This is a personal project, its main purpose is as a platform for me to use and 
 2. Download and unzip the latest release from the "Releases" tab on the right
 3. In a terminal
     - ```cd``` into the release folder
-    - run this command (or similar): ```sudo ./<build_name>```
+    - run this command (or similar): ```sudo ./NetScent```
 4. In the "Settings" tab, enter your API key for [IP geolocation](https://ipgeolocation.io/)
 5. In the "Capture" tab click "Start Capture"
 
