@@ -6,15 +6,20 @@ NetScent allows users to view a continuous stream of network information, includ
 
 This project is currently in an early, unfinished state, but I will continue to add features and fixes over time.
 
+![screenshot_1](screenshots/capture_tab_running.png)
+*main menu after capturing some packets*
+
 ## Purpose
 This is a personal project, its main purpose is as a platform for me to use and improve my programming and C/C++ skills. However, in service of that purpose I will try to make this program as usable, useful, accessible, and performant as possible.
 
 ## How to Use
 1. Ensure that you have an updated version of Linux installed*
-2. Download the latest build
-3. In a terminal, run this command (or similar): ```sudo ./<build_name>```
-4. Enter your API key for [IP geolocation](https://ipgeolocation.io/)
-5. Click start
+2. Download and unzip the latest release from the "Releases" tab on the right
+3. In a terminal
+    - ```cd``` into the release folder
+    - run this command (or similar): ```sudo ./<build_name>```
+4. In the "Settings" tab, enter your API key for [IP geolocation](https://ipgeolocation.io/)
+5. In the "Capture" tab click "Start Capture"
 
 *Not guaranteed to work on all systems or configurations
 
