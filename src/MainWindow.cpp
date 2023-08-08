@@ -44,7 +44,7 @@ void MainWindow::set_widgets_style() {
 
     //ApiLinkLabel Style
     ui->apiLinkLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    ui->apiLinkLabel->setToolTip("Foljlow this link, create an account, and paste your API key at"
+    ui->apiLinkLabel->setToolTip("Follow this link, create an account, and paste your API key at"
                                  " the right to unlock IP geolocation");
 
     //Tabs Style
