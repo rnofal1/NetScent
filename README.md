@@ -17,7 +17,7 @@ This is a personal project, its main purpose is as a platform for me to use and 
 2. Download dependencies:
     - In a terminal, run the command: ```sudo apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev``` 
 3. Download and unzip the latest [release](https://github.com/rnofal1/NetScent/releases/latest) (**NetScent_Release_v0.0.2.zip**)
-4. In a terminal
+4. In a terminal:
     - ```cd``` into the release folder
     - run the following commands (or similar):
         - ```chmod 777 NetScent.sh bin/NetScent```     
