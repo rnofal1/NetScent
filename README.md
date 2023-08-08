@@ -40,3 +40,5 @@ This is a personal project, its main purpose is as a platform for me to use and 
 https://ipgeolocation.io/  
 
 https://vichargrave.github.io/programming/develop-a-packet-sniffer-with-libpcap/
+
+https://github.com/QuasarApp/CQtDeployer
