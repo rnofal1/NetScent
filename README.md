@@ -17,11 +17,11 @@ This is a personal project, its main purpose is as a platform for me to use and 
 2. Download and unzip the latest release from the "Releases" tab on the right
 3. In a terminal
     - ```cd``` into the release folder
-    - run this command (or similar): ```sudo ./NetScent```
+    - run this command (or similar): ```sudo ./NetScent.sh```
 4. In the "Settings" tab, enter your API key for [IP geolocation](https://ipgeolocation.io/)
 5. In the "Capture" tab click "Start Capture"
 
-*Not guaranteed to work on all systems or configurations
+*Not guaranteed to work on all systems or configurations (definitely won't run properly on WSL)
 
 ## Rough Roadmap
 - Improve IP geolocation 
