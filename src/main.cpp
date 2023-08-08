@@ -21,7 +21,10 @@ int main(int argc, char *argv[]) {
 
     PacketCap packet_capturer(&w);
     std::thread t1(&PacketCap::run_packet_cap, packet_capturer);
-    t1.detach(); //ToDo: this threading could be handled better
 
-    return a.exec();
+    int success = a.exec();
+
+    t1.join();
+
+    return success;
 }

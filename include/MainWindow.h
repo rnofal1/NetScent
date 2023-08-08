@@ -36,12 +36,18 @@
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
+    bool run_capture;
+    bool closed;
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     
     Ui::MainWindow* get_ui_pointer();
 
-    bool run_capture;
+    void set_widgets_style();
+
+    void connect_buttons();
+
 
     static void add_packet(const struct ip& ip_header, const int& packet_num);
     static void add_packet(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num);
@@ -50,10 +56,15 @@ public:
 
     static void display_packet(const std::string& packetText, Packet* packet);
 
+    static void add_line();
+
     static void update_api_key_status();
 
     static void set_status_label_active();
     static void set_status_label_inactive();
+
+protected:
+    void closeEvent(QCloseEvent *ev) override;
 
 private slots:
     void start_button_clicked();

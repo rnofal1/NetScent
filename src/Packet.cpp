@@ -7,7 +7,6 @@
 #include "Packet.h"
 
 
-//Packet public functions:
 Packet::Packet(const struct ip& ip_header, const int& num)
                : ip_header(ip_header),
                 time_added(std::time(nullptr)),
@@ -43,8 +42,6 @@ std::string Packet::get_packet_geo_info() {
 int Packet::get_num() {
     return num;
 }
-
-//Packet protected functions:
 
 /* get_ip_geo_json_info() uses curl to make an HTTP GET request to the
  * appropriate ip geolocation API
@@ -132,7 +129,6 @@ size_t Packet::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* 
 }
 
 
-//TCPPacket public functions:
 TCPPacket::TCPPacket(const struct ip& ip_header, const int& num, const struct tcphdr& tcp_header)
                     : Packet(ip_header, num),
                     tcp_header(tcp_header){}
@@ -163,7 +159,6 @@ std::string TCPPacket::get_info() {
 }
 
 
-//UDPPacket public functions:
 UDPPacket::UDPPacket(const struct ip& ip_header, const int& num, const struct udphdr& udp_header)
                     : Packet(ip_header, num),
                     udp_header(udp_header){}
@@ -180,7 +175,6 @@ std::string UDPPacket::get_info() {
 }
 
 
-//ICMPPacket public functions:
 ICMPPacket::ICMPPacket(const struct ip& ip_header, const int& num, const struct icmp& icmp_header)
                         : Packet(ip_header, num),
                         icmp_header(icmp_header){}

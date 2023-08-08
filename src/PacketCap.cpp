@@ -17,7 +17,6 @@ int PacketCap::num_packets = 0;
 int PacketCap::link_header_len = 0;
 
 
-//PacketCap public functions:
 PacketCap::PacketCap(MainWindow* main_window_init) {
     main_window = main_window_init;
     count = 0;
@@ -103,7 +102,7 @@ int PacketCap::run_packet_cap() {
     signal(SIGQUIT, PacketCap::stop_capture);
 
     //Start the packet capture
-    while(true) {
+    while(main_window && !main_window->closed) {
         if(main_window->run_capture){
             std::cout << "Starting packet capture...\n\n";
 
@@ -128,7 +127,7 @@ int PacketCap::run_packet_cap() {
         }
     }
 
-    //stop_capture(0);
+    std::cout << "Program window closed.\n\n";
     return 0;
 }
 
@@ -192,7 +191,7 @@ void PacketCap::packet_handler(u_char *user,
                                const u_char *packet_ptr) {
     Q_UNUSED(user); Q_UNUSED(packet_header);
 
-    if(!main_window->run_capture) {
+    if(!main_window || main_window->closed || !main_window->run_capture) {
         pcap_breakloop(handle);
     }
 
@@ -226,7 +225,6 @@ void PacketCap::packet_handler(u_char *user,
     // default: ...
     }
 }
-
 
 /* Registered as the handler function for each of the signals SIGINT, SIGTERM,
  * and SIGQUIT, which are raised when a process is interrupted. Also called
