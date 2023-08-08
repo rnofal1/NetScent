@@ -16,14 +16,14 @@ This is a personal project, its main purpose is as a platform for me to use and 
 1. Ensure that you have an updated version of Linux installed*
 2. Download dependencies:
     - In a terminal, run the command: ```sudo apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev``` 
-4. Download and unzip the latest release from the "Releases" tab on the right (**NetScent_Release_v0.0.2.zip**)
-5. In a terminal
+3. Download and unzip the latest [release](https://github.com/rnofal1/NetScent/releases/latest) (**NetScent_Release_v0.0.2.zip**)
+4. In a terminal
     - ```cd``` into the release folder
     - run the following commands (or similar):
         - ```chmod 777 NetScent.sh bin/NetScent```     
         - ```sudo ./NetScent.sh```
-6. In the "Settings" tab, enter your API key for [IP geolocation](https://ipgeolocation.io/)
-7. In the "Capture" tab click "Start Capture"
+5. In the "Settings" tab, enter your API key for [IP geolocation](https://ipgeolocation.io/)
+6. In the "Capture" tab click "Start Capture"
 
 *Not guaranteed to work on all systems or configurations (Tested on a fresh install of **Ubuntu 22.04.2** running within VirtualBox)
 
