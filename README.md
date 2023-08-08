@@ -21,7 +21,7 @@ This is a personal project, its main purpose is as a platform for me to use and 
 4. In the "Settings" tab, enter your API key for [IP geolocation](https://ipgeolocation.io/)
 5. In the "Capture" tab click "Start Capture"
 
-*Not guaranteed to work on all systems or configurations (definitely won't run properly on WSL)
+*Not guaranteed to work on all systems or configurations (definitely won't run properly on WSL); Early releases will have notes on potential fixes to enable the program to run on vanilla Ubuntu.
 
 ## Rough Roadmap
 - Improve IP geolocation 
