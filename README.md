@@ -9,6 +9,9 @@ This project is currently in an early, unfinished state, but I will continue add
 ![screenshot_1](screenshots/capture_tab_running.png)
 *main menu after capturing some packets*
 
+![NetScent_Quick_Demo](https://github.com/rnofal1/NetScent/assets/57466011/6aff3c2b-69de-41b7-857d-68c3a8f23e7b)
+*small demo of the current UI*
+
 ## Purpose
 This is a personal project, its main purpose is as a platform for me to use and improve my programming and C/C++ skills. However, in service of that purpose I will try to make this program as usable, useful, accessible, and performant as possible.
 
