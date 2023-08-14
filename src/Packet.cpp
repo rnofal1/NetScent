@@ -30,8 +30,8 @@ std::string Packet::get_time_added() {
 
 //ToDo: split this into two functions, one for src and one for dst
 std::string Packet::get_packet_geo_info() {
-    nlohmann::json src_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_src)));
-    nlohmann::json dst_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_dst)));
+    QJsonObject src_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_src)));
+    QJsonObject dst_json = get_ip_geo_json_info(std::string(inet_ntoa(ip_header.ip_dst)));
 
     std::string src_info =  "Source Geographical Info:\n" + parse_json(src_json);
     std::string dst_info =  "Destination Geographical Info:\n" + parse_json(dst_json);
@@ -43,6 +43,24 @@ int Packet::get_num() {
     return num;
 }
 
+QJsonObject Packet::string_to_json_obj(const std::string& json_string) {
+    QJsonObject json_obj;
+
+    QJsonDocument json_doc = QJsonDocument::fromJson(QString::fromStdString(json_string).toUtf8());
+
+    if(!json_doc.isNull()) {
+        if(json_doc.isObject()) {
+            json_obj = json_doc.object();
+        } else {
+            std::cout << "Json doc is not an object\n";
+        }
+    } else {
+        std::cout << "Invalid json\n";
+    }
+
+    return json_obj;
+}
+
 /* get_ip_geo_json_info() uses curl to make an HTTP GET request to the
  * appropriate ip geolocation API
  *
@@ -52,9 +70,10 @@ int Packet::get_num() {
  * ToDo: implement local ip location caching (for recently-inspected locations)
  * and/or switch to a local ip location database
  */
-nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) {
+QJsonObject Packet::get_ip_geo_json_info(const std::string& ip_addr) {
     auto curl = curl_easy_init();
     auto key = get_geoloc_api_key();
+    QJsonObject json;
 
     if(curl && !key.empty()) {
         std::string response_string;
@@ -68,17 +87,15 @@ nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) {
         //Execute curl call
         curl_easy_perform(curl);
 
-        nlohmann::json json = nlohmann::json::parse(response_string);
+        json = string_to_json_obj(response_string);
 
         curl_easy_cleanup(curl);
         curl = NULL;
-
-        return json;
     } else if(!curl) {
         std::cout << "Could not initialize curl\n";
     }
 
-    return NULL;
+    return json;
 }
 
 std::string Packet::get_geoloc_api_key() {
@@ -96,7 +113,7 @@ std::string Packet::get_geoloc_api_key() {
 }
 
 //ToDo: consider having this function take in a vector of desired json keys
-std::string Packet::parse_json(const nlohmann::json& json) {
+std::string Packet::parse_json(const QJsonObject& json) {
     std::string json_info = "IP: " +                  get_json_val(json, "ip")
                             + "\nCountry: " +         get_json_val(json, "country_name")
                             + "\nState/Province: " +  get_json_val(json, "state_prov")
@@ -115,9 +132,10 @@ std::string Packet::get_ip_info() {
     return ip_info;
 }
 
-std::string Packet::get_json_val(const nlohmann::json& json, const std::string& key) {
-    if (json.contains(key)) {
-        return std::string(json[key]);
+std::string Packet::get_json_val(const QJsonObject& json, const std::string& key) {
+    QString q_key = QString::fromStdString(key);
+    if (json.contains(q_key)) {
+        return json[q_key].toString().toStdString();
     } else {
         return "Unknown";
     }

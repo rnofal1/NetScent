@@ -41,7 +41,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     .gitignore \
-    README.md
+    README.md \
+    style/style.json
 
 copydata.commands = $(COPY_DIR) $$PWD/icons $$OUT_PWD
 

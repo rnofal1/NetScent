@@ -21,12 +21,15 @@
 #include <iostream>
 #include <filesystem>
 
+//Standard Qt
+#include <QJsonObject>
+#include <QJsonDocument>
+
 //3rd-party
 #include <pcap/pcap.h> //libpcap library
 #include <netinet/tcp.h> //TCP-specific header fields
 #include <netinet/udp.h> //UDP-specific header fields
 #include <netinet/ip_icmp.h> //ICMP-specific header fields
-#include <nlohmann/json.hpp>
 #include <curl/curl.h>
 
 
@@ -65,18 +68,20 @@ protected:
     //Describes the order at which the Packet was sniffed, relative to other Packets
     int num;
 
-    nlohmann::json get_ip_geo_json_info(const std::string& ip_addr);
+    QJsonObject string_to_json_obj(const std::string& json_string);
+
+    QJsonObject get_ip_geo_json_info(const std::string& ip_addr);
 
     //Grabs the API key for the external ip geolocation service
     std::string get_geoloc_api_key();
 
     //Return json info in a formatted string
-    std::string parse_json(const nlohmann::json& json);
+    std::string parse_json(const QJsonObject& json);
 
     //Return a string containing miscellaneous ip header information
     std::string get_ip_info();
 
-    std::string get_json_val(const nlohmann::json& json, const std::string& key);
+    std::string get_json_val(const QJsonObject& json, const std::string& key);
 
     //Callback function used during HTTP GET request (curl)
     static size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data);
