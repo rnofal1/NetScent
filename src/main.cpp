@@ -14,7 +14,15 @@
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    a.setWindowIcon(QIcon("icons/icon.png"));
+
+    std::ifstream file(STYLE_FILE);
+    if(file) {
+        nlohmann::json style_json = nlohmann::json::parse(file);
+        a.setWindowIcon(QIcon(QString::fromStdString(std::string(style_json["Misc"]["icon-path"]))));
+        file.close();
+    } else {
+        std::cout << "Style file not found; Dynamic style elements will not work\n";
+    }
 
     MainWindow w;
     w.show();

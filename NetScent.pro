@@ -21,14 +21,16 @@ SOURCES += \
     src/MainWindow.cpp \
     src/Packet.cpp \
     src/PacketCap.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/util.cpp
 
 HEADERS += \
     include/CustomButton.h \
     include/CustomLabel.h \
     include/MainWindow.h \
     include/Packet.h \
-    include/PacketCap.h
+    include/PacketCap.h \
+    include/util.h
 
 FORMS += \
     mainwindow.ui

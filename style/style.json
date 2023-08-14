@@ -29,30 +29,44 @@
     },
     "scrollArea" : {
         "Main" : {
-            "background-color" : "rgb(54, 57, 62)",
+            "background-color" : "rgb(66, 69, 73)",
             "color" : "rgb(255, 255, 255)"
         },
         "Alt" : {}
     },
-    "textBrowser" : {
+    "scrollBar" : {
+        "Main" : {
+            "background-color" : "none",
+            "color" : "black"
+        },
+        "Alt" : {}
+    },
+    "infoPane" : {
         "Main" : {
             "color" : "rgb(0, 0, 0)"
         },
-        "Alt" : {}
+        "Alt" : {
+            "background-color" : "lightgrey",
+            "color" : "black"
+        }
     },
-    "startButton" : {
+    "packetLabel" : {
+        "Main" : {
+            "background-color" : "grey"
+        },
+        "Alt" : {
+            "background-color" : "rgb(66, 69, 73)"
+        }
+    },
+    "startStopButton" : {
         "Main" : {
             "background-color" : "rgb(87, 227, 137)",
-            "color" : "rgb(23, 23, 23)"
+            "color" : "black"
         },
-        "Alt" : {}
-    },
-    "stopButton" : {
-        "Main" : {
-            "background-color" : "rgb(87, 227, 137)",
-            "color" : "rgb(23, 23, 23)"
-        },
-        "Alt" : {}
+        "Alt" : {
+            "background-color" : "grey",
+            "color" : "black"
+        }
     },
     "statusLabel" : {
         "Main" : {},
@@ -70,7 +84,9 @@
         "Alt" : {}
     },
     "apiLinkLabel" : {
-        "Main" : {},
+        "Main" : {
+            "QToolTip { background-color" : "white; }"
+        },
         "Alt" : {}
     },
     "apiSettingLabel" : {
@@ -81,10 +97,13 @@
     },
     "keyDetectedLabel" : {
         "Main" : {
-            "background-color" : "rgb(246, 97, 81)",
-            "color" : "rgb(255, 255, 255)"
+            "background-color" : "green",
+            "color" : "black"
         },
-        "Alt" : {}
+        "Alt" : {
+            "background-color" : "orangered",
+            "color" : "black"
+        }
     },
     "setApiKeyButton" : {
         "Main" : {},

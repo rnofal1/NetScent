@@ -34,22 +34,19 @@ Ui::MainWindow* MainWindow::get_ui_pointer() {
     return this->ui;
 }
 
-//ToDo: store style preferences in a file (json, xml) or modify the ui xml directly
+//ToDo: consider adding stylesheet setting functions within derived UI/GUI classes
 void MainWindow::set_widgets_style() {
     //ScrollArea Style
-    ui->scrollArea->setStyleSheet("background-color : rgb(66, 69, 73)");
-    ui->scrollArea->verticalScrollBar()->setStyleSheet("background-color : none; color : black");
-    ui->scrollArea->horizontalScrollBar()->setStyleSheet("background-color : none; color : black");
+    set_stylesheet_from_json(*ui->scrollArea, "scrollArea", "Main");
+    set_stylesheet_from_json(*ui->scrollArea->verticalScrollBar(), "scrollBar", "Main");
+    set_stylesheet_from_json(*ui->scrollArea->horizontalScrollBar(), "scrollBar", "Main");
     ui->scrollArea->setAlignment(Qt::AlignTop);
 
     //ApiLinkLabel Style
     ui->apiLinkLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ui->apiLinkLabel->setToolTip("Follow this link, create an account, and paste your API key at"
                                  " the right to unlock IP geolocation");
-    ui->apiLinkLabel->setStyleSheet("QToolTip { background-color: white; }");
-
-    //Api key detected Style
-    ui->keyDetectedLabel->setStyleSheet("color : black");
+    set_stylesheet_from_json(*ui->apiLinkLabel, "apiLinkLabel", "Main");
 
     //Tabs Style
     ui->tabWidget->setCurrentIndex(0);
@@ -61,7 +58,6 @@ void MainWindow::set_widgets_style() {
 void MainWindow::connect_buttons() {
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
-
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
 }
 
@@ -78,10 +74,10 @@ void MainWindow::update_api_key_status() {
     if(key.length() > 0) {
         dummy_api_key = std::string(key.length(), '*');
         ui->apiKeyText->setText(QString::fromStdString(dummy_api_key));
-        ui->keyDetectedLabel->setStyleSheet("background-color : green; color : black");
+        set_stylesheet_from_json(*ui->keyDetectedLabel, "keyDetectedLabel", "Main");
         ui->keyDetectedLabel->setText(" API key found!");
     } else {
-        ui->keyDetectedLabel->setStyleSheet("background-color : orangered; color : black");
+        set_stylesheet_from_json(*ui->keyDetectedLabel, "keyDetectedLabel", "Alt");
         ui->keyDetectedLabel->setText(" No key detected");
     }
 }
@@ -91,7 +87,7 @@ void MainWindow::set_status_label_active() {
         delete ui->statusLabel->movie();
     }
 
-    QMovie *movie = new QMovie("icons/icon_rotate_cube.gif");
+    QMovie *movie = new QMovie(MOVING_ICON);
     movie->setScaledSize(ui->statusLabel->size());
     ui->statusLabel->setMovie(movie);
     movie->start();
@@ -101,7 +97,7 @@ void MainWindow::set_status_label_inactive() {
         delete ui->statusLabel->movie();
     }
 
-    QPixmap pixmap("icons/icon.png");
+    QPixmap pixmap(STATIC_ICON);
     ui->statusLabel->setPixmap(pixmap.scaled(ui->statusLabel->size(), Qt::KeepAspectRatio));
     ui->statusLabel->show();
 }

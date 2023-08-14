@@ -7,18 +7,15 @@
 #include "CustomButton.h"
 
 
-//CustomButton::CustomButton() {}
-
 //ToDo: store style specifications somewhere
 void CustomButton::enterEvent(QEnterEvent *ev) {
     Q_UNUSED(ev);
 
-    setStyleSheet("background-color : grey");
-    setStyleSheet("color: white");
+    set_stylesheet_from_json(*this, "startStopButton", "Alt");
 }
 
 void CustomButton::leaveEvent(QEvent *ev) {
     Q_UNUSED(ev);
 
-    setStyleSheet("background-color: rgb(87, 227, 137); color: black");
+    set_stylesheet_from_json(*this, "startStopButton", "Main");
 }

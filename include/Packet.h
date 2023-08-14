@@ -17,21 +17,17 @@
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
-#include <fstream>
-#include <iostream>
-#include <filesystem>
+
 
 //3rd-party
 #include <pcap/pcap.h> //libpcap library
 #include <netinet/tcp.h> //TCP-specific header fields
 #include <netinet/udp.h> //UDP-specific header fields
 #include <netinet/ip_icmp.h> //ICMP-specific header fields
-#include <nlohmann/json.hpp>
 #include <curl/curl.h>
 
-
-//Defines
-#define API_KEY_FILE "api_key.txt"
+//Local
+#include "util.h"
 
 
 /* The Packet class stores ip info and provides public methods to access

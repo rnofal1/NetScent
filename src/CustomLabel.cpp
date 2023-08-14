@@ -15,12 +15,12 @@ CustomLabel::CustomLabel(Packet* packet, QTextBrowser* info_pane_init, QWidget* 
 //ToDo: store style specifications somewhere
 void CustomLabel::enterEvent(QEnterEvent *ev) {
     Q_UNUSED(ev);
-    setStyleSheet("background-color : grey");
+
+    set_stylesheet_from_json(*this, "packetLabel", "Main");
 
     if(info_pane != nullptr) {
         QTextStream(stdout) << "Update Infopane\n";
-        info_pane->setStyleSheet("QTextBrowser { background-color : lightgrey; color : black; }");
-
+        set_stylesheet_from_json(*info_pane, "infoPane", "Alt");
         std::string set_text = "Packet #: " + std::to_string(packet->get_num())
                                +"\nTime Added: " + packet->get_time_added()
                                +"\n" + packet->get_packet_geo_info();
@@ -31,5 +31,6 @@ void CustomLabel::enterEvent(QEnterEvent *ev) {
 
 void CustomLabel::leaveEvent(QEvent *ev) {
     Q_UNUSED(ev);
-    setStyleSheet("background-color : rgb(66, 69, 73)");
+
+    set_stylesheet_from_json(*this, "packetLabel", "Alt");
 }

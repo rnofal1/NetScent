@@ -8,6 +8,7 @@
 
 //Standard Qt
 #include <QPushButton>
+#include "util.h"
 
 
 /* The CustomButton class is derived from the QPushButton class, with added stylistic
