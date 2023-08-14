@@ -28,8 +28,7 @@ HEADERS += \
     include/CustomLabel.h \
     include/MainWindow.h \
     include/Packet.h \
-    include/PacketCap.h \
-    src/CustomButton.h
+    include/PacketCap.h
 
 FORMS += \
     mainwindow.ui
@@ -41,13 +40,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     .gitignore \
-    README.md \
-    style/style.json
+    README.md
 
-copydata.commands = $(COPY_DIR) $$PWD/icons $$OUT_PWD
+copydata_icons.commands = $(COPY_DIR) $$PWD/icons $$OUT_PWD
+copydata_style.commands = $(COPY_DIR) $$PWD/style $$OUT_PWD
 
-first.depends = $(first) copydata
+first.depends = $(first) copydata_icons copydata_style
 export(first.depends)
-export(copydata.commands)
+export(copydata_icons.commands)
+export(copydata_style.commands)
 
-QMAKE_EXTRA_TARGETS += first copydata
+QMAKE_EXTRA_TARGETS += first copydata_icons copydata_style

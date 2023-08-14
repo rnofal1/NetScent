@@ -1,3 +1,96 @@
 {
-   
+   "MainWindow" : {
+        "Main" : {
+            "background-color" : "rgb(40, 43, 48)",
+            "color" : "rgb(255, 255, 255)"
+        },
+        "Alt" : {}
+   },
+   "centralWidget" : {
+        "Main" : {
+            "background-color" : "rgb(40, 43, 48)",
+            "color" : "rgb(255, 255, 255)"
+        },
+        "Alt" : {}
+    },
+    "tabWidget" : {
+        "Main" : {
+            "background-color" : "rgb(54, 57, 62)",
+            "color" : "rgb(255, 255, 255)"
+        },
+        "Alt" : {}
+    },
+    "captureTab" : {
+        "Main" : {
+            "background-color" : "rgb(54, 57, 62)",
+            "color" : "rgb(255, 255, 255)"
+        },
+        "Alt" : {}
+    },
+    "scrollArea" : {
+        "Main" : {
+            "background-color" : "rgb(54, 57, 62)",
+            "color" : "rgb(255, 255, 255)"
+        },
+        "Alt" : {}
+    },
+    "textBrowser" : {
+        "Main" : {
+            "color" : "rgb(0, 0, 0)"
+        },
+        "Alt" : {}
+    },
+    "startButton" : {
+        "Main" : {
+            "background-color" : "rgb(87, 227, 137)",
+            "color" : "rgb(23, 23, 23)"
+        },
+        "Alt" : {}
+    },
+    "stopButton" : {
+        "Main" : {
+            "background-color" : "rgb(87, 227, 137)",
+            "color" : "rgb(23, 23, 23)"
+        },
+        "Alt" : {}
+    },
+    "statusLabel" : {
+        "Main" : {},
+        "Alt" : {}
+    },
+    "settingsTab" : {
+        "Main" : {
+            "background-color" : "rgb(54, 57, 62)",
+            "color" : "rgb(255, 255, 255)"
+        },
+        "Alt" : {}
+    },
+    "apiKeyText" : {
+        "Main" : {},
+        "Alt" : {}
+    },
+    "apiLinkLabel" : {
+        "Main" : {},
+        "Alt" : {}
+    },
+    "apiSettingLabel" : {
+        "Main" : {
+            "background-color" : "rgb(54, 57, 62)"
+        },
+        "Alt" : {}
+    },
+    "keyDetectedLabel" : {
+        "Main" : {
+            "background-color" : "rgb(246, 97, 81)",
+            "color" : "rgb(255, 255, 255)"
+        },
+        "Alt" : {}
+    },
+    "setApiKeyButton" : {
+        "Main" : {},
+        "Alt" : {}
+    },
+    "Misc" : {
+        "icon-path" : "icons/icon.png"
+    }
 }
