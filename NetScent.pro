@@ -16,6 +16,7 @@ LIBS += -lpcap
 LIBS += -lcurl
 
 SOURCES += \
+    src/CustomButton.cpp \
     src/CustomLabel.cpp \
     src/MainWindow.cpp \
     src/Packet.cpp \
@@ -23,10 +24,12 @@ SOURCES += \
     src/main.cpp
 
 HEADERS += \
+    include/CustomButton.h \
     include/CustomLabel.h \
     include/MainWindow.h \
     include/Packet.h \
-    include/PacketCap.h
+    include/PacketCap.h \
+    src/CustomButton.h
 
 FORMS += \
     mainwindow.ui

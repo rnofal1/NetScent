@@ -48,6 +48,10 @@ public:
 
     void connect_buttons();
 
+    void update_api_key_status();
+
+    void set_status_label_active();
+    void set_status_label_inactive();
 
     static void add_packet(const struct ip& ip_header, const int& packet_num);
     static void add_packet(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num);
@@ -57,11 +61,6 @@ public:
     static void display_packet(const std::string& packetText, Packet* packet);
 
     static void add_line();
-
-    static void update_api_key_status();
-
-    static void set_status_label_active();
-    static void set_status_label_inactive();
 
 protected:
     void closeEvent(QCloseEvent *ev) override;
@@ -74,6 +73,7 @@ private slots:
 
 private:
     static Ui::MainWindow *ui;
+    std::string dummy_api_key;
 };
 
 #endif // MAINWINDOW_H

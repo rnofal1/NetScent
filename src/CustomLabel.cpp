@@ -19,7 +19,7 @@ void CustomLabel::enterEvent(QEnterEvent *ev) {
 
     if(info_pane != nullptr) {
         QTextStream(stdout) << "Update Infopane\n";
-        info_pane->setStyleSheet("QTextBrowser { background-color : lightgrey; }");
+        info_pane->setStyleSheet("QTextBrowser { background-color : lightgrey; color : black; }");
 
         std::string set_text = "Packet #: " + std::to_string(packet->get_num())
                                +"\nTime Added: " + packet->get_time_added()
@@ -31,5 +31,5 @@ void CustomLabel::enterEvent(QEnterEvent *ev) {
 
 void CustomLabel::leaveEvent(QEvent *ev) {
     Q_UNUSED(ev);
-    setStyleSheet("background-color : white");
+    setStyleSheet("background-color : rgb(66, 69, 73)");
 }

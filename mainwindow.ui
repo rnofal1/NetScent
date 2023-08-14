@@ -13,7 +13,15 @@
   <property name="windowTitle">
    <string>NetScent</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(40, 43, 48);
+color: rgb(255, 255, 255);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(40, 43, 48);
+color: rgb(255, 255, 255);</string>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="3">
      <widget class="QTabWidget" name="tabWidget">
@@ -23,10 +31,18 @@
         <height>0</height>
        </size>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(54, 57, 62);
+color: rgb(255, 255, 255);</string>
+      </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="captureTab">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(54, 57, 62);
+color: rgb(255, 255, 255);</string>
+       </property>
        <attribute name="title">
         <string>Capture</string>
        </attribute>
@@ -86,12 +102,15 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(0, 0, 0);</string>
+            </property>
            </widget>
           </item>
          </layout>
         </item>
         <item row="0" column="0">
-         <widget class="QPushButton" name="startButton">
+         <widget class="CustomButton" name="startButton">
           <property name="minimumSize">
            <size>
             <width>100</width>
@@ -105,7 +124,8 @@
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(222, 221, 218);</string>
+           <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
           </property>
           <property name="text">
            <string>Start Capture</string>
@@ -113,7 +133,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QPushButton" name="stopButton">
+         <widget class="CustomButton" name="stopButton">
           <property name="minimumSize">
            <size>
             <width>98</width>
@@ -127,7 +147,8 @@
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(222, 221, 218);</string>
+           <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
           </property>
           <property name="text">
            <string>Stop Capture</string>
@@ -172,7 +193,7 @@
          </rect>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(222, 221, 218);</string>
+         <string notr="true">background-color: rgb(54, 57, 62);</string>
         </property>
         <property name="text">
          <string>Geolocation API Key:</string>
@@ -253,6 +274,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomButton</class>
+   <extends>QPushButton</extends>
+   <header>CustomButton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
