@@ -24,10 +24,6 @@
 #include <netinet/tcp.h> //TCP-specific header fields
 #include <netinet/udp.h> //UDP-specific header fields
 #include <netinet/ip_icmp.h> //ICMP-specific header fields
-#include <curl/curl.h>
-
-//Local
-#include "util.h"
 
 
 /* The Packet class stores ip info and provides public methods to access
@@ -39,6 +35,7 @@
 class Packet {
 public:
     Packet(const struct ip& ip_header, const int& num);
+    virtual ~Packet();
 
     //Return a string containing miscellaneous Packet header information
     virtual std::string get_info();
@@ -46,9 +43,6 @@ public:
     std::string get_src_ip();
     std::string get_dst_ip();
     std::string get_time_added();
-
-    //Return a string describing geographical information regarding the sniffed Packet
-    std::string get_packet_geo_info();
 
     int get_num();
 
@@ -61,21 +55,8 @@ protected:
     //Describes the order at which the Packet was sniffed, relative to other Packets
     int num;
 
-    nlohmann::json get_ip_geo_json_info(const std::string& ip_addr);
-
-    //Grabs the API key for the external ip geolocation service
-    std::string get_geoloc_api_key();
-
-    //Return json info in a formatted string
-    std::string parse_json(const nlohmann::json& json);
-
     //Return a string containing miscellaneous ip header information
     std::string get_ip_info();
-
-    std::string get_json_val(const nlohmann::json& json, const std::string& key);
-
-    //Callback function used during HTTP GET request (curl)
-    static size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data);
 };
 
 
@@ -95,7 +76,7 @@ class UDPPacket : public Packet {
 public:
     UDPPacket(const struct ip& ip_header, const int& num, const struct udphdr& udp_header);
 
-    //Return a string containing miscellaneous TCPPacket header information
+    //Return a string containing miscellaneous UDPPacket header information
     std::string get_info() override;
 
 private:
@@ -107,7 +88,7 @@ class ICMPPacket : public Packet {
 public:
     ICMPPacket(const struct ip& ip_header, const int& num, const struct icmp& icmp_header);
 
-    //Return a string containing miscellaneous TCPPacket header information
+    //Return a string containing miscellaneous ICMPPacket header information
     std::string get_info() override;
 
 private:

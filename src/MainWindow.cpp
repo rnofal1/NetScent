@@ -5,16 +5,18 @@
 
 //Local
 #include "MainWindow.h"
-
+#include "PacketLabel.h"
+#include "util.h"
 
 //Static variable definitions
 Ui::MainWindow *MainWindow::ui = nullptr;
-
+std::vector<Packet* > MainWindow::packets;
+bool MainWindow::clear_packets = false;
 
 MainWindow::MainWindow(QWidget *parent)
                        : QMainWindow(parent),
-                       run_capture(false),
-                       closed(false) {
+                        run_capture(false),
+                        closed(false){
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
@@ -27,6 +29,9 @@ MainWindow::~MainWindow() {
     if(ui->statusLabel->movie()) {
         delete ui->statusLabel->movie();
     }
+
+    delete_packets();
+
     delete ui;
 }
 
@@ -59,6 +64,11 @@ void MainWindow::connect_buttons() {
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
+    connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
+    connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(remove_existing_packets()));
+
+    //Filter checkmarks
+    connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
 }
 
 //ToDo: URGENT Handle api key(s) in a more sensible way
@@ -99,44 +109,64 @@ void MainWindow::set_status_label_inactive() {
 
     QPixmap pixmap(STATIC_ICON);
     ui->statusLabel->setPixmap(pixmap.scaled(ui->statusLabel->size(), Qt::KeepAspectRatio));
+    ui->statusLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     ui->statusLabel->show();
 }
 
 //ToDo: Dynamically instantiate different subclasses (in a single line/single function)?
 //ToDo: This just seems messy in general, consider changing
+//ToDo: Better way of handling clear_packets
 void MainWindow::add_packet(const struct ip& ip_header, const int& packet_num) {
+    if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
+
     Packet* packet = new Packet(ip_header, packet_num);
-    std::string info = packet->get_info();
-    display_packet(info, packet);
-    QTextStream(stdout) << "Added Other Packet\n" << QString::fromStdString(info);
+    packets.push_back(packet);
+    display_packet(packet);
+    QTextStream(stdout) << "Added Other Packet\n";
 }
 void MainWindow::add_packet(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num) {
+    if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
+
     TCPPacket* packet = new TCPPacket(ip_header, packet_num, tcp_header);
-    std::string info = packet->get_info();
-    display_packet(info, packet);
-    QTextStream(stdout) << "Added TCP\n" << QString::fromStdString(info);
+    packets.push_back(packet);
+
+    if(ui->filterBox->tcp_filter_enabled()) {
+        display_packet(packet);
+    }
+
+    QTextStream(stdout) << "Added TCP\n";
 }
 void MainWindow::add_packet(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num) {
+    if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
+
     UDPPacket* packet = new UDPPacket(ip_header, packet_num, udp_header);
-    std::string info = packet->get_info();
-    display_packet(info, packet);
-    QTextStream(stdout) << "Added UDP\n" << QString::fromStdString(info);
+    packets.push_back(packet);
+
+    if(ui->filterBox->udp_filter_enabled()) {
+        display_packet(packet);
+    }
+
+    QTextStream(stdout) << "Added UDP\n";
 }
 void MainWindow::add_packet(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num) {
+    if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
+
     ICMPPacket* packet = new ICMPPacket(ip_header, packet_num, icmp_header);
-    std::string info = packet->get_info();
-    display_packet(info, packet);
-    QTextStream(stdout) << "Added ICMP\n" << QString::fromStdString(info);
+    packets.push_back(packet);
+
+    if(ui->filterBox->icmp_filter_enabled()) {
+        display_packet(packet);
+    }
+
+    display_packet(packet);
+    QTextStream(stdout) << "Added ICMP\n";
 }
 
-void MainWindow::display_packet(const std::string& packetText, Packet* packet) {
+void MainWindow::display_packet(Packet* packet) {
     QTextBrowser *infoPane = ui->textBrowser;
-    CustomLabel *label = new CustomLabel(packet, infoPane);
+    PacketLabel *label = new PacketLabel(packet, infoPane);
 
-    label->setText(QString::fromStdString(packetText));
-    label->setMinimumHeight(50);
-    label->setMaximumHeight(50);
-
+    label->setText(QString::fromStdString(packet->get_info()));
     ui->scrollArea->widget()->layout()->addWidget(label);
 
     add_line();
@@ -168,6 +198,23 @@ void MainWindow::stop_button_clicked() {
     run_capture = false;
 }
 
+void MainWindow::clear_packet_display() {
+    while(PacketLabel* label = ui->scrollArea->findChild<PacketLabel*>()) {
+        delete label;
+    }
+    while(QFrame* line = ui->scrollArea->findChild<QFrame*>()) {
+        delete line;
+    }
+
+    ui->textBrowser->clear();
+    set_stylesheet_from_json(*ui->textBrowser, "infoPane", "Main");
+}
+void MainWindow::remove_existing_packets() {
+    clear_packets = true;
+    clear_packet_display();
+    delete_packets();
+}
+
 //ToDo: URGENT Handle api key(s) in a more sensible way
 void MainWindow::set_api_button_clicked() {
     std::string input_key = ui->apiKeyText->text().toStdString();
@@ -179,4 +226,32 @@ void MainWindow::set_api_button_clicked() {
     }
 
     update_api_key_status();
+}
+
+void MainWindow::refresh_packet_window() {
+    clear_packet_display();
+    add_valid_packets();
+}
+
+
+//ToDo: make this more efficient; loop through all available filter options
+void MainWindow::add_valid_packets() {
+    bool tcp_enabled = ui->filterBox->tcp_filter_enabled();
+    bool udp_enabled = ui->filterBox->udp_filter_enabled();
+    bool icmp_enabled = ui->filterBox->icmp_filter_enabled();
+
+    for(auto& packet : packets) {
+        if(tcp_enabled && dynamic_cast<TCPPacket*>(packet)) {
+            display_packet(packet);
+        } else if(udp_enabled && dynamic_cast<UDPPacket*>(packet)) {
+            display_packet(packet);
+        } else if(icmp_enabled && dynamic_cast<ICMPPacket*>(packet)) {
+            display_packet(packet);
+        }
+    }
+}
+
+void MainWindow::delete_packets() {
+    std::for_each(packets.begin(), packets.end(), delete_ptr());
+    packets.clear();
 }

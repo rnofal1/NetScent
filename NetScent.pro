@@ -16,20 +16,24 @@ LIBS += -lpcap
 LIBS += -lcurl
 
 SOURCES += \
+    src/ComboCheckBox.cpp \
+    src/CustomApplication.cpp \
     src/CustomButton.cpp \
-    src/CustomLabel.cpp \
     src/MainWindow.cpp \
     src/Packet.cpp \
     src/PacketCap.cpp \
+    src/PacketLabel.cpp \
     src/main.cpp \
     src/util.cpp
 
 HEADERS += \
+    include/ComboCheckBox.h \
+    include/CustomApplication.h \
     include/CustomButton.h \
-    include/CustomLabel.h \
     include/MainWindow.h \
     include/Packet.h \
     include/PacketCap.h \
+    include/PacketLabel.h \
     include/util.h
 
 FORMS += \

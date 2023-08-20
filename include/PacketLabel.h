@@ -1,10 +1,10 @@
-/* This file contains declarations for the CustomLabel class (derived from QLabel)
+/* This file contains declarations for the PacketLabel class (derived from QLabel)
  * Ramsey Nofal, 08/2023
  */
 
 
-#ifndef CUSTOMLABEL_H
-#define CUSTOMLABEL_H
+#ifndef PACKETLABEL_H
+#define PACKETLABEL_H
 
 
 //Standard Qt
@@ -20,10 +20,10 @@
  *
  * CustomLabel is used (in tandem with MainWindow) to display packet info
  */
-class CustomLabel : public QLabel {
+class PacketLabel : public QLabel {
     Q_OBJECT
 public:
-    CustomLabel(Packet* packet, QTextBrowser* info_pane_init = nullptr, QWidget* parent = nullptr);
+    PacketLabel(Packet* packet, QTextBrowser* info_pane_init = nullptr, QWidget* parent = nullptr);
 
 protected:
     void enterEvent(QEnterEvent *ev) override;
@@ -31,7 +31,11 @@ protected:
 
 private:
     QTextBrowser* info_pane;
-    Packet* packet;
+
+    int packet_num;
+    std::string packet_time;
+    std::string packet_ip_src;
+    std::string packet_ip_dst;
 };
 
-#endif // CUSTOMLABEL_H
+#endif // PACKETLABEL_H

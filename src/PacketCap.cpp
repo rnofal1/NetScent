@@ -104,6 +104,12 @@ int PacketCap::run_packet_cap() {
     //Start the packet capture
     while(main_window && !main_window->closed) {
         if(main_window->run_capture){
+            //Reset packet count if necessary
+            if(main_window->clear_packets) {
+                num_packets = 0;
+                main_window->clear_packets = false;
+            }
+
             std::cout << "Starting packet capture...\n\n";
 
             //Create packet capture handle.
@@ -118,10 +124,12 @@ int PacketCap::run_packet_cap() {
                 return -1;
             }
 
+            //This runs continuously until reaching one of our stop conditions
             if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) == PCAP_ERROR) {
                 std::cerr << "pcap_loop failed: " << pcap_geterr(handle) << "\n";
                 return -1;
             }
+
             stop_capture(0);
             std::cout << "Packet capture halted.\n\n";
         }
@@ -191,7 +199,7 @@ void PacketCap::packet_handler(u_char *user,
                                const u_char *packet_ptr) {
     Q_UNUSED(user); Q_UNUSED(packet_header);
 
-    if(!main_window || main_window->closed || !main_window->run_capture) {
+    if(!main_window || main_window->closed || !main_window->run_capture || main_window->clear_packets) {
         pcap_breakloop(handle);
     }
 

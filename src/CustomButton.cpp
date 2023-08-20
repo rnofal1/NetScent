@@ -5,7 +5,7 @@
 
 //Local
 #include "CustomButton.h"
-
+#include "util.h"
 
 //ToDo: store style specifications somewhere
 void CustomButton::enterEvent(QEnterEvent *ev) {

@@ -6,6 +6,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
 //Standard C/C++
 #include <iostream>
 #include <sstream>
@@ -25,7 +26,7 @@
 
 //Local
 #include "ui_mainwindow.h"
-#include "CustomLabel.h"
+#include "Packet.h"
 
 
 /* The MainWindow class is derived from the QMainWindow class, with the added functionality
@@ -38,6 +39,7 @@ class MainWindow : public QMainWindow {
 public:
     bool run_capture;
     bool closed;
+    static bool clear_packets;
 
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -58,7 +60,7 @@ public:
     static void add_packet(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num);
     static void add_packet(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num);
 
-    static void display_packet(const std::string& packetText, Packet* packet);
+    static void display_packet(Packet* packet);
 
     static void add_line();
 
@@ -69,11 +71,25 @@ private slots:
     void start_button_clicked();
     void stop_button_clicked();
 
+    //Only hide packets while retaining packet array
+    void clear_packet_display();
+
+    //Remove visable packets and wipe packet array
+    void remove_existing_packets();
+
     void set_api_button_clicked();
+
+    void refresh_packet_window();
 
 private:
     static Ui::MainWindow *ui;
+    static std::vector<Packet* > packets;
     std::string dummy_api_key;
+
+    //Add packets to window based on filter settings
+    void add_valid_packets();
+
+    void delete_packets();
 };
 
 #endif // MAINWINDOW_H

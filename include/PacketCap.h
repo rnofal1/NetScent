@@ -48,6 +48,7 @@ public:
                                const u_char *packet_ptr);
 
     static void stop_capture(int signo);
+
     void set_desired_num_packets(const char* desired_num_packets);
     void set_device(const char* network_interface);
     void set_filter(const int optind, const int argc, char** argv);
