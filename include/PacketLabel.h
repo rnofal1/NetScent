@@ -9,10 +9,10 @@
 
 //Standard Qt
 #include <QLabel>
-#include <QTextBrowser>
 
 //Local
 #include "Packet.h"
+#include "InfoPane.h"
 
 
 /* The CustomLabel class is derived from the QLabel class, with the added functionality
@@ -23,19 +23,24 @@
 class PacketLabel : public QLabel {
     Q_OBJECT
 public:
-    PacketLabel(Packet* packet, QTextBrowser* info_pane_init = nullptr, QWidget* parent = nullptr);
+    PacketLabel(Packet* packet, InfoPane* info_pane_init = nullptr, QWidget* parent = nullptr);
+
+    void add_style(const std::string& style_name, const std::string& style_val);
+    void set_style(const std::string& style_name);
 
 protected:
     void enterEvent(QEnterEvent *ev) override;
     void leaveEvent(QEvent *ev) override;
 
 private:
-    QTextBrowser* info_pane;
+    InfoPane* info_pane;
 
-    int packet_num;
+    static std::map<std::string, std::string> style_map;
+
     std::string packet_time;
     std::string packet_ip_src;
     std::string packet_ip_dst;
+    int packet_num;
 };
 
 #endif // PACKETLABEL_H

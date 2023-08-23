@@ -56,6 +56,9 @@ void MainWindow::set_widgets_style() {
     //Tabs Style
     ui->tabWidget->setCurrentIndex(0);
 
+    //Save button Style
+    ui->saveButton->disable();
+
     update_api_key_status();
     set_status_label_inactive();
 }
@@ -64,32 +67,11 @@ void MainWindow::connect_buttons() {
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
-    connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
     connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(remove_existing_packets()));
+    connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
 
     //Filter checkmarks
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
-}
-
-//ToDo: URGENT Handle api key(s) in a more sensible way
-void MainWindow::update_api_key_status() {
-    std::ifstream api_key_file(API_KEY_FILE);
-    std::string key;
-
-    if(api_key_file) {
-        std::getline(api_key_file, key);
-        api_key_file.close();
-    }
-
-    if(key.length() > 0) {
-        dummy_api_key = std::string(key.length(), '*');
-        ui->apiKeyText->setText(QString::fromStdString(dummy_api_key));
-        set_stylesheet_from_json(*ui->keyDetectedLabel, "keyDetectedLabel", "Main");
-        ui->keyDetectedLabel->setText(" API key found!");
-    } else {
-        set_stylesheet_from_json(*ui->keyDetectedLabel, "keyDetectedLabel", "Alt");
-        ui->keyDetectedLabel->setText(" No key detected");
-    }
 }
 
 void MainWindow::set_status_label_active() {
@@ -163,7 +145,7 @@ void MainWindow::add_packet(const struct ip& ip_header, const struct icmp& icmp_
 }
 
 void MainWindow::display_packet(Packet* packet) {
-    QTextBrowser *infoPane = ui->textBrowser;
+    InfoPane *infoPane = ui->infoPane;
     PacketLabel *label = new PacketLabel(packet, infoPane);
 
     label->setText(QString::fromStdString(packet->get_info()));
@@ -190,12 +172,17 @@ void MainWindow::closeEvent(QCloseEvent *ev) {
 }
 
 void MainWindow::start_button_clicked() {
+    ui->saveButton->disable();
     set_status_label_active();
     run_capture = true;
 }
 void MainWindow::stop_button_clicked() {
     set_status_label_inactive();
     run_capture = false;
+
+    if(!packets.empty()) {
+        ui->saveButton->enable();
+    }
 }
 
 void MainWindow::clear_packet_display() {
@@ -206,8 +193,8 @@ void MainWindow::clear_packet_display() {
         delete line;
     }
 
-    ui->textBrowser->clear();
-    set_stylesheet_from_json(*ui->textBrowser, "infoPane", "Main");
+    ui->infoPane->clear();
+    ui->infoPane->set_style("Main");
 }
 void MainWindow::remove_existing_packets() {
     clear_packets = true;
@@ -220,17 +207,76 @@ void MainWindow::set_api_button_clicked() {
     std::string input_key = ui->apiKeyText->text().toStdString();
 
     if(input_key != dummy_api_key) {
-        std::fstream file(API_KEY_FILE, std::fstream::in | std::fstream::out | std::fstream::trunc);
-        file << input_key << std::endl;
-        file.close();
+        std::fstream api_key_file(API_KEY_FILE, std::fstream::out | std::fstream::trunc);
+        if(api_key_file) {
+            api_key_file << input_key << std::endl;
+            api_key_file.close();
+        } else {
+            std::cout << "API Key file write error" << std::endl;
+        }
     }
 
     update_api_key_status();
 }
 
+//ToDo: URGENT Handle api key(s) in a more sensible way
+void MainWindow::update_api_key_status() {
+    std::fstream api_key_file(API_KEY_FILE, std::fstream::in | std::fstream::app);
+    std::string key;
+
+    if(api_key_file) {
+        std::getline(api_key_file, key);
+        api_key_file.close();
+    } else {
+        std::cout << "API Key file read error\n";
+    }
+
+    if(key.length() > 0) {
+        dummy_api_key = std::string(key.length(), '*');
+        ui->apiKeyText->setText(QString::fromStdString(dummy_api_key));
+        set_stylesheet_from_json(*ui->keyDetectedLabel, "keyDetectedLabel", "Main");
+        ui->keyDetectedLabel->setText(" API key found!");
+    } else {
+        set_stylesheet_from_json(*ui->keyDetectedLabel, "keyDetectedLabel", "Alt");
+        ui->keyDetectedLabel->setText(" No key detected");
+    }
+}
+
 void MainWindow::refresh_packet_window() {
     clear_packet_display();
     add_valid_packets();
+}
+
+//ToDo: offload file saving to some util functions
+void MainWindow::save_to_file() {
+    std::time_t time_saved = std::time(nullptr);
+
+    QString filename = QFileDialog::getExistingDirectory(this,
+                                                        tr("Open Directory"),
+                                                        "~",
+                                                        QFileDialog::ShowDirsOnly
+                                                        );
+
+    std::string file_name_full = filename.toStdString();
+    file_name_full += "/PacketRecord_";
+    file_name_full += std::asctime(std::localtime(&time_saved));
+    file_name_full += ".txt";
+    std::replace(file_name_full.begin(), file_name_full.end(), ' ', '_');
+
+    std::ofstream file(file_name_full);
+    if(file) {
+        for(auto& packet : packets) {
+            file << packet->get_info() << "\n---------------\n";
+        }
+
+        file << std::endl;
+        file.close();
+        std::cout << "Save to file success\n";
+    } else {
+        std::cout << "Save to file error\n";
+    }
+
+    message_popup("Packet record saved as: " + file_name_full);
 }
 
 
@@ -254,4 +300,11 @@ void MainWindow::add_valid_packets() {
 void MainWindow::delete_packets() {
     std::for_each(packets.begin(), packets.end(), delete_ptr());
     packets.clear();
+}
+
+void MainWindow::message_popup(const std::string& msg) {
+    QMessageBox msgBox;
+
+    msgBox.setText(QString::fromStdString(msg));
+    msgBox.exec();
 }

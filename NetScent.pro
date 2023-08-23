@@ -19,6 +19,7 @@ SOURCES += \
     src/ComboCheckBox.cpp \
     src/CustomApplication.cpp \
     src/CustomButton.cpp \
+    src/InfoPane.cpp \
     src/MainWindow.cpp \
     src/Packet.cpp \
     src/PacketCap.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     include/ComboCheckBox.h \
     include/CustomApplication.h \
     include/CustomButton.h \
+    include/InfoPane.h \
     include/MainWindow.h \
     include/Packet.h \
     include/PacketCap.h \

@@ -47,7 +47,30 @@ color: rgb(255, 255, 255);</string>
         <string>Capture</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="2" column="0" colspan="7">
+        <item row="0" column="0">
+         <widget class="CustomButton" name="startButton">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+          </property>
+          <property name="text">
+           <string>Start Capture</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="8">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QScrollArea" name="scrollArea">
@@ -95,7 +118,7 @@ color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item>
-           <widget class="QTextBrowser" name="textBrowser">
+           <widget class="InfoPane" name="infoPane">
             <property name="maximumSize">
              <size>
               <width>275</width>
@@ -132,29 +155,6 @@ color: rgb(23, 23, 23);</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
-         <widget class="CustomButton" name="clearButton">
-          <property name="minimumSize">
-           <size>
-            <width>49</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>49</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(87, 227, 137);
-color: rgb(23, 23, 23);</string>
-          </property>
-          <property name="text">
-           <string>Clear</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="2">
          <widget class="QLabel" name="statusLabel">
           <property name="minimumSize">
@@ -177,17 +177,17 @@ color: rgb(23, 23, 23);</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="CustomButton" name="startButton">
+        <item row="0" column="4">
+         <widget class="CustomButton" name="clearButton">
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>49</width>
             <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>100</width>
+            <width>49</width>
             <height>25</height>
            </size>
           </property>
@@ -196,14 +196,49 @@ color: rgb(23, 23, 23);</string>
 color: rgb(23, 23, 23);</string>
           </property>
           <property name="text">
-           <string>Start Capture</string>
+           <string>Clear</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="4">
+        <item row="0" column="3">
          <widget class="ComboCheckBox" name="filterBox">
+          <property name="minimumSize">
+           <size>
+            <width>89</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>89</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="CustomButton" name="saveButton">
+          <property name="minimumSize">
+           <size>
+            <width>49</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>49</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+          </property>
+          <property name="text">
+           <string>Save</string>
           </property>
          </widget>
         </item>
@@ -314,6 +349,11 @@ color: rgb(23, 23, 23);</string>
    <class>ComboCheckBox</class>
    <extends>QComboBox</extends>
    <header>ComboCheckBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>InfoPane</class>
+   <extends>QTextBrowser</extends>
+   <header>InfoPane.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -22,7 +22,7 @@ PacketCap::PacketCap(MainWindow* main_window_init) {
     count = 0;
     *device = 0;
     *filter = 0;
-    infoPane = main_window->get_ui_pointer()->textBrowser;
+    infoPane = main_window->get_ui_pointer()->infoPane;
 }
 
 /* Creates a packet capture endpoint to receive packets described by a packet

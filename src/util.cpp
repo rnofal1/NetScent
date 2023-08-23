@@ -29,6 +29,29 @@ void set_stylesheet_from_json(QWidget& widget, const std::string& sec_key, const
     }
 }
 
+//ToDo: avoid code repetition in this function and set_stylesheet_from_json()
+std::string get_stylesheet_from_json(const std::string& sec_key, const std::string& sub_sec_key) {
+    std::ifstream file(STYLE_FILE);
+    if(file) {
+        nlohmann::json style_json = nlohmann::json::parse(file);
+        if(style_json.contains(sec_key) && style_json[sec_key].contains(sub_sec_key)) {
+            std::string style_sheet_std;
+            for(auto& [key, val] : style_json[sec_key][sub_sec_key].items()) {
+                style_sheet_std.append(key).append(" : ").append(val).append("; ");
+            }
+
+            return style_sheet_std;
+        } else {
+            std::cout << "Invalid JSON section + subsection: " << sec_key << " + " << sub_sec_key << "\n";
+        }
+        file.close();
+    } else {
+        std::cout << "Style file not found; Dynamic style elements will not work\n";
+    }
+
+    return "";
+}
+
 //Callback function used during HTTP GET request (curl)
 static size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
     data->append((char*) ptr, size * nmemb);
@@ -115,3 +138,4 @@ std::string get_json_val(const nlohmann::json& json, const std::string& key) {
         return "Unknown";
     }
 }
+

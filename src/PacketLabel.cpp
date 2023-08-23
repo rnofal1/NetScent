@@ -7,14 +7,36 @@
 #include "PacketLabel.h"
 #include "util.h"
 
+//Static variable definitions
+/* Note: making this map static greatly improves performance since we usually
+ * have many PacketLabels.
+ *
+ * ToDo: despite the performance gain, there are other/better ways of doing this
+ */
+std::map<std::string, std::string> PacketLabel::style_map = {{"Main",
+                                                            get_stylesheet_from_json("packetLabel", "Main")},
+                                                            {"Alt",
+                                                            get_stylesheet_from_json("packetLabel", "Alt")}};
 
-PacketLabel::PacketLabel(Packet* packet, QTextBrowser* info_pane_init, QWidget* parent)
+PacketLabel::PacketLabel(Packet* packet, InfoPane* info_pane_init, QWidget* parent)
                         : QLabel(parent),
                         info_pane(info_pane_init),
-                        packet_num(packet->get_num()),
                         packet_time(packet->get_time_added()),
                         packet_ip_src(packet->get_src_ip()),
-                        packet_ip_dst(packet->get_dst_ip()) {}
+                        packet_ip_dst(packet->get_dst_ip()),
+                        packet_num(packet->get_num()) {}
+
+//ToDo: reduce code duplication with add_style()/set_style() in classes
+void PacketLabel::add_style(const std::string& style_name, const std::string& style_val) {
+    style_map[style_name] = style_val;
+}
+void PacketLabel::set_style(const std::string& style_name) {
+    auto style = style_map.find(style_name);
+
+    if(style != style_map.end()) {
+        setStyleSheet(QString::fromStdString(style->second));
+    }
+}
 
 /* Note: the call to packet->get_packet_geo_info() will trigger a packet capture.
  * Therefore, we cannot call packet->get_packet_geo_info() everytime we capture a
@@ -23,11 +45,11 @@ PacketLabel::PacketLabel(Packet* packet, QTextBrowser* info_pane_init, QWidget* 
 void PacketLabel::enterEvent(QEnterEvent *ev) {
     Q_UNUSED(ev);
 
-    set_stylesheet_from_json(*this, "packetLabel", "Main");
+    set_style("Main");
 
     if(info_pane != nullptr) {
 
-        set_stylesheet_from_json(*info_pane, "infoPane", "Alt");
+        info_pane->set_style("Alt");
 
         std::string set_text = "Packet #: ";
         set_text += std::to_string(packet_num);
@@ -42,6 +64,5 @@ void PacketLabel::enterEvent(QEnterEvent *ev) {
 
 void PacketLabel::leaveEvent(QEvent *ev) {
     Q_UNUSED(ev);
-
-    set_stylesheet_from_json(*this, "packetLabel", "Alt");
+    set_style("Alt");
 }

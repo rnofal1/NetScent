@@ -23,6 +23,7 @@
 #include <QLineEdit>
 #include <QMovie>
 #include <QPixmap>
+#include <QFileDialog>
 
 //Local
 #include "ui_mainwindow.h"
@@ -81,6 +82,8 @@ private slots:
 
     void refresh_packet_window();
 
+    void save_to_file();
+
 private:
     static Ui::MainWindow *ui;
     static std::vector<Packet* > packets;
@@ -90,6 +93,8 @@ private:
     void add_valid_packets();
 
     void delete_packets();
+
+    void message_popup(const std::string& msg);
 };
 
 #endif // MAINWINDOW_H
