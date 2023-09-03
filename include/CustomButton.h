@@ -9,11 +9,13 @@
 //Standard Qt
 #include <QPushButton>
 
+//Local
+#include "StyleWidget.h"
 
 /* The CustomButton class is derived from the QPushButton class, with added stylistic
  * functionality
  */
-class CustomButton : public QPushButton {
+class CustomButton : public QPushButton, public StyleWidget {
     Q_OBJECT
 public:
     //using QPushButton::QPushButton;
@@ -22,15 +24,9 @@ public:
     void enable();
     void disable();
 
-    void add_style(const std::string& style_name, const std::string& style_val);
-    void set_style(const std::string& style_name);
-
 protected:
     void enterEvent(QEnterEvent *ev) override;
     void leaveEvent(QEvent *ev) override;
-
-private:
-    std::map<std::string, std::string> style_map;
 };
 
 #endif // CUSTOMBUTTON_H

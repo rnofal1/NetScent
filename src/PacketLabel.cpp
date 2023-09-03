@@ -20,13 +20,14 @@ std::map<std::string, std::string> PacketLabel::style_map = {{"Main",
 
 PacketLabel::PacketLabel(Packet* packet, InfoPane* info_pane_init, QWidget* parent)
                         : QLabel(parent),
+                        StyleWidget(this),
                         info_pane(info_pane_init),
                         packet_time(packet->get_time_added()),
                         packet_ip_src(packet->get_src_ip()),
                         packet_ip_dst(packet->get_dst_ip()),
                         packet_num(packet->get_num()) {}
 
-//ToDo: reduce code duplication with add_style()/set_style() in classes
+//PacketLabels handle style slightly differently due to static style_map
 void PacketLabel::add_style(const std::string& style_name, const std::string& style_val) {
     style_map[style_name] = style_val;
 }
@@ -45,10 +46,9 @@ void PacketLabel::set_style(const std::string& style_name) {
 void PacketLabel::enterEvent(QEnterEvent *ev) {
     Q_UNUSED(ev);
 
-    set_style("Main");
+    set_style("Alt");
 
     if(info_pane != nullptr) {
-
         info_pane->set_style("Alt");
 
         std::string set_text = "Packet #: ";
@@ -64,5 +64,5 @@ void PacketLabel::enterEvent(QEnterEvent *ev) {
 
 void PacketLabel::leaveEvent(QEvent *ev) {
     Q_UNUSED(ev);
-    set_style("Alt");
+    set_style("Main");
 }

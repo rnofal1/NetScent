@@ -1,13 +1,16 @@
 {
    "MainWindow" : {
         "Main" : {
+            "MainWindow { border-image" : "url(icons/window_background.png) 0 0 0 0 stretch stretch; }",
             "background-color" : "rgb(40, 43, 48)",
+            "background-position" : "center",
             "color" : "rgb(255, 255, 255)"
         },
         "Alt" : {}
    },
    "centralWidget" : {
         "Main" : {
+            "CustomCentralWidget { border-image" : "url(icons/window_background.png) 0 0 0 0 stretch stretch; }",
             "background-color" : "rgb(40, 43, 48)",
             "color" : "rgb(255, 255, 255)"
         },
@@ -29,7 +32,7 @@
     },
     "scrollArea" : {
         "Main" : {
-            "background-color" : "rgb(66, 69, 73)",
+            "background-color" : "rgb(192, 97, 203)",
             "color" : "rgb(255, 255, 255)"
         },
         "Alt" : {}
@@ -52,10 +55,10 @@
     },
     "packetLabel" : {
         "Main" : {
-            "background-color" : "grey"
+            "background-color" : "rgb(54, 57, 62)"
         },
         "Alt" : {
-            "background-color" : "rgb(66, 69, 73)"
+            "background-color" : "grey"
         }
     },
     "startStopButton" : {
@@ -110,6 +113,7 @@
         "Alt" : {}
     },
     "Misc" : {
-        "icon-path" : "icons/icon.png"
+        "icon-path" : "icons/icon.png",
+        "background-path" : "icons/window_background.png"
     }
 }

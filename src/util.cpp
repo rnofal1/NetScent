@@ -122,6 +122,7 @@ std::string get_packet_geo_info(const std::string& src, const std::string& dst) 
 }
 
 //ToDo: consider having this function take in a vector of desired json keys
+//ToDo: rename this function
 std::string parse_json(const nlohmann::json& json) {
     std::string json_info = "IP: " +                  get_json_val(json, "ip")
                             + "\nCountry: " +         get_json_val(json, "country_name")
@@ -139,3 +140,49 @@ std::string get_json_val(const nlohmann::json& json, const std::string& key) {
     }
 }
 
+std::string get_json_val(const std::vector<std::string>& nested_keys) {
+    std::ifstream file(STYLE_FILE);
+
+    if(file) {
+        nlohmann::json json = nlohmann::json::parse(file);
+        for(auto& key : nested_keys) {
+            if(!json.contains(key)) {
+                std::cout << "Invalid JSON section: " << key << "\n";
+            }
+            json = json[key]; //inserts a null value if key not present
+        }
+        file.close();
+        if(!json.is_null()) {
+            return std::string(json);
+        }
+    } else {
+        std::cout << "Style file not found; Dynamic style elements will not work\n";
+    }
+
+    return "";
+}
+
+std::map<std::string, std::string> load_geo_info_from_file() {
+    std::map<std::string, std::string> geo_info_map;
+
+    std::fstream geo_info_file(GEO_INFO_FILE, std::fstream::in | std::fstream::app);
+    if(geo_info_file) {
+        boost::archive::text_iarchive iarch(geo_info_file);
+        iarch >> geo_info_map;
+        geo_info_file.close();
+    } else {
+        std::cout << "API Geo Info file read error\n";
+    }
+    return geo_info_map;
+}
+
+void save_geo_info_to_file(std::map<std::string, std::string>& geo_info_map) {
+    std::fstream geo_info_file(GEO_INFO_FILE, std::fstream::out | std::fstream::trunc);
+    if(geo_info_file) {
+        boost::archive::text_oarchive oarch(geo_info_file);
+        oarch << geo_info_map;
+        geo_info_file.close();
+    } else {
+        std::cout << "API Geo Info file write error" << std::endl;
+    }
+}

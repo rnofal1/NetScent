@@ -15,12 +15,20 @@ bool MainWindow::clear_packets = false;
 
 MainWindow::MainWindow(QWidget *parent)
                        : QMainWindow(parent),
+                        StyleWidget(this),
                         run_capture(false),
                         closed(false){
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
+    std::shared_ptr<std::map<std::string, std::string>> geo_cache_map =
+                        std::make_shared<std::map<std::string, std::string>>();
+
+    add_style("Main", get_stylesheet_from_json("MainWindow", "Main"));
+    set_style("Main");
+
     set_widgets_style();
+
     connect_buttons();
 }
 
@@ -29,7 +37,6 @@ MainWindow::~MainWindow() {
     if(ui->statusLabel->movie()) {
         delete ui->statusLabel->movie();
     }
-
     delete_packets();
 
     delete ui;
@@ -41,12 +48,6 @@ Ui::MainWindow* MainWindow::get_ui_pointer() {
 
 //ToDo: consider adding stylesheet setting functions within derived UI/GUI classes
 void MainWindow::set_widgets_style() {
-    //ScrollArea Style
-    set_stylesheet_from_json(*ui->scrollArea, "scrollArea", "Main");
-    set_stylesheet_from_json(*ui->scrollArea->verticalScrollBar(), "scrollBar", "Main");
-    set_stylesheet_from_json(*ui->scrollArea->horizontalScrollBar(), "scrollBar", "Main");
-    ui->scrollArea->setAlignment(Qt::AlignTop);
-
     //ApiLinkLabel Style
     ui->apiLinkLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ui->apiLinkLabel->setToolTip("Follow this link, create an account, and paste your API key at"
@@ -58,6 +59,9 @@ void MainWindow::set_widgets_style() {
 
     //Save button Style
     ui->saveButton->disable();
+
+    //Num packets LCD Style
+    ui->numPacketsLCD->setSegmentStyle(QLCDNumber::Flat);
 
     update_api_key_status();
     set_status_label_inactive();
@@ -80,7 +84,9 @@ void MainWindow::set_status_label_active() {
     }
 
     QMovie *movie = new QMovie(MOVING_ICON);
-    movie->setScaledSize(ui->statusLabel->size());
+    int height = ui->statusLabel->size().height();
+    QSize size(height, height);
+    movie->setScaledSize(size);
     ui->statusLabel->setMovie(movie);
     movie->start();
 }
@@ -101,7 +107,7 @@ void MainWindow::set_status_label_inactive() {
 void MainWindow::add_packet(const struct ip& ip_header, const int& packet_num) {
     if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
 
-    Packet* packet = new Packet(ip_header, packet_num);
+    Packet* packet = new Packet(ip_header, packet_num + 1);
     packets.push_back(packet);
     display_packet(packet);
     QTextStream(stdout) << "Added Other Packet\n";
@@ -109,7 +115,7 @@ void MainWindow::add_packet(const struct ip& ip_header, const int& packet_num) {
 void MainWindow::add_packet(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num) {
     if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
 
-    TCPPacket* packet = new TCPPacket(ip_header, packet_num, tcp_header);
+    TCPPacket* packet = new TCPPacket(ip_header, packet_num + 1, tcp_header);
     packets.push_back(packet);
 
     if(ui->filterBox->tcp_filter_enabled()) {
@@ -121,7 +127,7 @@ void MainWindow::add_packet(const struct ip& ip_header, const struct tcphdr& tcp
 void MainWindow::add_packet(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num) {
     if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
 
-    UDPPacket* packet = new UDPPacket(ip_header, packet_num, udp_header);
+    UDPPacket* packet = new UDPPacket(ip_header, packet_num + 1, udp_header);
     packets.push_back(packet);
 
     if(ui->filterBox->udp_filter_enabled()) {
@@ -133,14 +139,13 @@ void MainWindow::add_packet(const struct ip& ip_header, const struct udphdr& udp
 void MainWindow::add_packet(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num) {
     if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
 
-    ICMPPacket* packet = new ICMPPacket(ip_header, packet_num, icmp_header);
+    ICMPPacket* packet = new ICMPPacket(ip_header, packet_num + 1, icmp_header);
     packets.push_back(packet);
 
     if(ui->filterBox->icmp_filter_enabled()) {
         display_packet(packet);
     }
 
-    display_packet(packet);
     QTextStream(stdout) << "Added ICMP\n";
 }
 
@@ -152,6 +157,8 @@ void MainWindow::display_packet(Packet* packet) {
     ui->scrollArea->widget()->layout()->addWidget(label);
 
     add_line();
+
+    ui->numPacketsLCD->display((int) packets.size());
 }
 
 //ToDo: create a custom line class
@@ -200,6 +207,7 @@ void MainWindow::remove_existing_packets() {
     clear_packets = true;
     clear_packet_display();
     delete_packets();
+    ui->numPacketsLCD->display(0);
 }
 
 //ToDo: URGENT Handle api key(s) in a more sensible way

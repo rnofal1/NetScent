@@ -11,12 +11,6 @@
 
 CustomApplication::CustomApplication(int &argc, char **argv)
                                     : QApplication(argc, argv) {
-    std::ifstream file(STYLE_FILE);
-    if(file) {
-        nlohmann::json style_json = nlohmann::json::parse(file);
-        this->setWindowIcon(QIcon(QString::fromStdString(std::string(style_json["Misc"]["icon-path"]))));
-        file.close();
-    } else {
-        std::cout << "Style file not found; Dynamic style elements will not work\n";
-    }
+    std::vector<std::string> style_json_keys = {"Misc", "icon-path"};
+    this->setWindowIcon(QIcon(QString::fromStdString(get_json_val(style_json_keys))));
 }

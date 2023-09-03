@@ -10,17 +10,14 @@
 //Standard Qt
 #include <QTextBrowser>
 
+//Local
+#include "StyleWidget.h"
 
-class InfoPane : public QTextBrowser {
+
+class InfoPane : public QTextBrowser, public StyleWidget {
     Q_OBJECT
 public:
     InfoPane(QWidget *parent = nullptr);
-
-    void add_style(const std::string& style_name, const std::string& style_val);
-    void set_style(const std::string& style_name);
-
-private:
-    std::map<std::string, std::string> style_map;
 };
 
 #endif // INFOPANE_H

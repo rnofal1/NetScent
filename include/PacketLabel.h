@@ -13,6 +13,7 @@
 //Local
 #include "Packet.h"
 #include "InfoPane.h"
+#include "StyleWidget.h"
 
 
 /* The CustomLabel class is derived from the QLabel class, with the added functionality
@@ -20,11 +21,12 @@
  *
  * CustomLabel is used (in tandem with MainWindow) to display packet info
  */
-class PacketLabel : public QLabel {
+class PacketLabel : public QLabel, public StyleWidget {
     Q_OBJECT
 public:
     PacketLabel(Packet* packet, InfoPane* info_pane_init = nullptr, QWidget* parent = nullptr);
 
+    //PacketLabels handle style slightly differently due to static style_map
     void add_style(const std::string& style_name, const std::string& style_val);
     void set_style(const std::string& style_name);
 
@@ -34,9 +36,7 @@ protected:
 
 private:
     InfoPane* info_pane;
-
     static std::map<std::string, std::string> style_map;
-
     std::string packet_time;
     std::string packet_ip_src;
     std::string packet_ip_dst;

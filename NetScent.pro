@@ -14,16 +14,25 @@ QMAKE_CXXFLAGS = -std=c++20
 
 LIBS += -lpcap
 LIBS += -lcurl
+LIBS += -lboost_system
+LIBS += -lboost_filesystem
+LIBS += -lboost_iostreams
+LIBS += -lboost_serialization
 
 SOURCES += \
     src/ComboCheckBox.cpp \
     src/CustomApplication.cpp \
     src/CustomButton.cpp \
+    src/CustomCaptureTab.cpp \
+    src/CustomCentralWidget.cpp \
+    src/CustomTabWidget.cpp \
     src/InfoPane.cpp \
     src/MainWindow.cpp \
     src/Packet.cpp \
     src/PacketCap.cpp \
     src/PacketLabel.cpp \
+    src/PacketScrollArea.cpp \
+    src/StyleWidget.cpp \
     src/main.cpp \
     src/util.cpp
 
@@ -31,11 +40,16 @@ HEADERS += \
     include/ComboCheckBox.h \
     include/CustomApplication.h \
     include/CustomButton.h \
+    include/CustomCaptureTab.h \
+    include/CustomCentralWidget.h \
+    include/CustomTabWidget.h \
     include/InfoPane.h \
     include/MainWindow.h \
     include/Packet.h \
     include/PacketCap.h \
     include/PacketLabel.h \
+    include/PacketScrollArea.h \
+    include/StyleWidget.h \
     include/util.h
 
 FORMS += \

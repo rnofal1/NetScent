@@ -7,12 +7,6 @@
 #define MAINWINDOW_H
 
 
-//Standard C/C++
-#include <iostream>
-#include <sstream>
-#include <unordered_map>
-#include <stdlib.h>
-
 //Standard Qt
 #include <QMainWindow>
 #include <QFile>
@@ -24,10 +18,12 @@
 #include <QMovie>
 #include <QPixmap>
 #include <QFileDialog>
+#include <QLCDNumber>
 
 //Local
 #include "ui_mainwindow.h"
 #include "Packet.h"
+#include "StyleWidget.h"
 
 
 /* The MainWindow class is derived from the QMainWindow class, with the added functionality
@@ -35,9 +31,10 @@
  *
  * MainWindow is used (in tandem with CustomLabel) to display packet info
  */
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow, public StyleWidget {
     Q_OBJECT
 public:
+    std::shared_ptr<std::map<std::string, std::string>> geo_cache_map;
     bool run_capture;
     bool closed;
     static bool clear_packets;
