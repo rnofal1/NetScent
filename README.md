@@ -9,7 +9,7 @@ This project is currently in an early, unfinished state, but I will continue add
 ![Screenshot from 2023-09-03 19-54-41](https://github.com/rnofal1/NetScent/assets/57466011/87ff2a84-aeb7-42a8-a6b4-6440f5320bc3)  
 *main menu after capturing some packets*
 
-![netscent_demo_2](https://github.com/rnofal1/NetScent/assets/57466011/2a195ef1-9eb1-46ae-8687-d561f71054d7)  
+![netscent_demo_new](https://github.com/rnofal1/NetScent/assets/57466011/388fe346-9f46-4b17-9938-64787ac4ae81)  
 *small demo of the current UI*
 
 
