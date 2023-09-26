@@ -16,6 +16,12 @@ class CustomApplication : public QApplication {
     Q_OBJECT
 public:
     CustomApplication(int &argc, char **argv);
+
+    void add_style(const std::string& style_name, const std::string& style_val);
+    void set_style(const std::string& style_name);
+
+private:
+    std::map<std::string, std::string> style_map;
 };
 
 #endif // CUSTOMAPPLICATION_H

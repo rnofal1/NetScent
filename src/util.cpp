@@ -110,20 +110,20 @@ nlohmann::json get_ip_geo_json_info(const std::string& ip_addr) {
     return NULL;
 }
 
-//ToDo: split this into two functions, one for src and one for dst
+//ToDo: split this into two functions, one for src and one for dst (?)
 std::string get_packet_geo_info(const std::string& src, const std::string& dst) {
     nlohmann::json src_json = get_ip_geo_json_info(src);
     nlohmann::json dst_json = get_ip_geo_json_info(dst);
 
-    std::string src_info =  "Source Geographical Info:\n" + parse_json(src_json);
-    std::string dst_info =  "Destination Geographical Info:\n" + parse_json(dst_json);
+    std::string src_info =  "Source Geographical Info:\n" + parse_geo_info_json(src_json);
+    std::string dst_info =  "Destination Geographical Info:\n" + parse_geo_info_json(dst_json);
 
     return src_info + dst_info;
 }
 
 //ToDo: consider having this function take in a vector of desired json keys
 //ToDo: rename this function
-std::string parse_json(const nlohmann::json& json) {
+std::string parse_geo_info_json(const nlohmann::json& json) {
     std::string json_info = "IP: " +                  get_json_val(json, "ip")
                             + "\nCountry: " +         get_json_val(json, "country_name")
                             + "\nState/Province: " +  get_json_val(json, "state_prov")

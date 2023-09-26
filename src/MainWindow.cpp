@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
                        : QMainWindow(parent),
                         StyleWidget(this),
                         run_capture(false),
-                        closed(false){
+                        closed(false) {
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
-    //ToDo: consider changing movie ownership
     if(ui->statusLabel->movie()) {
         delete ui->statusLabel->movie();
     }
@@ -46,7 +45,6 @@ Ui::MainWindow* MainWindow::get_ui_pointer() {
     return this->ui;
 }
 
-//ToDo: consider adding stylesheet setting functions within derived UI/GUI classes
 void MainWindow::set_widgets_style() {
     //ApiLinkLabel Style
     ui->apiLinkLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -79,26 +77,30 @@ void MainWindow::connect_buttons() {
 }
 
 void MainWindow::set_status_label_active() {
-    if(ui->statusLabel->movie()) {
-        delete ui->statusLabel->movie();
+    auto statusLabel = ui->statusLabel;
+
+    if(statusLabel->movie()) {
+        delete statusLabel->movie();
     }
 
     QMovie *movie = new QMovie(MOVING_ICON);
-    int height = ui->statusLabel->size().height();
+    int height = statusLabel->size().height();
     QSize size(height, height);
     movie->setScaledSize(size);
-    ui->statusLabel->setMovie(movie);
+    statusLabel->setMovie(movie);
     movie->start();
 }
 void MainWindow::set_status_label_inactive() {
-    if(ui->statusLabel->movie()) {
-        delete ui->statusLabel->movie();
+    auto statusLabel = ui->statusLabel;
+
+    if(statusLabel->movie()) {
+        delete statusLabel->movie();
     }
 
     QPixmap pixmap(STATIC_ICON);
-    ui->statusLabel->setPixmap(pixmap.scaled(ui->statusLabel->size(), Qt::KeepAspectRatio));
-    ui->statusLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    ui->statusLabel->show();
+    statusLabel->setPixmap(pixmap.scaled(statusLabel->size(), Qt::KeepAspectRatio));
+    statusLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    statusLabel->show();
 }
 
 //ToDo: Dynamically instantiate different subclasses (in a single line/single function)?
@@ -161,7 +163,7 @@ void MainWindow::display_packet(Packet* packet) {
     ui->numPacketsLCD->display((int) packets.size());
 }
 
-//ToDo: create a custom line class
+//ToDo: create a custom line class (?)
 void MainWindow::add_line() {
     QFrame *line = new QFrame();
 

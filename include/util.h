@@ -49,7 +49,7 @@ std::string get_json_val(const std::vector<std::string>& nested_keys);
 
 
 //Return json info in a formatted string
-std::string parse_json(const nlohmann::json& json);
+std::string parse_geo_info_json(const nlohmann::json& json);
 
 std::map<std::string, std::string> load_geo_info_from_file();
 void save_geo_info_to_file(std::map<std::string, std::string>& geo_info_map);

@@ -9,7 +9,7 @@
 
 //Static variable definitions
 /* Note: making this map static greatly improves performance since we usually
- * have many PacketLabels.
+ * have many PacketLabels (which should all look identical and thus have the same style parameters).
  *
  * ToDo: despite the performance gain, there are other/better ways of doing this
  */

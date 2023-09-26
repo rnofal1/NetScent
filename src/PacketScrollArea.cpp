@@ -12,9 +12,6 @@ PacketScrollArea::PacketScrollArea(QWidget *parent) : QScrollArea(parent), Style
     set_style("Main");
     setAlignment(Qt::AlignTop);
 
-//rgb(66, 69, 73)
-
-    //ToDo: create custom scroll bar class(es) ?
     set_stylesheet_from_json(*verticalScrollBar(), "scrollBar", "Main");
     set_stylesheet_from_json(*horizontalScrollBar(), "scrollBar", "Main");
 }

@@ -25,7 +25,6 @@ void CustomButton::disable() {
     set_stylesheet_from_json(*this, "startStopButton", "Alt");
 }
 
-//ToDo: store style specifications somewhere
 void CustomButton::enterEvent(QEnterEvent *ev) {
     Q_UNUSED(ev);
     if(!isEnabled()) {

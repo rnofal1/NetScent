@@ -72,7 +72,7 @@ private slots:
     //Only hide packets while retaining packet array
     void clear_packet_display();
 
-    //Remove visable packets and wipe packet array
+    //Remove visible packets and wipe packet array
     void remove_existing_packets();
 
     void set_api_button_clicked();

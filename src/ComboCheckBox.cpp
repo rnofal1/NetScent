@@ -5,10 +5,8 @@
 
 //Local
 #include "ComboCheckBox.h"
-#include <iostream>
 
 
-//ToDo: add new items in a loop (not necessary but might be cleaner) (?)
 ComboCheckBox::ComboCheckBox(QWidget *parent) : QComboBox(parent) {
     QStandardItem* title = new QStandardItem(QString("Filter"));
     model.appendRow(title);
