@@ -48,7 +48,11 @@ Qt Linux deployment helper: https://github.com/QuasarApp/CQtDeployer
 
 Loading icon source: http://www.staredit.net/topic/16487/
 
-Menu background made with Dall-E 2: https://openai.com/dall-e-2
+Menu background made with Dall-E 2: https://openai.com/dall-e-2  
+  
+## Misc  
+### A small note on style:  
+In order to better match STL style conventions, the default naming convention for functions and variables in this project is snake_case. Qt functions and variables typically utilize lowerCamelCase. Class names (Qt and otherwise) are written in UpperCamelCase.  
 
 
 
