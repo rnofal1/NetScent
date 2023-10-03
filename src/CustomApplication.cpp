@@ -26,4 +26,6 @@ void CustomApplication::set_style(const std::string& style_name) {
     if(style != style_map.end()) {
         this->setWindowIcon(QIcon(QString::fromStdString(style->second)));
     }
+
+    setStyle("fusion"); //NOTE: different from set_style (necessary for tab style in Windows)
 }

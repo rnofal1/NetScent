@@ -162,27 +162,27 @@ std::string get_json_val(const std::vector<std::string>& nested_keys) {
     return "";
 }
 
-std::map<std::string, std::string> load_geo_info_from_file() {
-    std::map<std::string, std::string> geo_info_map;
+//std::map<std::string, std::string> load_geo_info_from_file() {
+//    std::map<std::string, std::string> geo_info_map;
 
-    std::fstream geo_info_file(GEO_INFO_FILE, std::fstream::in | std::fstream::app);
-    if(geo_info_file) {
-        boost::archive::text_iarchive iarch(geo_info_file);
-        iarch >> geo_info_map;
-        geo_info_file.close();
-    } else {
-        std::cout << "API Geo Info file read error\n";
-    }
-    return geo_info_map;
-}
+//    std::fstream geo_info_file(GEO_INFO_FILE, std::fstream::in | std::fstream::app);
+//    if(geo_info_file) {
+//        boost::archive::text_iarchive iarch(geo_info_file);
+//        iarch >> geo_info_map;
+//        geo_info_file.close();
+//    } else {
+//        std::cout << "API Geo Info file read error\n";
+//    }
+//    return geo_info_map;
+//}
 
-void save_geo_info_to_file(std::map<std::string, std::string>& geo_info_map) {
-    std::fstream geo_info_file(GEO_INFO_FILE, std::fstream::out | std::fstream::trunc);
-    if(geo_info_file) {
-        boost::archive::text_oarchive oarch(geo_info_file);
-        oarch << geo_info_map;
-        geo_info_file.close();
-    } else {
-        std::cout << "API Geo Info file write error" << std::endl;
-    }
-}
+//void save_geo_info_to_file(std::map<std::string, std::string>& geo_info_map) {
+//    std::fstream geo_info_file(GEO_INFO_FILE, std::fstream::out | std::fstream::trunc);
+//    if(geo_info_file) {
+//        boost::archive::text_oarchive oarch(geo_info_file);
+//        oarch << geo_info_map;
+//        geo_info_file.close();
+//    } else {
+//        std::cout << "API Geo Info file write error" << std::endl;
+//    }
+//}

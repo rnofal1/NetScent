@@ -18,9 +18,9 @@
 //3rd-party
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
-#include <boost/serialization/map.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
+//#include <boost/serialization/map.hpp>
+//#include <boost/archive/text_iarchive.hpp>
+//#include <boost/archive/text_oarchive.hpp>
 
 
 //Defines
@@ -51,8 +51,8 @@ std::string get_json_val(const std::vector<std::string>& nested_keys);
 //Return json info in a formatted string
 std::string parse_geo_info_json(const nlohmann::json& json);
 
-std::map<std::string, std::string> load_geo_info_from_file();
-void save_geo_info_to_file(std::map<std::string, std::string>& geo_info_map);
+//std::map<std::string, std::string> load_geo_info_from_file();
+//void save_geo_info_to_file(std::map<std::string, std::string>& geo_info_map);
 
 struct delete_ptr { // Helper function to ease cleanup of container
     template <typename P>

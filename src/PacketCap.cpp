@@ -46,7 +46,12 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
             std::cerr << "pcap_findalldevs(): " << error_buff << "\n";
             return NULL;
         }
-        strncpy(device, devices[0].name, DEFAULT_CHAR_BUFF);
+        while(devices && std::string(devices->description) != "802.11ac Wireless LAN Card") {
+            qInfo() << "DEVICE " << devices->description << "\n";
+            devices = devices->next;
+        }
+
+        strncpy(device, devices->name, DEFAULT_CHAR_BUFF);
     }
 
     /* Get network device source IP address and netmask
@@ -99,7 +104,7 @@ int PacketCap::run_packet_cap() {
     //Binds stop_capture() as handler function to the following signals
     signal(SIGINT, PacketCap::stop_capture);
     signal(SIGTERM, PacketCap::stop_capture);
-    signal(SIGQUIT, PacketCap::stop_capture);
+    signal(SIGBREAK, PacketCap::stop_capture);
 
     //Start the packet capture
     while(main_window && !main_window->closed) {
@@ -110,7 +115,7 @@ int PacketCap::run_packet_cap() {
                 main_window->clear_packets = false;
             }
 
-            std::cout << "Starting packet capture...\n\n";
+            qInfo() << "Starting packet capture...\n\n";
 
             //Create packet capture handle.
             handle = create_pcap_handle(device, filter);
@@ -124,6 +129,8 @@ int PacketCap::run_packet_cap() {
                 return -1;
             }
 
+            qInfo() << "Initiating packet capture loop...\n\n";
+
             //This runs continuously until reaching one of our stop conditions
             if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) == PCAP_ERROR) {
                 std::cerr << "pcap_loop failed: " << pcap_geterr(handle) << "\n";
@@ -131,7 +138,7 @@ int PacketCap::run_packet_cap() {
             }
 
             stop_capture(0);
-            std::cout << "Packet capture halted.\n\n";
+            qInfo() << "Packet capture halted.\n\n";
         }
     }
 
@@ -202,6 +209,7 @@ void PacketCap::packet_handler(u_char *user,
     if(!main_window || main_window->closed || !main_window->run_capture || main_window->clear_packets) {
         pcap_breakloop(handle);
     }
+
 
     struct ip* ip_header;
 

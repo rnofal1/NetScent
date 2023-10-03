@@ -20,6 +20,8 @@
 #include <QFileDialog>
 #include <QLCDNumber>
 
+#include <QDebug>
+
 //Local
 #include "ui_mainwindow.h"
 #include "Packet.h"

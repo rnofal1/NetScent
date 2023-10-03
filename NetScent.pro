@@ -2,22 +2,36 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++20
+CONFIG += c++17
+CONFIG += file_copies
+
+CONFIG += embed_manifest_exe
+QMAKE_LFLAGS_WINDOWS += /MANIFESTUAC:"level='requireAdministrator'"
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 INCLUDEPATH += include
+INCLUDEPATH += "C:\CPPINCLUDE\nlohmann\json\single_include"
+INCLUDEPATH += "C:\CPPINCLUDE\curl-8.3.0\include"
+INCLUDEPATH += "C:\CPPINCLUDE\npcap-sdk-1.13\Include"
+INCLUDEPATH += "C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um"
+INCLUDEPATH += "C:\CPPINCLUDE\boost_1_82_0"
 
-QMAKE_CXXFLAGS = -std=c++20
+LIBS += -L"C:\CPPINCLUDE\npcap-sdk-1.13\Lib\x64"
+LIBS += -lwpcap
+LIBS += -L"C:\CPPINCLUDE\curl-8.3.0\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\lib"
+LIBS += -llibcurl
+LIBS += -L"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22000.0\um\x64"
+LIBS += -lWS2_32
+#LIBS += -lboost_system
+#LIBS += -lboost_filesystem
+#LIBS += -lboost_iostreams
+#LIBS += -lboost_serialization
 
-LIBS += -lpcap
-LIBS += -lcurl
-LIBS += -lboost_system
-LIBS += -lboost_filesystem
-LIBS += -lboost_iostreams
-LIBS += -lboost_serialization
+#LIBS += -L"C:\CPPINCLUDE\boost_1_82_0\libs\serialization" -lboost_serialization-vc143-mt-gd-x64-1_82
+
 
 SOURCES += \
     src/ComboCheckBox.cpp \
@@ -49,6 +63,7 @@ HEADERS += \
     include/PacketCap.h \
     include/PacketLabel.h \
     include/PacketScrollArea.h \
+    include/ProtocolHeaders.h \
     include/StyleWidget.h \
     include/util.h
 
@@ -64,12 +79,18 @@ DISTFILES += \
     .gitignore \
     README.md
 
-copydata_icons.commands = $(COPY_DIR) $$PWD/icons $$OUT_PWD
-copydata_style.commands = $(COPY_DIR) $$PWD/style $$OUT_PWD
+# Copy over files
+COPIES += copyFolders
+copyFolders.files = $$files($$PWD/icons)
+copyFolders.files += $$files($$PWD/style)
+copyFolders.path = $$OUT_PWD
 
-first.depends = $(first) copydata_icons copydata_style
-export(first.depends)
-export(copydata_icons.commands)
-export(copydata_style.commands)
+#copydata_icons.commands = $(COPY_DIR) $$PWD/icons $$OUT_PWD
+#copydata_style.commands = $(COPY_DIR) $$PWD/style $$OUT_PWD
 
-QMAKE_EXTRA_TARGETS += first copydata_icons copydata_style
+#first.depends = $(first) copydata_icons copydata_style
+#export(first.depends)
+#export(copydata_icons.commands)
+#export(copydata_style.commands)
+
+#QMAKE_EXTRA_TARGETS += first copydata_icons copydata_style

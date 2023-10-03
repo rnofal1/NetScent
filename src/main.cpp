@@ -9,7 +9,6 @@
 #include "PacketCap.h"
 #include "CustomApplication.h"
 
-
 int main(int argc, char *argv[]) {
     CustomApplication a(argc, argv);
 
