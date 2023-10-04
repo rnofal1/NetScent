@@ -1,3 +1,6 @@
+# *This is the Windows port of the original Linux-based NetScent program  
+This will eventually be the main, supported version of NetScent (but currently it is experimental) 
+
 # NetScent
 
 NetScent is a packet analyzer/sniffer designed to monitor local network traffic.  
