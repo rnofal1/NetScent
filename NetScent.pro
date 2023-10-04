@@ -4,6 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 CONFIG += file_copies
+CONFIG -= debug_and_release debug_and_release_target
 
 CONFIG += embed_manifest_exe
 QMAKE_LFLAGS_WINDOWS += /MANIFESTUAC:"level='requireAdministrator'"
@@ -25,13 +26,6 @@ LIBS += -L"C:\CPPINCLUDE\curl-8.3.0\builds\libcurl-vc-x64-release-dll-ipv6-sspi-
 LIBS += -llibcurl
 LIBS += -L"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22000.0\um\x64"
 LIBS += -lWS2_32
-#LIBS += -lboost_system
-#LIBS += -lboost_filesystem
-#LIBS += -lboost_iostreams
-#LIBS += -lboost_serialization
-
-#LIBS += -L"C:\CPPINCLUDE\boost_1_82_0\libs\serialization" -lboost_serialization-vc143-mt-gd-x64-1_82
-
 
 SOURCES += \
     src/ComboCheckBox.cpp \
@@ -85,12 +79,6 @@ copyFolders.files = $$files($$PWD/icons)
 copyFolders.files += $$files($$PWD/style)
 copyFolders.path = $$OUT_PWD
 
-#copydata_icons.commands = $(COPY_DIR) $$PWD/icons $$OUT_PWD
-#copydata_style.commands = $(COPY_DIR) $$PWD/style $$OUT_PWD
-
-#first.depends = $(first) copydata_icons copydata_style
-#export(first.depends)
-#export(copydata_icons.commands)
-#export(copydata_style.commands)
-
-#QMAKE_EXTRA_TARGETS += first copydata_icons copydata_style
+COPIES += copyFiles
+copyFiles.files += $$files("C:\CPPINCLUDE\curl-8.3.0\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\lib\libcurl.dll")
+copyFiles.path = $$OUT_PWD
