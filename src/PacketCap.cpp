@@ -46,8 +46,11 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
             std::cerr << "pcap_findalldevs(): " << error_buff << "\n";
             return NULL;
         }
-        while(devices && std::string(devices->description) != "802.11ac Wireless LAN Card") {
-            qInfo() << "DEVICE " << devices->description << "\n";
+
+        network_adapters = get_network_adapters();
+        auto adapter_name = get_preferred_adapter().get_name();
+
+        while(devices && std::string(devices->name).find(adapter_name) == std::string::npos) {
             devices = devices->next;
         }
 
@@ -274,4 +277,66 @@ void PacketCap::set_filter(const int optind, const int argc, char** argv) {
         strcat(filter, argv[i]);
         strcat(filter, " ");
     }
+}
+
+//Return a vector of relevant adapter info (adapted from https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadaptersinfo)
+std::vector<NetworkAdapter> PacketCap::get_network_adapters() {
+    std::vector<NetworkAdapter> found_adapters;
+    PIP_ADAPTER_INFO net_adapter_info;
+    PIP_ADAPTER_INFO net_adapter = NULL;
+    DWORD adapter_call_ret_val = 0;
+
+    u_long out_buf_len = sizeof(IP_ADAPTER_INFO);
+    net_adapter_info = (IP_ADAPTER_INFO *) MALLOC(sizeof(IP_ADAPTER_INFO));
+    if (net_adapter_info == NULL) {
+        qInfo("Error allocating memory needed to call GetAdaptersinfo\n");
+        return found_adapters;
+    }
+
+    //Make an initial call to GetAdaptersInfo to get the necessary size into out_buf_len
+    if (GetAdaptersInfo(net_adapter_info, &out_buf_len) == ERROR_BUFFER_OVERFLOW) {
+        FREE(net_adapter_info);
+        net_adapter_info = (IP_ADAPTER_INFO *) MALLOC(out_buf_len);
+        if (net_adapter_info == NULL) {
+            qInfo("Error allocating memory needed to call GetAdaptersinfo\n");
+            return found_adapters;
+        }
+    }
+
+    //Iterate over all found adapters, adding them to the return vector
+    if ((adapter_call_ret_val = GetAdaptersInfo(net_adapter_info, &out_buf_len)) == NO_ERROR) {
+        net_adapter = net_adapter_info;
+        while (net_adapter) {
+            found_adapters.emplace_back(net_adapter);
+            net_adapter = net_adapter->Next;
+        }
+    } else {
+        qInfo("GetAdaptersInfo failed with error: %d\n", adapter_call_ret_val);
+    }
+
+    if (net_adapter_info) {
+        FREE(net_adapter_info);
+    }
+
+    return found_adapters;
+}
+
+//ToDo: there must be a simpler/more reliable way to figure out which adapter is connected to the internet
+NetworkAdapter PacketCap::get_preferred_adapter() {
+    //If the adapter's gateway address does not match the string in EMPTY_GATEWAY, it is our default/pref adapter
+    for(auto& adapter : network_adapters) {
+        if(adapter.get_gateway() != EMPTY_GATEWAY) {
+            return adapter;
+        }
+    }
+    return NetworkAdapter();
+}
+
+void PacketCap::print_network_adapter_info(const NetworkAdapter& adapter) {
+    qInfo() << adapter.get_all_info() << '\n';
+}
+
+void PacketCap::print_all_adapter_info() {
+    auto adapter_print_func = std::bind(&PacketCap::print_network_adapter_info, this, std::placeholders::_1);
+    std::for_each(network_adapters.begin(), network_adapters.end(), adapter_print_func);
 }

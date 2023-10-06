@@ -26,6 +26,7 @@ LIBS += -L"C:\CPPINCLUDE\curl-8.3.0\builds\libcurl-vc-x64-release-dll-ipv6-sspi-
 LIBS += -llibcurl
 LIBS += -L"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22000.0\um\x64"
 LIBS += -lWS2_32
+LIBS += -liphlpapi
 
 SOURCES += \
     src/ComboCheckBox.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
     src/CustomTabWidget.cpp \
     src/InfoPane.cpp \
     src/MainWindow.cpp \
+    src/NetworkAdapter.cpp \
     src/Packet.cpp \
     src/PacketCap.cpp \
     src/PacketLabel.cpp \
@@ -53,6 +55,7 @@ HEADERS += \
     include/CustomTabWidget.h \
     include/InfoPane.h \
     include/MainWindow.h \
+    include/NetworkAdapter.h \
     include/Packet.h \
     include/PacketCap.h \
     include/PacketLabel.h \

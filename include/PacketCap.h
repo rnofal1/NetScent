@@ -12,6 +12,7 @@
 
 //Local
 #include "MainWindow.h"
+#include "NetworkAdapter.h"
 
 
 //Defines
@@ -22,7 +23,9 @@
 #define SIZE_SLIP_HEADER 8 //https://www.networxsecurity.org/members-area/glossary/s/slip.html
 #define SIZE_ETHERNET_HEADER 14 //https://www.firewall.cx/networking/ethernet/ieee-8023-snap-frame.html
 #define SIZE_PPP_HEADER 24 //http://www.tcpipguide.com/free/t_PPPMultilinkProtocolMPFrameFormat-3.htm
-
+#define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x)) //For Win32 IP Helper functions
+#define FREE(x) HeapFree(GetProcessHeap(), 0, (x)) //For Win32 IP Helper functions
+#define EMPTY_GATEWAY "0.0.0.0"
 
 /* Top-level packet-handler class.
  *  Implementation heavily derived from:
@@ -53,9 +56,17 @@ public:
     void set_device(const char* network_interface);
     void set_filter(const int optind, const int argc, char** argv);
 
+    std::vector<NetworkAdapter> get_network_adapters(); //ToDo: could create a new class derived from PIP_ADAPTER_INFO
+    NetworkAdapter get_preferred_adapter();
+
+    void print_network_adapter_info(const NetworkAdapter& adapter); //Necessary due to printing within Qt debug
+    void print_all_adapter_info();
+
 private:
     static MainWindow* main_window;
     static QTextBrowser* infoPane;
+
+    std::vector<NetworkAdapter> network_adapters;
 
     static pcap_t* handle; //Packet capture channel identifier (used in all libpcap calls)
     static int link_header_len; //Offset to skip over datalink layer header to get to packet IP header
