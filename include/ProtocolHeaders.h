@@ -14,11 +14,6 @@
 #include <winsock2.h>
 #include <windows.h>
 
-/* Internet address.  */
-//struct in_addr
-//{
-//    uint32_t s_addr;
-//};
 
 /* IPv4 header */
 struct iphdr
@@ -37,7 +32,7 @@ struct iphdr
     uint32_t daddr;
 };
 
-/* IPv4 header, from: https://www.binarytides.com/code-packet-sniffer-c-winpcap/ */
+// IPv4 header, from: https://www.binarytides.com/code-packet-sniffer-c-winpcap/
 struct ip {
     unsigned char ip_hl:4; // 4-bit header length (in 32-bit words) normally=5 (Means 20 Bytes may be 24 also)
     unsigned char ip_version :4; // 4-bit IPv4 version
@@ -60,23 +55,23 @@ struct ip {
     struct in_addr ip_dst; // Source address
 };
 
-/* UDP header*/
+// UDP header (from netinet)
 struct udphdr {
-    uint16_t uh_sport;                /* source port */
-    uint16_t uh_dport;                /* destination port */
-    uint16_t uh_ulen;                /* udp length */
-    uint16_t uh_sum;                /* udp checksum */
+    uint16_t uh_sport;                // source port
+    uint16_t uh_dport;                // destination port
+    uint16_t uh_ulen;                // udp length
+    uint16_t uh_sum;                // udp checksum
 };
 
-/* TCP header*/
+// TCP header (from netinet)
 struct tcphdr
 {
-    uint16_t th_sport;                /* source port */
-    uint16_t th_dport;                /* destination port */
-    uint32_t  th_seq;                /* sequence number */
-    uint32_t th_ack;                /* acknowledgement number */
-    uint8_t th_x2:4;                /* (unused) */
-    uint8_t th_off:4;                /* data offset */
+    uint16_t th_sport;                // source port
+    uint16_t th_dport;                // destination port
+    uint32_t  th_seq;                // sequence number
+    uint32_t th_ack;                // acknowledgement number
+    uint8_t th_x2:4;                // (unused)
+    uint8_t th_off:4;                // data offset
 
     uint8_t th_flags;
 #  define TH_FIN        0x01
@@ -85,36 +80,36 @@ struct tcphdr
 #  define TH_PUSH        0x08
 #  define TH_ACK        0x10
 #  define TH_URG        0x20
-    uint16_t th_win;                /* window */
-    uint16_t th_sum;                /* checksum */
-    uint16_t th_urp;                /* urgent pointer */
+    uint16_t th_win;                // window
+    uint16_t th_sum;                // checksum
+    uint16_t th_urp;                // urgent pointer
 };
 
-/* Internal of an ICMP Router Advertisement */
+// Internal of an ICMP Router Advertisement (from netinet.h)
 struct icmp_ra_addr
 {
     uint32_t ira_addr;
     uint32_t ira_preference;
 };
 
-/* ICMP header*/
+// ICMP header (from netinet.h)
 struct icmp
 {
-    uint8_t  icmp_type;        /* type of message, see below */
-    uint8_t  icmp_code;        /* type sub code */
-    uint16_t icmp_cksum;        /* ones complement checksum of struct */
+    uint8_t  icmp_type;        // type of message, see below
+    uint8_t  icmp_code;        // type sub code
+    uint16_t icmp_cksum;        // ones complement checksum of struct
     union
     {
-        unsigned char ih_pptr;                /* ICMP_PARAMPROB */
-        struct in_addr ih_gwaddr;        /* gateway address */
-        struct ih_idseq                /* echo datagram */
+        unsigned char ih_pptr;                // ICMP_PARAMPROB
+        struct in_addr ih_gwaddr;        // gateway address
+        struct ih_idseq                // echo datagram
         {
             uint16_t icd_id;
             uint16_t icd_seq;
         } ih_idseq;
         uint32_t ih_void;
 
-        /* ICMP_UNREACH_NEEDFRAG -- Path MTU Discovery (RFC1191) */
+        // ICMP_UNREACH_NEEDFRAG -- Path MTU Discovery (RFC1191)
         struct ih_pmtu
         {
             uint16_t ipm_void;
@@ -149,7 +144,7 @@ struct icmp
         struct
         {
             struct ip idi_ip;
-            /* options and then 64 bits of data */
+            // options and then 64 bits of data
         } id_ip;
         struct icmp_ra_addr id_radv;
         uint32_t   id_mask;

@@ -7,7 +7,7 @@
 //Local
 #include "util.h"
 
-
+//ToDo: this whole file is a bit of a mess
 //ToDo: this is pretty inefficient (and ugly); find a different way to do this
 void set_stylesheet_from_json(QWidget& widget, const std::string& sec_key, const std::string& sub_sec_key) {
     std::ifstream file(STYLE_FILE);

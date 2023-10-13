@@ -11,8 +11,6 @@
 #include <stdio.h>
 #include <string>
 #include <stdlib.h>
-//#include <unistd.h> //Posix OS API
-//#include <windows.h> //Posix OS API (?)
 #include <signal.h>
 #include <cstddef>
 #include <ctime>
@@ -22,11 +20,6 @@
 
 //3rd-party
 #include <pcap/pcap.h> //libpcap library
-//#include <winsock2.h>
-//#include <windows.h>
-//#include <netinet/tcp.h> //TCP-specific header fields
-//#include <netinet/udp.h> //UDP-specific header fields
-//#include <netinet/ip_icmp.h> //ICMP-specific header fields
 
 //Local
 #include "ProtocolHeaders.h"
