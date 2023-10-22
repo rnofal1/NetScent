@@ -65,6 +65,7 @@ std::string TCPPacket::get_info() {
     tcp_info += std::to_string(ntohs(tcp_header.th_sport));
     tcp_info += " -> ";
     tcp_info += std::string(inet_ntoa(ip_header.ip_dst));
+    tcp_info += ":";
     tcp_info += std::to_string(ntohs(tcp_header.th_dport));
     tcp_info += "\n";
 
