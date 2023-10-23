@@ -83,6 +83,8 @@ private slots:
 
     void save_to_file();
 
+    void update_map();
+
 private:
     static Ui::MainWindow *ui;
     static std::vector<Packet* > packets;

@@ -8,6 +8,7 @@
 #include "util.h"
 
 //ToDo: this whole file is a bit of a mess
+
 //ToDo: this is pretty inefficient (and ugly); find a different way to do this
 void set_stylesheet_from_json(QWidget& widget, const std::string& sec_key, const std::string& sub_sec_key) {
     std::ifstream file(STYLE_FILE);
@@ -110,6 +111,14 @@ nlohmann::json get_ip_geo_json_info(const std::string& ip_addr) {
     return NULL;
 }
 
+// ToDo: handling of unknown coords
+std::pair<float, float> get_ip_coords(const std::string& ip_addr) {
+    nlohmann::json loc_json = get_ip_geo_json_info(ip_addr);
+    float lati = get_json_val_float(loc_json, "latitude");
+    float longi = get_json_val_float(loc_json, "longitude");
+    return std::make_pair(lati, longi);
+}
+
 //ToDo: split this into two functions, one for src and one for dst (?)
 std::string get_packet_geo_info(const std::string& src, const std::string& dst) {
     nlohmann::json src_json = get_ip_geo_json_info(src);
@@ -124,19 +133,31 @@ std::string get_packet_geo_info(const std::string& src, const std::string& dst) 
 //ToDo: consider having this function take in a vector of desired json keys
 //ToDo: rename this function
 std::string parse_geo_info_json(const nlohmann::json& json) {
-    std::string json_info = "IP: " +                  get_json_val(json, "ip")
-                            + "\nCountry: " +         get_json_val(json, "country_name")
-                            + "\nState/Province: " +  get_json_val(json, "state_prov")
-                            + "\nCity: " +            get_json_val(json, "city")
-                            + "\nOrganization: " +    get_json_val(json, "organization") + "\n\n";
+    std::string json_info = "IP: " +                  get_json_val_string(json, "ip")
+                            + "\nCountry: " +         get_json_val_string(json, "country_name")
+                            + "\nState/Province: " +  get_json_val_string(json, "state_prov")
+                            + "\nCity: " +            get_json_val_string(json, "city")
+                            + "\nOrganization: " +    get_json_val_string(json, "organization") + "\n\n";
     return json_info;
 }
 
-std::string get_json_val(const nlohmann::json& json, const std::string& key) {
+std::string get_json_val_string(const nlohmann::json& json, const std::string& key) {
     if (json.contains(key)) {
         return std::string(json[key]);
     } else {
+        qInfo() << "Unknown json value\n";
         return "Unknown";
+    }
+}
+
+float get_json_val_float(const nlohmann::json& json, const std::string& key) {
+    if(json.contains(key)) {
+        std::string coord_str = json[key];
+        float coord_f = std::stod(coord_str);
+        return coord_f;
+    } else {
+        qInfo() << "Unknown json value\n";
+        return 0.0; // ToDo: better handling of unknown float
     }
 }
 

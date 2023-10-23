@@ -23,7 +23,6 @@
 //#include <boost/archive/text_iarchive.hpp>
 //#include <boost/archive/text_oarchive.hpp>
 
-
 //Defines
 #define API_KEY_FILE "api_key.txt"
 #define GEO_INFO_FILE "geo_info.txt"
@@ -31,6 +30,7 @@
 #define WINDOW_ICON "icons/icon.png"
 #define STATIC_ICON "icons/icon_globe.png"
 #define MOVING_ICON "icons/icon_globe_loading.gif"
+
 
 //ToDo: modify this to accomodate greater levels of JSON nesting (?) (with an array/list of keys(?))
 //ToDo: consider removing this and incorporating its functionality into derived UI/GUI classes
@@ -42,10 +42,13 @@ std::string get_geoloc_api_key();
 
 nlohmann::json get_ip_geo_json_info(const std::string& ip_addr);
 
+std::pair<float, float> get_ip_coords(const std::string& ip_addr);
+
 //Return a string describing geographical information regarding the sniffed Packet
 std::string get_packet_geo_info(const std::string& src, const std::string& dst);
 
-std::string get_json_val(const nlohmann::json& json, const std::string& key);
+std::string get_json_val_string(const nlohmann::json& json, const std::string& key);
+float get_json_val_float(const nlohmann::json& json, const std::string& key);
 std::string get_json_val(const std::vector<std::string>& nested_keys);
 
 

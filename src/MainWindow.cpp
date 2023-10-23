@@ -71,6 +71,7 @@ void MainWindow::connect_buttons() {
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
     connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(remove_existing_packets()));
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
+    connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(update_map()));
 
     //Filter checkmarks
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
@@ -317,4 +318,24 @@ void MainWindow::message_popup(const std::string& msg) {
 
     msgBox.setText(QString::fromStdString(msg));
     msgBox.exec();
+}
+
+// Populate map with packet locations and center on user location (if possible)
+void MainWindow::update_map() {
+    double waitInterval = 200;
+    double totalWait = 200;
+    for(auto& packet : packets) {
+        if(!dynamic_cast<TCPPacket*>(packet)) {
+            continue;
+        }
+        auto coords = get_ip_coords(packet->get_dst_ip());
+        float lati = coords.first;
+        float longi = coords.second;
+        if(!(lati == 0.0 && longi == 0.0)) { // ToDo: better handling of unknown coords
+            // This is grotesque but (seemingly) the best way to insert a delay between map updates
+            QTimer::singleShot(totalWait, this, [lati, longi] () { ui->mapTab->update_map(lati, longi); });
+            totalWait += waitInterval;
+        }
+    }
+
 }

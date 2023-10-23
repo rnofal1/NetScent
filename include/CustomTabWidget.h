@@ -18,6 +18,9 @@ class CustomTabWidget : public QTabWidget, public StyleWidget {
     Q_OBJECT
 public:
     CustomTabWidget(QWidget *parent = nullptr);
+
+private slots:
+    void update_tab();
 };
 
 

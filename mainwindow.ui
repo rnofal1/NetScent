@@ -264,6 +264,41 @@ color: rgb(23, 23, 23);</string>
         </item>
        </layout>
       </widget>
+      <widget class="CustomMapTab" name="mapTab">
+       <attribute name="title">
+        <string>   Map   </string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="3" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="CustomButton" name="mapRefreshButton">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+            </property>
+            <property name="text">
+             <string>Refresh</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QQuickWidget" name="quickWidgetMap">
+            <property name="resizeMode">
+             <enum>QQuickWidget::SizeRootObjectToView</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="settingsTab">
        <attribute name="title">
         <string>Settings</string>
@@ -361,6 +396,11 @@ color: rgb(23, 23, 23);</string>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>QQuickWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">QtQuickWidgets/QQuickWidget</header>
+  </customwidget>
+  <customwidget>
    <class>CustomButton</class>
    <extends>QPushButton</extends>
    <header>CustomButton.h</header>
@@ -397,6 +437,12 @@ color: rgb(23, 23, 23);</string>
    <class>CustomCaptureTab</class>
    <extends>QWidget</extends>
    <header>CustomCaptureTab.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CustomMapTab</class>
+   <extends>QWidget</extends>
+   <header>CustomMapTab.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

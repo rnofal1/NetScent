@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui location quickwidgets positioning
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -34,6 +34,7 @@ SOURCES += \
     src/CustomButton.cpp \
     src/CustomCaptureTab.cpp \
     src/CustomCentralWidget.cpp \
+    src/CustomMapTab.cpp \
     src/CustomTabWidget.cpp \
     src/InfoPane.cpp \
     src/MainWindow.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
     include/CustomButton.h \
     include/CustomCaptureTab.h \
     include/CustomCentralWidget.h \
+    include/CustomMapTab.h \
     include/CustomTabWidget.h \
     include/InfoPane.h \
     include/MainWindow.h \
@@ -85,3 +87,6 @@ copyFolders.path = $$OUT_PWD
 COPIES += copyFiles
 copyFiles.files += $$files("C:\CPPINCLUDE\curl-8.3.0\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\lib\libcurl.dll")
 copyFiles.path = $$OUT_PWD
+
+RESOURCES += \
+    resources/Map.qrc
