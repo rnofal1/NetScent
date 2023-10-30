@@ -19,14 +19,12 @@
 #include <QPixmap>
 #include <QFileDialog>
 #include <QLCDNumber>
-
 #include <QDebug>
 
 //Local
 #include "ui_mainwindow.h"
 #include "Packet.h"
 #include "StyleWidget.h"
-
 
 /* The MainWindow class is derived from the QMainWindow class, with the added functionality
  * of storing packet info
@@ -70,6 +68,7 @@ protected:
 private slots:
     void start_button_clicked();
     void stop_button_clicked();
+    void refresh_button_clicked();
 
     //Only hide packets while retaining packet array
     void clear_packet_display();

@@ -20,7 +20,6 @@
 
 //Local
 #include "StyleWidget.h"
-#include "Packet.h"
 
 //Defines
 #define US_CENTER_LAT 39.8283
@@ -39,7 +38,6 @@ public:
     void clear_map();
 
     void update_map(const int& point_lat, const float& point_long);
-    void update_map(std::vector<Packet* >& packets);
 
 private:
     std::set<std::pair<float, float>> plotted_locs;

@@ -2,6 +2,7 @@
  * Ramsey Nofal, 08/2023
  */
 
+#include <QtConcurrent>
 
 //Local
 #include "MainWindow.h"
@@ -71,7 +72,7 @@ void MainWindow::connect_buttons() {
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
     connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(remove_existing_packets()));
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
-    connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(update_map()));
+    connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(refresh_button_clicked()));
 
     //Filter checkmarks
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
@@ -320,10 +321,14 @@ void MainWindow::message_popup(const std::string& msg) {
     msgBox.exec();
 }
 
+// ToDO: some success/failure error-checking
+void MainWindow::refresh_button_clicked() {
+    stop_button_clicked();
+    QFuture<void> future = QtConcurrent::run([this] {update_map();});
+}
+
 // Populate map with packet locations and center on user location (if possible)
 void MainWindow::update_map() {
-    double waitInterval = 200;
-    double totalWait = 200;
     for(auto& packet : packets) {
         if(!dynamic_cast<TCPPacket*>(packet)) {
             continue;
@@ -332,10 +337,7 @@ void MainWindow::update_map() {
         float lati = coords.first;
         float longi = coords.second;
         if(!(lati == 0.0 && longi == 0.0)) { // ToDo: better handling of unknown coords
-            // This is grotesque but (seemingly) the best way to insert a delay between map updates
-            QTimer::singleShot(totalWait, this, [lati, longi] () { ui->mapTab->update_map(lati, longi); });
-            totalWait += waitInterval;
+            ui->mapTab->update_map(lati, longi);
         }
     }
-
 }

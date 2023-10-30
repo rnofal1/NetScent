@@ -9,7 +9,7 @@
 #include "util.h"
 
 #define MAP_INDEX 1
-#define MAP_TAB_NAME
+#define MAP_TAB_NAME "mapTab"
 CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent), StyleWidget(this) {
     add_style("Main", get_stylesheet_from_json("tabWidget", "Main"));
     set_style("Main");
@@ -20,7 +20,7 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent), StyleWid
 // ToDo: only create qquickwidget on map tab visit
 void CustomTabWidget::update_tab() {
     if(currentIndex() == MAP_INDEX) {
-        CustomMapTab *mapTab = this->findChild<CustomMapTab *>("mapTab");
+        CustomMapTab *mapTab = this->findChild<CustomMapTab *>(MAP_TAB_NAME);
         if(mapTab && !mapTab->is_map_active()) {
             mapTab->init_map();
         }

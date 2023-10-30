@@ -21,7 +21,6 @@ bool CustomMapTab::is_map_active() {
 }
 
 void CustomMapTab::init_map() {
-
     set_qml();
     set_map_default_loc();
     map_active = true;
@@ -39,19 +38,6 @@ void CustomMapTab::set_qml() {
         connect(this, SIGNAL(set_location_marker(QVariant,QVariant)), Obj, SLOT(set_location_marker(QVariant,QVariant)));
     } else {
         qInfo() << "Map quickWidget not found\n";
-    }
-}
-
-// Populate map with packet locations and center on user location (if possible)
-void CustomMapTab::update_map(std::vector<Packet* >& packets) {
-    // Initialize map if just entering view
-    if(!map_active) {
-        init_map();
-    }
-
-    // ToDo: Loop through packets, plotting known locations
-    for(auto& packet : packets) {
-        emit set_location_marker(US_CENTER_LAT,US_CENTER_LONG);
     }
 }
 

@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include <optional>
 
 
 //Standard Qt

@@ -145,7 +145,7 @@ std::string get_json_val_string(const nlohmann::json& json, const std::string& k
     if (json.contains(key)) {
         return std::string(json[key]);
     } else {
-        qInfo() << "Unknown json value\n";
+        //qInfo() << "Unknown json value\n";
         return "Unknown";
     }
 }
@@ -156,7 +156,7 @@ float get_json_val_float(const nlohmann::json& json, const std::string& key) {
         float coord_f = std::stod(coord_str);
         return coord_f;
     } else {
-        qInfo() << "Unknown json value\n";
+        //qInfo() << "Unknown json value\n";
         return 0.0; // ToDo: better handling of unknown float
     }
 }
