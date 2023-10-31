@@ -49,7 +49,6 @@ void CustomMapTab::update_map(const int& point_lat, const float& point_long) {
     }
 
     // Plot location if not already plotted
-    // ToDo: duplication of check for repeat points in MainWindow::update_map(), possibly problematic
     auto pair = std::make_pair(point_lat, point_long);
     if(!plotted_locs.count(pair)) {
         plotted_locs.insert(pair);

@@ -8,6 +8,7 @@
 #include "MainWindow.h"
 #include "PacketLabel.h"
 #include "util.h"
+#include "LoadingLabel.h"
 
 //Static variable definitions
 Ui::MainWindow *MainWindow::ui = nullptr;
@@ -31,11 +32,13 @@ MainWindow::MainWindow(QWidget *parent)
     set_widgets_style();
 
     connect_buttons();
+
+    connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(set_map_loading_inactive())); //ToDo: move this?
 }
 
 MainWindow::~MainWindow() {
-    if(ui->statusLabel->movie()) {
-        delete ui->statusLabel->movie();
+    if(ui->packetLoadingLabel->movie()) {
+        delete ui->packetLoadingLabel->movie();
     }
     delete_packets();
 
@@ -63,7 +66,8 @@ void MainWindow::set_widgets_style() {
     ui->numPacketsLCD->setSegmentStyle(QLCDNumber::Flat);
 
     update_api_key_status();
-    set_status_label_inactive();
+
+    ui->packetLoadingLabel->set_icon();
 }
 
 void MainWindow::connect_buttons() {
@@ -78,31 +82,27 @@ void MainWindow::connect_buttons() {
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
 }
 
-void MainWindow::set_status_label_active() {
-    auto statusLabel = ui->statusLabel;
-
-    if(statusLabel->movie()) {
-        delete statusLabel->movie();
-    }
-
-    QMovie *movie = new QMovie(MOVING_ICON);
-    int height = statusLabel->size().height();
-    QSize size(height, height);
-    movie->setScaledSize(size);
-    statusLabel->setMovie(movie);
-    movie->start();
+// ToDo: consider condensing these
+// Paradigm: use Q_CHECK_PTR to check existence of stylistic elements in dev/debug mode
+void MainWindow::set_packet_loading_active() {
+    auto packetLoadingLabel = ui->packetLoadingLabel;
+    Q_CHECK_PTR(packetLoadingLabel);
+    packetLoadingLabel->set_status_active();
 }
-void MainWindow::set_status_label_inactive() {
-    auto statusLabel = ui->statusLabel;
-
-    if(statusLabel->movie()) {
-        delete statusLabel->movie();
-    }
-
-    QPixmap pixmap(STATIC_ICON);
-    statusLabel->setPixmap(pixmap.scaled(statusLabel->size(), Qt::KeepAspectRatio));
-    statusLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    statusLabel->show();
+void MainWindow::set_packet_loading_inactive() {
+    auto packetLoadingLabel = ui->packetLoadingLabel;
+    Q_CHECK_PTR(packetLoadingLabel);
+    packetLoadingLabel->set_status_inactive();
+}
+void MainWindow::set_map_loading_active() {
+    auto mapLoadingLabel = ui->mapLoadingLabel;
+    Q_CHECK_PTR(mapLoadingLabel);
+    mapLoadingLabel->set_status_active();
+}
+void MainWindow::set_map_loading_inactive() {
+    auto mapLoadingLabel = ui->mapLoadingLabel;
+    Q_CHECK_PTR(mapLoadingLabel);
+    mapLoadingLabel->set_status_inactive();
 }
 
 //ToDo: Dynamically instantiate different subclasses (in a single line/single function)?
@@ -184,11 +184,11 @@ void MainWindow::closeEvent(QCloseEvent *ev) {
 
 void MainWindow::start_button_clicked() {
     ui->saveButton->disable();
-    set_status_label_active();
+    set_packet_loading_active();
     run_capture = true;
 }
 void MainWindow::stop_button_clicked() {
-    set_status_label_inactive();
+    set_packet_loading_inactive();
     run_capture = false;
 
     if(!packets.empty()) {
@@ -324,6 +324,7 @@ void MainWindow::message_popup(const std::string& msg) {
 // ToDO: some success/failure error-checking
 void MainWindow::refresh_button_clicked() {
     stop_button_clicked();
+    set_map_loading_active();
     QFuture<void> future = QtConcurrent::run([this] {update_map();});
 }
 
@@ -340,4 +341,5 @@ void MainWindow::update_map() {
             ui->mapTab->update_map(lati, longi);
         }
     }
+    emit all_packets_added_to_map();
 }

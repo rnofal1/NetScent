@@ -37,6 +37,7 @@ SOURCES += \
     src/CustomMapTab.cpp \
     src/CustomTabWidget.cpp \
     src/InfoPane.cpp \
+    src/LoadingLabel.cpp \
     src/MainWindow.cpp \
     src/NetworkAdapter.cpp \
     src/Packet.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     include/CustomMapTab.h \
     include/CustomTabWidget.h \
     include/InfoPane.h \
+    include/LoadingLabel.h \
     include/MainWindow.h \
     include/NetworkAdapter.h \
     include/Packet.h \

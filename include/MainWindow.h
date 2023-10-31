@@ -50,8 +50,8 @@ public:
 
     void update_api_key_status();
 
-    void set_status_label_active();
-    void set_status_label_inactive();
+    void set_packet_loading_active();
+    void set_packet_loading_inactive();
 
     static void add_packet(const struct ip& ip_header, const int& packet_num);
     static void add_packet(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num);
@@ -83,6 +83,12 @@ private slots:
     void save_to_file();
 
     void update_map();
+
+    void set_map_loading_active();
+    void set_map_loading_inactive();
+
+signals:
+    void all_packets_added_to_map();
 
 private:
     static Ui::MainWindow *ui;
