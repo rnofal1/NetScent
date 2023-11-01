@@ -32,6 +32,10 @@ public:
     void add_style(const std::string& style_name, const std::string& style_val);
     void set_style(const std::string& style_name);
 
+    //ToDo: modify this to accomodate greater levels of JSON nesting (?) (with an array/list of keys(?))
+    void set_stylesheet_from_json(QWidget& widget, const std::string& sec_key, const std::string& sub_sec_key);
+    static std::string get_stylesheet_from_json(const std::string& sec_key, const std::string& sub_sec_key);
+
 protected:
     QWidget* this_widget;
     std::map<std::string, std::string> style_map;

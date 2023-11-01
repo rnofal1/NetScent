@@ -6,6 +6,7 @@
 //Local
 #include "PacketLabel.h"
 #include "util.h"
+#include "StyleWidget.h"
 
 //Static variable definitions
 /* Note: making this map static greatly improves performance since we usually
@@ -14,9 +15,9 @@
  * ToDo: despite the performance gain, there are other/better ways of doing this
  */
 std::map<std::string, std::string> PacketLabel::style_map = {{"Main",
-                                                            get_stylesheet_from_json("packetLabel", "Main")},
+                                                            StyleWidget::get_stylesheet_from_json("packetLabel", "Main")},
                                                             {"Alt",
-                                                            get_stylesheet_from_json("packetLabel", "Alt")}};
+                                                            StyleWidget::get_stylesheet_from_json("packetLabel", "Alt")}};
 
 PacketLabel::PacketLabel(Packet* packet, InfoPane* info_pane_init, QWidget* parent)
                         : QLabel(parent),

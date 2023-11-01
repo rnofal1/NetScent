@@ -33,12 +33,6 @@
 #define MOVING_ICON "icons/icon_globe_loading.gif"
 
 
-//ToDo: modify this to accomodate greater levels of JSON nesting (?) (with an array/list of keys(?))
-//ToDo: consider removing this and incorporating its functionality into derived UI/GUI classes
-void set_stylesheet_from_json(QWidget& widget, const std::string& sec_key, const std::string& sub_sec_key);
-
-std::string get_stylesheet_from_json(const std::string& sec_key, const std::string& sub_sec_key);
-    
 std::string get_geoloc_api_key();
 
 nlohmann::json get_ip_geo_json_info(const std::string& ip_addr);
