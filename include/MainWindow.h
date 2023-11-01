@@ -26,6 +26,9 @@
 #include "Packet.h"
 #include "StyleWidget.h"
 
+//Defines
+#define PACKET_LIMIT 999
+
 /* The MainWindow class is derived from the QMainWindow class, with the added functionality
  * of storing packet info
  *

@@ -109,7 +109,7 @@ void MainWindow::set_map_loading_inactive() {
 //ToDo: This just seems messy in general, consider changing
 //ToDo: Better way of handling clear_packets
 void MainWindow::add_packet(const struct ip& ip_header, const int& packet_num) {
-    if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
+    if(MainWindow::clear_packets || packet_num > PACKET_LIMIT) {return;} //ToDo: Necessary for now due to timing between threads
 
     Packet* packet = new Packet(ip_header, packet_num + 1);
     packets.push_back(packet);
@@ -117,7 +117,7 @@ void MainWindow::add_packet(const struct ip& ip_header, const int& packet_num) {
     QTextStream(stdout) << "Added Other Packet\n";
 }
 void MainWindow::add_packet(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num) {
-    if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
+    if(MainWindow::clear_packets || packet_num > PACKET_LIMIT) {return;} //ToDo: Necessary for now due to timing between threads
 
     TCPPacket* packet = new TCPPacket(ip_header, packet_num + 1, tcp_header);
     packets.push_back(packet);
@@ -129,7 +129,7 @@ void MainWindow::add_packet(const struct ip& ip_header, const struct tcphdr& tcp
     QTextStream(stdout) << "Added TCP\n";
 }
 void MainWindow::add_packet(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num) {
-    if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
+    if(MainWindow::clear_packets || packet_num > PACKET_LIMIT) {return;} //ToDo: Necessary for now due to timing between threads
 
     UDPPacket* packet = new UDPPacket(ip_header, packet_num + 1, udp_header);
     packets.push_back(packet);
@@ -141,7 +141,7 @@ void MainWindow::add_packet(const struct ip& ip_header, const struct udphdr& udp
     QTextStream(stdout) << "Added UDP\n";
 }
 void MainWindow::add_packet(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num) {
-    if(MainWindow::clear_packets) {return;} //Necessary for now due to timing between threads
+    if(MainWindow::clear_packets || packet_num > PACKET_LIMIT) {return;} //ToDo: Necessary for now due to timing between threads
 
     ICMPPacket* packet = new ICMPPacket(ip_header, packet_num + 1, icmp_header);
     packets.push_back(packet);
