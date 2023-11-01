@@ -33,9 +33,11 @@ public:
 
     bool is_map_active();
 
-    void init_map();
     void set_qml();
+
+    void init_map();
     void clear_map();
+    void clear_pins();
 
     void update_map(const int& point_lat, const float& point_long);
 
@@ -49,6 +51,7 @@ signals:
     void set_map_center(QVariant, QVariant);
     void set_map_zoom(QVariant);
     void set_location_marker(QVariant, QVariant);
+    void remove_all_location_markers();
 };
 
 #endif // CUSTOMMAPTAB_H

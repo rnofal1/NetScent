@@ -18,9 +18,10 @@ class CustomTabWidget : public QTabWidget, public StyleWidget {
     Q_OBJECT
 public:
     CustomTabWidget(QWidget *parent = nullptr);
+    void clear_map();
 
 private slots:
-    void update_tab();
+    void update_map_tab();
 };
 
 

@@ -27,18 +27,18 @@ void CustomMapTab::init_map() {
 }
 
 void CustomMapTab::set_qml() {
-    QQuickWidget* quickWidgetMap = this->findChild<QQuickWidget*>("quickWidgetMap");
-    if(quickWidgetMap) {
-        quickWidgetMap->setSource(QUrl(QStringLiteral("qrc:/QmlMap.qml"))); //Tie this object to the QML
-        quickWidgetMap->show();
+    auto quickWidgetMap = this->findChild<QQuickWidget*>("quickWidgetMap");
+    Q_CHECK_PTR(quickWidgetMap);
 
-        auto Obj = quickWidgetMap->rootObject();
-        connect(this, SIGNAL(set_map_center(QVariant,QVariant)), Obj, SLOT(set_map_center(QVariant,QVariant)));
-        connect(this, SIGNAL(set_map_zoom(QVariant)), Obj, SLOT(set_map_zoom(QVariant)));
-        connect(this, SIGNAL(set_location_marker(QVariant,QVariant)), Obj, SLOT(set_location_marker(QVariant,QVariant)));
-    } else {
-        qInfo() << "Map quickWidget not found\n";
-    }
+    quickWidgetMap->setSource(QUrl(QStringLiteral("qrc:/QmlMap.qml"))); //Tie this object to the QML
+    quickWidgetMap->show();
+
+    auto w_map_obj = quickWidgetMap->rootObject();
+    connect(this, SIGNAL(set_map_center(QVariant,QVariant)), w_map_obj, SLOT(set_map_center(QVariant,QVariant)));
+    connect(this, SIGNAL(set_map_zoom(QVariant)), w_map_obj, SLOT(set_map_zoom(QVariant)));
+    connect(this, SIGNAL(set_location_marker(QVariant,QVariant)), w_map_obj, SLOT(set_location_marker(QVariant,QVariant)));
+    connect(this, SIGNAL(remove_all_location_markers()), w_map_obj, SLOT(remove_all_location_markers()));
+
 }
 
 // Populate map with packet location and center on user location (if possible)
@@ -58,6 +58,12 @@ void CustomMapTab::update_map(const int& point_lat, const float& point_long) {
 
 // ToDo: delete map (and quickwidget?) when not in view to free up resources
 void CustomMapTab::clear_map() {
+    clear_pins();
+}
+
+// Clears location pins from map
+void CustomMapTab::clear_pins() {
+    emit remove_all_location_markers();
 }
 
 void CustomMapTab::set_map_default_loc() {

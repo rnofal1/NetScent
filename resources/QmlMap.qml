@@ -31,7 +31,10 @@ Item {
                                                    coordinate:QtPositioning.coordinate(mark_lat, mark_long)
                                                })
         mapview.map.addMapItem(item)
+    }
 
+    function remove_all_location_markers() {
+        mapview.map.clearMapItems()
     }
 
     Component {

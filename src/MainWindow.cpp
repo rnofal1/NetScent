@@ -211,6 +211,7 @@ void MainWindow::remove_existing_packets() {
     clear_packets = true;
     clear_packet_display();
     delete_packets();
+    ui->tabWidget->clear_map();
     ui->numPacketsLCD->display(0);
 }
 
