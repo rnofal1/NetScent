@@ -21,7 +21,7 @@ void CustomButton::enable() {
 
 void CustomButton::disable() {
     setDisabled(true);
-    setToolTip("Must have at least one packet to save. Cannot save when capture enabled");
+    setToolTip("");
     set_stylesheet_from_json(*this, "startStopButton", "Alt");
 }
 

@@ -327,6 +327,7 @@ void MainWindow::message_popup(const std::string& msg) {
 void MainWindow::refresh_button_clicked() {
     stop_button_clicked();
     ui->packetClearButton->disable();
+    ui->mapClearButton->disable();
     ui->startButton->disable();
     set_map_loading_active();
     QFuture<void> future = QtConcurrent::run([this] {update_map();});
@@ -351,5 +352,6 @@ void MainWindow::update_map() {
 void MainWindow::map_update_complete() {
     set_map_loading_inactive();
     ui->packetClearButton->enable();
+    ui->mapClearButton->enable();
     ui->startButton->enable();
 }
