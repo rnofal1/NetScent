@@ -87,6 +87,8 @@ private slots:
     void set_map_loading_active();
     void set_map_loading_inactive();
 
+    void map_update_complete();
+
 signals:
     void all_packets_added_to_map();
 

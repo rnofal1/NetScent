@@ -36,7 +36,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="CustomCaptureTab" name="captureTab">
        <property name="styleSheet">
@@ -71,7 +71,7 @@ color: rgb(23, 23, 23);</string>
          </widget>
         </item>
         <item row="0" column="5">
-         <widget class="CustomButton" name="clearButton">
+         <widget class="CustomButton" name="packetClearButton">
           <property name="minimumSize">
            <size>
             <width>49</width>
@@ -325,6 +325,29 @@ color: rgb(23, 23, 23);</string>
                </property>
                <property name="text">
                 <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="CustomButton" name="mapClearButton">
+               <property name="minimumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+               </property>
+               <property name="text">
+                <string>Clear</string>
                </property>
               </widget>
              </item>

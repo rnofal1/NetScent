@@ -36,7 +36,6 @@ public:
     void set_qml();
 
     void init_map();
-    void clear_map();
     void clear_pins();
 
     void update_map(const int& point_lat, const float& point_long);
@@ -46,6 +45,9 @@ private:
     bool map_active;
 
     void set_map_default_loc();
+
+public slots:
+    void clear_map();
 
 signals:
     void set_map_center(QVariant, QVariant);

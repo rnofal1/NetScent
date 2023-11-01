@@ -8,6 +8,7 @@
 
 //Local
 #include "CustomMapTab.h"
+#include "CustomButton.h"
 #include "util.h"
 
 CustomMapTab::CustomMapTab(QWidget *parent) : QWidget(parent), StyleWidget(this) {
@@ -39,6 +40,10 @@ void CustomMapTab::set_qml() {
     connect(this, SIGNAL(set_location_marker(QVariant,QVariant)), w_map_obj, SLOT(set_location_marker(QVariant,QVariant)));
     connect(this, SIGNAL(remove_all_location_markers()), w_map_obj, SLOT(remove_all_location_markers()));
 
+    auto mapClearButton = this->findChild<CustomButton*>("mapClearButton");
+    Q_CHECK_PTR(mapClearButton);
+    connect(mapClearButton, SIGNAL(clicked()), this, SLOT(clear_map()));
+
 }
 
 // Populate map with packet location and center on user location (if possible)
@@ -63,6 +68,7 @@ void CustomMapTab::clear_map() {
 
 // Clears location pins from map
 void CustomMapTab::clear_pins() {
+    plotted_locs.clear();
     emit remove_all_location_markers();
 }
 

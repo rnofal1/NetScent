@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect_buttons();
 
-    connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(set_map_loading_inactive())); //ToDo: move this?
+    connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete())); //ToDo: move this?
 }
 
 MainWindow::~MainWindow() {
@@ -74,7 +74,7 @@ void MainWindow::connect_buttons() {
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
-    connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(remove_existing_packets()));
+    connect(ui->packetClearButton, SIGNAL(clicked()), this, SLOT(remove_existing_packets()));
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
     connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(refresh_button_clicked()));
 
@@ -208,6 +208,7 @@ void MainWindow::clear_packet_display() {
     ui->infoPane->set_style("Main");
 }
 void MainWindow::remove_existing_packets() {
+    stop_button_clicked();
     clear_packets = true;
     clear_packet_display();
     delete_packets();
@@ -325,6 +326,8 @@ void MainWindow::message_popup(const std::string& msg) {
 // ToDO: some success/failure error-checking
 void MainWindow::refresh_button_clicked() {
     stop_button_clicked();
+    ui->packetClearButton->disable();
+    ui->startButton->disable();
     set_map_loading_active();
     QFuture<void> future = QtConcurrent::run([this] {update_map();});
 }
@@ -343,4 +346,10 @@ void MainWindow::update_map() {
         }
     }
     emit all_packets_added_to_map();
+}
+
+void MainWindow::map_update_complete() {
+    set_map_loading_inactive();
+    ui->packetClearButton->enable();
+    ui->startButton->enable();
 }
