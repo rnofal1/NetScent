@@ -64,7 +64,6 @@ std::string get_json_val_string(const nlohmann::json& json, const std::string& k
         return "Unknown";
     }
 }
-
 float get_json_val_float(const nlohmann::json& json, const std::string& key) {
     if(json.contains(key)) {
         std::string coord_str = json[key];

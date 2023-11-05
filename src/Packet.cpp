@@ -69,18 +69,25 @@ nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) {
     return curl_get_json(get_url);
 }
 
-// ToDo: handling of unknown coords
-std::pair<float, float> Packet::get_ip_coords(const std::string& ip_addr) {
+// ToDo: this could probably be a bit simpler
+IPCoords Packet::get_ip_coords(const std::string& ip_addr) {
     nlohmann::json loc_json = get_ip_geo_json_info(ip_addr);
-    float lati = get_json_val_float(loc_json, "latitude");
-    float longi = get_json_val_float(loc_json, "longitude");
-    return std::make_pair(lati, longi);
+    bool known_location = loc_json.contains("latitude"); //We known that if latitude exists, so will longitude
+    float lati = 0.0;
+    float longi = 0.0;
+
+    if(known_location) {
+        lati = get_json_val_float(loc_json, "latitude");
+        longi = get_json_val_float(loc_json, "longitude");
+    }
+
+    return {known_location, lati, longi};
 }
 
-std::pair<int, int> Packet::get_dst_ip_coords() {
+IPCoords Packet::get_dst_ip_coords() {
     return get_ip_coords(get_dst_ip());
 }
-std::pair<int, int> Packet::get_src_ip_coords() {
+IPCoords Packet::get_src_ip_coords() {
     return get_ip_coords(get_src_ip());
 }
 

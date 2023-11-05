@@ -29,6 +29,12 @@
 #define STATIC_ICON "icons/icon_globe.png"
 #define MOVING_ICON "icons/icon_globe_loading.gif"
 
+struct delete_ptr { // Helper function to ease cleanup of container
+    template <typename P>
+    void operator () (P p) {
+        delete p;
+    }
+};
 
 std::string get_geoloc_api_key();
 
@@ -37,12 +43,5 @@ nlohmann::json curl_get_json(const std::string& request);
 std::string get_json_val_string(const nlohmann::json& json, const std::string& key);
 float get_json_val_float(const nlohmann::json& json, const std::string& key);
 std::string get_json_val(const std::vector<std::string>& nested_keys);
-
-struct delete_ptr { // Helper function to ease cleanup of container
-    template <typename P>
-    void operator () (P p) {
-        delete p;
-    }
-};
 
 #endif // UTIL_H

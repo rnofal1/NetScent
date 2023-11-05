@@ -359,11 +359,9 @@ void MainWindow::update_map() {
         if(!dynamic_cast<TCPPacket*>(packet)) {
             continue;
         }
-        auto coords = packet->get_dst_ip_coords();
-        float lati = coords.first;
-        float longi = coords.second;
-        if(!(lati == 0.0 && longi == 0.0)) { // ToDo: better handling of unknown coords
-            ui->mapTab->update_map(lati, longi);
+        IPCoords coords = packet->get_dst_ip_coords();
+        if(coords.known) {
+            ui->mapTab->update_map(coords.latitude, coords.longitude);
         }
     }
     emit all_packets_added_to_map();

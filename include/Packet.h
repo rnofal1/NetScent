@@ -25,6 +25,14 @@
 //Local
 #include "ProtocolHeaders.h"
 
+
+//ip_coords struct used in get_ip_coords() and associated functions
+struct IPCoords {
+    bool known = false;
+    float latitude;
+    float longitude;
+};
+
 /* The Packet class stores ip info and provides public methods to access
  * this info
  *
@@ -46,8 +54,8 @@ public:
     //Return a string describing geographical information regarding the sniffed Packet
     std::string get_geo_info();
 
-    std::pair<int, int> get_dst_ip_coords();
-    std::pair<int, int> get_src_ip_coords();
+    IPCoords get_dst_ip_coords();
+    IPCoords get_src_ip_coords();
 
     int get_num();
 
@@ -65,7 +73,7 @@ protected:
 
     nlohmann::json get_ip_geo_json_info(const std::string& ip_addr);
 
-    std::pair<float, float> get_ip_coords(const std::string& ip_addr);
+    IPCoords get_ip_coords(const std::string& ip_addr);
 
     std::string parse_geo_info_json(const nlohmann::json& json);
 };
@@ -105,6 +113,5 @@ public:
 private:
     struct icmp icmp_header;
 };
-
 
 #endif // PACKETS_H
