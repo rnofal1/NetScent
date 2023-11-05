@@ -12,7 +12,7 @@
 #include <iostream>
 #include <filesystem>
 #include <optional>
-
+#include <filesystem>
 
 //Standard Qt
 #include <QWidget>
@@ -43,5 +43,7 @@ nlohmann::json curl_get_json(const std::string& request);
 std::string get_json_val_string(const nlohmann::json& json, const std::string& key);
 float get_json_val_float(const nlohmann::json& json, const std::string& key);
 std::string get_json_val(const std::vector<std::string>& nested_keys);
+
+std::string get_cwd();
 
 #endif // UTIL_H

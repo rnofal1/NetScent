@@ -74,3 +74,8 @@ float get_json_val_float(const nlohmann::json& json, const std::string& key) {
         return 0.0; // ToDo: better handling of unknown float
     }
 }
+
+std::string get_cwd() {
+    std::filesystem::path cwd = std::filesystem::current_path();
+    return std::string(cwd.u8string());
+}

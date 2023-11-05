@@ -101,6 +101,11 @@ private:
     std::string dummy_api_key;
 
     QString get_stylesheet();
+    std::string get_dir_path_from_user();
+    std::string create_record_file_name();
+
+    //Return true on success, false otherwise
+    bool write_all_packets_to_file(const std::string& path);
 
     //Add packets to window based on filter settings
     void add_valid_packets();

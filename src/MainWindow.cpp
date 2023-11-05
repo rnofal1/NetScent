@@ -80,7 +80,7 @@ void MainWindow::set_widgets_style() {
     ui->saveButton->disable();
 
     //Num packets LCD Style
-    ui->numPacketsLCD->setSegmentStyle(QLCDNumber::Flat);
+    ui->numPacketsLCD->setSegmentStyle(QLCDNumber::Flat); //ToDo: move to stylesheet
 
     update_api_key_status();
 
@@ -281,36 +281,20 @@ void MainWindow::refresh_packet_window() {
     add_valid_packets();
 }
 
-//ToDo: offload file saving to some util functions
+//ToDo: give user more control over save file
 void MainWindow::save_to_file() {
-    std::time_t time_saved = std::time(nullptr);
-
-    QString filename = QFileDialog::getExistingDirectory(this,
-                                                        tr("Open Directory"),
-                                                        "~",
-                                                        QFileDialog::ShowDirsOnly
-                                                        );
-
-    std::string file_name_full = filename.toStdString();
-    file_name_full += "/PacketRecord_";
-    file_name_full += std::asctime(std::localtime(&time_saved));
-    file_name_full += ".txt";
-    std::replace(file_name_full.begin(), file_name_full.end(), ' ', '_');
-
-    std::ofstream file(file_name_full);
-    if(file) {
-        for(auto& packet : packets) {
-            file << packet->get_info() << "\n---------------\n";
-        }
-
-        file << std::endl;
-        file.close();
-        std::cout << "Save to file success\n";
-    } else {
-        std::cout << "Save to file error\n";
+    std::string initial_path = get_dir_path_from_user();
+    if(initial_path == "") {
+        return;
     }
+    std::string record_file_name = create_record_file_name();
+    std::string full_path = initial_path + "/" + record_file_name;
 
-    message_popup("Packet record saved as: " + file_name_full);
+    if(write_all_packets_to_file(full_path)) {
+        message_popup("Packet record saved as: " + full_path);
+    } else {
+        message_popup("ERROR: record not saved");
+    }
 }
 
 
@@ -372,4 +356,55 @@ void MainWindow::map_update_complete() {
     ui->packetClearButton->enable();
     ui->mapClearButton->enable();
     ui->startButton->enable();
+}
+
+std::string MainWindow::get_dir_path_from_user() {
+    std::string folder_path = get_cwd() + "/Records";
+
+    try {
+        std::filesystem::create_directory(folder_path);
+    } catch(...){
+        auto err_msg = "ERROR: Could not create directory at path: " + folder_path;
+        qInfo() << err_msg;
+        message_popup(err_msg);
+        return "";
+    }
+
+    QString path = QFileDialog::getExistingDirectory(this,
+                                                         tr("Choose Save Folder"),
+                                                         QString::fromStdString(folder_path),
+                                                         QFileDialog::ShowDirsOnly
+                                                         );
+    return path.toStdString();
+}
+
+std::string MainWindow::create_record_file_name() {
+    std::time_t time_saved = std::time(nullptr);
+
+    std::string record_path_preset ="PacketRecord_";
+    record_path_preset += std::asctime(std::localtime(&time_saved));
+    record_path_preset += ".txt";
+    record_path_preset.erase(std::remove(record_path_preset.begin(), record_path_preset.end(), '\n'), record_path_preset.end());
+    std::replace(record_path_preset.begin(), record_path_preset.end(), ' ', '_');
+    std::replace(record_path_preset.begin(), record_path_preset.end(), ':', '#');
+
+
+    return record_path_preset;
+}
+
+//Return true on success, false otherwise
+bool MainWindow::write_all_packets_to_file(const std::string& path) {
+    std::ofstream record_file(path);
+    if(!record_file) {
+        qInfo() << "write_all_packets_to_file() error, could not write file: " << path;
+        return false;
+    }
+
+    for(auto& packet : packets) {
+        record_file << packet->get_info() << "\n---------------\n";
+    }
+
+    record_file << std::endl;
+    record_file.close();
+    return true;
 }
