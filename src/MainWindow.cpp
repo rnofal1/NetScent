@@ -255,6 +255,7 @@ void MainWindow::set_api_button_clicked() {
 }
 
 //ToDo: URGENT Handle api key(s) in a more sensible way
+//ToDo: just use the function in util
 void MainWindow::update_api_key_status() {
     std::fstream api_key_file(API_KEY_FILE, std::fstream::in | std::fstream::app);
     std::string key;
@@ -358,7 +359,7 @@ void MainWindow::update_map() {
         if(!dynamic_cast<TCPPacket*>(packet)) {
             continue;
         }
-        auto coords = get_ip_coords(packet->get_dst_ip());
+        auto coords = packet->get_dst_ip_coords();
         float lati = coords.first;
         float longi = coords.second;
         if(!(lati == 0.0 && longi == 0.0)) { // ToDo: better handling of unknown coords

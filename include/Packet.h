@@ -20,6 +20,7 @@
 
 //3rd-party
 #include <pcap/pcap.h> //libpcap library
+#include <nlohmann/json.hpp>
 
 //Local
 #include "ProtocolHeaders.h"
@@ -42,6 +43,12 @@ public:
     std::string get_dst_ip();
     std::string get_time_added();
 
+    //Return a string describing geographical information regarding the sniffed Packet
+    std::string get_geo_info();
+
+    std::pair<int, int> get_dst_ip_coords();
+    std::pair<int, int> get_src_ip_coords();
+
     int get_num();
 
 protected:
@@ -55,6 +62,12 @@ protected:
 
     //Return a string containing miscellaneous ip header information
     std::string get_ip_info();
+
+    nlohmann::json get_ip_geo_json_info(const std::string& ip_addr);
+
+    std::pair<float, float> get_ip_coords(const std::string& ip_addr);
+
+    std::string parse_geo_info_json(const nlohmann::json& json);
 };
 
 

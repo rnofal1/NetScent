@@ -30,11 +30,14 @@ protected:
     void enterEvent(QEnterEvent *ev) override;
     void leaveEvent(QEvent *ev) override;
 
+//ToDo: remove some of these variables since we already store the packet
 private:
     InfoPane* info_pane;
+    Packet* packet;
     std::string packet_time;
     std::string packet_ip_src;
     std::string packet_ip_dst;
+    std::string geo_info;
     int packet_num;
 };
 

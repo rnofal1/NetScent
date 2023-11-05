@@ -7,7 +7,8 @@
 //Local
 #include "util.h"
 
-//ToDo: this whole file is a bit of a mess
+//ToDo: miscellaneous helper functions; try to incorporate into a class whenever appropriate
+//ToDo: ideally all of these functions will be part of a class eventually
 
 //Callback function used during HTTP GET request (curl)
 static size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
@@ -29,72 +30,30 @@ std::string get_geoloc_api_key() {
     return ret_string;
 }
 
-/* get_ip_geo_json_info() uses curl to make an HTTP GET request to the
- * appropriate ip geolocation API
- *
- * This request requires a valid ip geolocation API key and takes the desired
- * ip address as a parameter
- *
- * ToDo: implement local ip location caching (for recently-inspected locations)
- * and/or switch to a local ip location database
- */
-nlohmann::json get_ip_geo_json_info(const std::string& ip_addr) {
+nlohmann::json curl_get_json(const std::string& request) {
     auto curl = curl_easy_init();
-    auto key = get_geoloc_api_key();
-
-    if(curl && !key.empty()) {
-        std::string response_string;
-        std::string get_url = "https://api.ipgeolocation.io/ipgeo?apiKey=" + key + "&ip="+ip_addr;
-
-        //Setup curl call
-        curl_easy_setopt(curl, CURLOPT_URL, get_url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeFunction);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
-
-        //Execute curl call
-        curl_easy_perform(curl);
-
-        nlohmann::json json = nlohmann::json::parse(response_string);
-
-        curl_easy_cleanup(curl);
-        curl = NULL;
-
-        return json;
-    } else if(!curl) {
-        std::cout << "Could not initialize curl\n";
+    nlohmann::json ret_json;
+    if(!curl) {
+        qInfo() << "Could not initialize curl\n";
+        return ret_json;
     }
 
-    return NULL;
-}
 
-// ToDo: handling of unknown coords
-std::pair<float, float> get_ip_coords(const std::string& ip_addr) {
-    nlohmann::json loc_json = get_ip_geo_json_info(ip_addr);
-    float lati = get_json_val_float(loc_json, "latitude");
-    float longi = get_json_val_float(loc_json, "longitude");
-    return std::make_pair(lati, longi);
-}
+    std::string response_string;
 
-//ToDo: split this into two functions, one for src and one for dst (?)
-std::string get_packet_geo_info(const std::string& src, const std::string& dst) {
-    nlohmann::json src_json = get_ip_geo_json_info(src);
-    nlohmann::json dst_json = get_ip_geo_json_info(dst);
+    //Setup curl call
+    curl_easy_setopt(curl, CURLOPT_URL, request.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeFunction);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
 
-    std::string src_info =  "Source Geographical Info:\n" + parse_geo_info_json(src_json);
-    std::string dst_info =  "Destination Geographical Info:\n" + parse_geo_info_json(dst_json);
+    //Execute curl call
+    curl_easy_perform(curl);
 
-    return src_info + dst_info;
-}
+    ret_json = nlohmann::json::parse(response_string);
 
-//ToDo: consider having this function take in a vector of desired json keys
-//ToDo: rename this function
-std::string parse_geo_info_json(const nlohmann::json& json) {
-    std::string json_info = "IP: " +                  get_json_val_string(json, "ip")
-                            + "\nCountry: " +         get_json_val_string(json, "country_name")
-                            + "\nState/Province: " +  get_json_val_string(json, "state_prov")
-                            + "\nCity: " +            get_json_val_string(json, "city")
-                            + "\nOrganization: " +    get_json_val_string(json, "organization") + "\n\n";
-    return json_info;
+    curl_easy_cleanup(curl);
+
+    return ret_json;
 }
 
 std::string get_json_val_string(const nlohmann::json& json, const std::string& key) {
@@ -116,28 +75,3 @@ float get_json_val_float(const nlohmann::json& json, const std::string& key) {
         return 0.0; // ToDo: better handling of unknown float
     }
 }
-
-//std::map<std::string, std::string> load_geo_info_from_file() {
-//    std::map<std::string, std::string> geo_info_map;
-
-//    std::fstream geo_info_file(GEO_INFO_FILE, std::fstream::in | std::fstream::app);
-//    if(geo_info_file) {
-//        boost::archive::text_iarchive iarch(geo_info_file);
-//        iarch >> geo_info_map;
-//        geo_info_file.close();
-//    } else {
-//        std::cout << "API Geo Info file read error\n";
-//    }
-//    return geo_info_map;
-//}
-
-//void save_geo_info_to_file(std::map<std::string, std::string>& geo_info_map) {
-//    std::fstream geo_info_file(GEO_INFO_FILE, std::fstream::out | std::fstream::trunc);
-//    if(geo_info_file) {
-//        boost::archive::text_oarchive oarch(geo_info_file);
-//        oarch << geo_info_map;
-//        geo_info_file.close();
-//    } else {
-//        std::cout << "API Geo Info file write error" << std::endl;
-//    }
-//}

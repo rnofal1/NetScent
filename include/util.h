@@ -32,20 +32,11 @@
 
 std::string get_geoloc_api_key();
 
-nlohmann::json get_ip_geo_json_info(const std::string& ip_addr);
-
-std::pair<float, float> get_ip_coords(const std::string& ip_addr);
-
-//Return a string describing geographical information regarding the sniffed Packet
-std::string get_packet_geo_info(const std::string& src, const std::string& dst);
+nlohmann::json curl_get_json(const std::string& request);
 
 std::string get_json_val_string(const nlohmann::json& json, const std::string& key);
 float get_json_val_float(const nlohmann::json& json, const std::string& key);
 std::string get_json_val(const std::vector<std::string>& nested_keys);
-
-
-//Return json info in a formatted string
-std::string parse_geo_info_json(const nlohmann::json& json);
 
 struct delete_ptr { // Helper function to ease cleanup of container
     template <typename P>

@@ -5,7 +5,7 @@
 
 //Local
 #include "Packet.h"
-
+#include "util.h"
 
 Packet::Packet(const struct ip& ip_header, const int& num)
                : ip_header(ip_header),
@@ -34,6 +34,7 @@ int Packet::get_num() {
     return num;
 }
 
+//Return a string containing miscellaneous ip header information
 std::string Packet::get_ip_info() {
     std::string ip_info =  "ID:";
     ip_info += std::to_string(ntohs(ip_header.ip_id));
@@ -50,6 +51,57 @@ std::string Packet::get_ip_info() {
     ip_info += "\n";
 
     return ip_info;
+}
+
+
+/* get_ip_geo_json_info() uses curl to make an HTTP GET request to the
+ * appropriate ip geolocation API
+ *
+ * This request requires a valid ip geolocation API key and takes the desired
+ * ip address as a parameter
+ *
+ * ToDo: implement local ip location caching (for recently-inspected locations)
+ * and/or switch to a local ip location database
+ */
+nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) {
+    std::string key = get_geoloc_api_key();
+    std::string get_url = "https://api.ipgeolocation.io/ipgeo?apiKey=" + key + "&ip="+ip_addr;
+    return curl_get_json(get_url);
+}
+
+// ToDo: handling of unknown coords
+std::pair<float, float> Packet::get_ip_coords(const std::string& ip_addr) {
+    nlohmann::json loc_json = get_ip_geo_json_info(ip_addr);
+    float lati = get_json_val_float(loc_json, "latitude");
+    float longi = get_json_val_float(loc_json, "longitude");
+    return std::make_pair(lati, longi);
+}
+
+std::pair<int, int> Packet::get_dst_ip_coords() {
+    return get_ip_coords(get_dst_ip());
+}
+std::pair<int, int> Packet::get_src_ip_coords() {
+    return get_ip_coords(get_src_ip());
+}
+
+std::string Packet::parse_geo_info_json(const nlohmann::json& json) {
+    std::string json_info = "IP: " +                  get_json_val_string(json, "ip")
+                            + "\nCountry: " +         get_json_val_string(json, "country_name")
+                            + "\nState/Province: " +  get_json_val_string(json, "state_prov")
+                            + "\nCity: " +            get_json_val_string(json, "city")
+                            + "\nOrganization: " +    get_json_val_string(json, "organization") + "\n\n";
+    return json_info;
+}
+
+//ToDo: split this into two functions, one for src and one for dst (?)
+std::string Packet::get_geo_info() {
+    nlohmann::json src_json = get_ip_geo_json_info(get_src_ip());
+    nlohmann::json dst_json = get_ip_geo_json_info(get_dst_ip());
+
+    std::string src_info =  "Source Geographical Info:\n" + parse_geo_info_json(src_json);
+    std::string dst_info =  "Destination Geographical Info:\n" + parse_geo_info_json(dst_json);
+
+    return src_info + dst_info;
 }
 
 TCPPacket::TCPPacket(const struct ip& ip_header, const int& num, const struct tcphdr& tcp_header)
