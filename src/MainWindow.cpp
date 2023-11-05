@@ -23,17 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
-    std::shared_ptr<std::map<std::string, std::string>> geo_cache_map =
-                        std::make_shared<std::map<std::string, std::string>>();
-
-    add_style("Main", get_stylesheet_from_json("MainWindow", "Main"));
-    set_style("Main");
-
     set_widgets_style();
 
     connect_buttons();
-
-    connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete())); //ToDo: move this?
 }
 
 MainWindow::~MainWindow() {
@@ -49,17 +41,42 @@ Ui::MainWindow* MainWindow::get_ui_pointer() {
     return this->ui;
 }
 
+QString MainWindow::get_stylesheet() {
+    QFile styleFile(STYLE_FILE);
+    styleFile.open(QFile::ReadOnly);
+    QString style(styleFile.readAll());
+    styleFile.close();
+    return style;
+}
+
+//ToDo: all children should inherit the MainWindow stylesheet, but it seems like they don't (this shouldn't be necessary)
+void MainWindow::set_child_stylesheets() {
+    QString style = get_stylesheet();
+    setStyleSheet(style);
+    QList<QWidget*> children = findChildren<QWidget*>();
+    for(auto& child : children) {
+        auto child_style = dynamic_cast<StyleWidget*>(child);
+        if(child_style) {
+            child_style->reset_style();
+        } else {
+            child->setStyleSheet(style);
+        }
+    }
+
+    this->ensurePolished();
+}
+
 void MainWindow::set_widgets_style() {
     //ApiLinkLabel Style
     ui->apiLinkLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ui->apiLinkLabel->setToolTip("Follow this link, create an account, and paste your API key at"
                                  " the right to unlock IP geolocation");
-    set_stylesheet_from_json(*ui->apiLinkLabel, "apiLinkLabel", "Main");
+    //set_stylesheet_from_json(*ui->apiLinkLabel, "apiLinkLabel", "Main");
 
     //Tabs Style
     ui->tabWidget->setCurrentIndex(0);
 
-    //Save button Style
+    //Disable certain buttons
     ui->saveButton->disable();
 
     //Num packets LCD Style
@@ -68,6 +85,8 @@ void MainWindow::set_widgets_style() {
     update_api_key_status();
 
     ui->packetLoadingLabel->set_icon();
+
+    set_child_stylesheets();
 }
 
 void MainWindow::connect_buttons() {
@@ -80,6 +99,8 @@ void MainWindow::connect_buttons() {
 
     //Filter checkmarks
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
+
+    connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete())); //ToDo: move this?
 }
 
 // ToDo: consider condensing these
@@ -169,7 +190,7 @@ void MainWindow::display_packet(Packet* packet) {
 void MainWindow::add_line() {
     QFrame *line = new QFrame();
 
-    line->setObjectName(QString::fromUtf8("line"));
+    line->setObjectName(QString::fromUtf8("scrollLine"));
     line->setGeometry(QRect(320, 150, 118, 3));
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
@@ -205,7 +226,7 @@ void MainWindow::clear_packet_display() {
     }
 
     ui->infoPane->clear();
-    ui->infoPane->set_style("Main");
+    ui->infoPane->set_inactive();
 }
 void MainWindow::remove_existing_packets() {
     stop_button_clicked();
@@ -248,11 +269,9 @@ void MainWindow::update_api_key_status() {
     if(key.length() > 0) {
         dummy_api_key = std::string(key.length(), '*');
         ui->apiKeyText->setText(QString::fromStdString(dummy_api_key));
-        set_stylesheet_from_json(*ui->keyDetectedLabel, "keyDetectedLabel", "Main");
-        ui->keyDetectedLabel->setText(" API key found!");
+        ui->keyDetectedLabel->set_key_detected(true);
     } else {
-        set_stylesheet_from_json(*ui->keyDetectedLabel, "keyDetectedLabel", "Alt");
-        ui->keyDetectedLabel->setText(" No key detected");
+        ui->keyDetectedLabel->set_key_detected(false);
     }
 }
 

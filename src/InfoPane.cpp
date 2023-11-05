@@ -2,12 +2,20 @@
  * Ramsey Nofal, 08/2023
  */
 
+//Standard Qt
+#include <QStyle>
 
 //Local
 #include "InfoPane.h"
-#include "util.h"
+
 
 InfoPane::InfoPane(QWidget *parent) : QTextBrowser(parent), StyleWidget(this) {
-    add_style("Main", get_stylesheet_from_json("infoPane", "Main"));
-    add_style("Alt", get_stylesheet_from_json("infoPane", "Alt"));
+    set_inactive();
+}
+
+void InfoPane::set_active() {
+    set_style_property("active", true);
+}
+void InfoPane::set_inactive() {
+    set_style_property("active", false);
 }

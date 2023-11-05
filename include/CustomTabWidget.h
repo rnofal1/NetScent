@@ -13,6 +13,10 @@
 //Local
 #include "StyleWidget.h"
 
+//Defines
+#define MAP_INDEX 1
+#define MAP_TAB_NAME "mapTab"
+
 
 class CustomTabWidget : public QTabWidget, public StyleWidget {
     Q_OBJECT

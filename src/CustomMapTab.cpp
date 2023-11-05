@@ -9,11 +9,9 @@
 //Local
 #include "CustomMapTab.h"
 #include "CustomButton.h"
-#include "util.h"
+
 
 CustomMapTab::CustomMapTab(QWidget *parent) : QWidget(parent), StyleWidget(this) {
-    add_style("Main", get_stylesheet_from_json("captureTab", "Main"));
-    set_style("Main");
     map_active = false;
 }
 

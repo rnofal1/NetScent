@@ -20,14 +20,11 @@
 //3rd-party
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
-//#include <boost/serialization/map.hpp>
-//#include <boost/archive/text_iarchive.hpp>
-//#include <boost/archive/text_oarchive.hpp>
 
 //Defines
 #define API_KEY_FILE "api_key.txt"
 #define GEO_INFO_FILE "geo_info.txt"
-#define STYLE_FILE "style/style.json"
+#define STYLE_FILE "style/style.qss"
 #define WINDOW_ICON "icons/icon.png"
 #define STATIC_ICON "icons/icon_globe.png"
 #define MOVING_ICON "icons/icon_globe_loading.gif"
@@ -49,9 +46,6 @@ std::string get_json_val(const std::vector<std::string>& nested_keys);
 
 //Return json info in a formatted string
 std::string parse_geo_info_json(const nlohmann::json& json);
-
-//std::map<std::string, std::string> load_geo_info_from_file();
-//void save_geo_info_to_file(std::map<std::string, std::string>& geo_info_map);
 
 struct delete_ptr { // Helper function to ease cleanup of container
     template <typename P>

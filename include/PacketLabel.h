@@ -26,17 +26,12 @@ class PacketLabel : public QLabel, public StyleWidget {
 public:
     PacketLabel(Packet* packet, InfoPane* info_pane_init = nullptr, QWidget* parent = nullptr);
 
-    //PacketLabels handle style slightly differently due to static style_map
-    void add_style(const std::string& style_name, const std::string& style_val);
-    void set_style(const std::string& style_name);
-
 protected:
     void enterEvent(QEnterEvent *ev) override;
     void leaveEvent(QEvent *ev) override;
 
 private:
     InfoPane* info_pane;
-    static std::map<std::string, std::string> style_map;
     std::string packet_time;
     std::string packet_ip_src;
     std::string packet_ip_dst;

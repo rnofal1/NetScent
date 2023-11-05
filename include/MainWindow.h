@@ -100,12 +100,16 @@ private:
     static std::vector<Packet* > packets;
     std::string dummy_api_key;
 
+    QString get_stylesheet();
+
     //Add packets to window based on filter settings
     void add_valid_packets();
 
     void delete_packets();
 
     void message_popup(const std::string& msg);
+
+    void set_child_stylesheets();
 };
 
 #endif // MAINWINDOW_H

@@ -1,0 +1,155 @@
+MainWindow
+{
+    border-image : url(icons/window_background.png) 0 0 0 0 stretch stretch;
+    background-position : center;
+    color : rgb(255, 255, 255);
+}
+
+CustomCentralWidget
+{
+    color: rgb(255, 255, 255);
+}
+
+CustomTabWidget
+{
+    background-color: rgb(54, 57, 62);
+    color : rgb(255, 255, 255);
+}
+
+CustomCaptureTab
+{
+    background-color: rgb(54, 57, 62);
+    color: rgb(255, 255, 255);
+}
+
+PacketScrollArea
+{
+    background-color: rgb(54, 57, 62);
+    color : rgb(255, 255, 255);
+}
+
+QScrollBar
+{
+    background-color : none;
+    color : black;
+}
+
+InfoPane[active=false]
+{
+    background-color : rgb(70, 72, 77);
+    color : rgb(0, 0, 0);
+}
+InfoPane[active=true]
+{
+    background-color : lightgrey;
+    color : black;
+}
+
+PacketLabel[active=false]
+{
+    background-color : rgb(54, 57, 62);
+    color : white;
+}
+PacketLabel[active=true]
+{
+    background-color : grey;
+    color : white;
+}
+
+CustomButton[state="default"]
+{
+    background-color : rgb(87, 227, 137);
+    color : black;
+}
+CustomButton[state="hover"]
+{
+    background-color : grey;
+    color : black;
+}
+CustomButton[state="disabled"]
+{
+    background-color : grey;
+    color : black;
+}
+
+CustomSettingsTab
+{
+    background-color : rgb(54, 57, 62);
+    color : rgb(255, 255, 255);
+}
+
+QToolTip
+{
+    background-color : white;
+}
+
+QLabel#apiSettingLabel
+{
+    background-color : rgb(54, 57, 62);
+}
+
+KeyDetectedLabel[detected=true]
+{
+    background-color : green;
+    color : black;
+}
+KeyDetectedLabel[detected=false]
+{
+    background-color : orangered;
+    color : black;
+}
+
+QLabel#apiLinkLabel
+{
+    background-color : rgb(70, 72, 77);
+    color : white;
+}
+
+QLabel#apiSettingLabel
+{
+    background-color :  rgb(70, 72, 77);
+    color : white;
+}
+
+QLCDNumber
+{
+    background-color: rgb(87, 227, 137);
+    color: rgb(23, 23, 23);
+}
+
+ComboCheckBox#filterBox
+{
+    background-color : rgb(54, 57, 62);
+    color : white;
+}
+
+ComboCheckBox QAbstractItemView
+{
+    background-color : rgb(54, 57, 62);
+    color : white;
+}
+
+QWidget#scrollAreaWidgetContents
+{
+    background-color : rgb(54, 57, 62);
+}
+
+QFrame#scrollLine
+{
+    background-color : rgb(54, 57, 62);
+}
+
+QFrame#mapButtonsFrame
+{
+    border : none;
+}
+
+QTabBar
+{
+    background-color : rgb(70, 72, 77);
+    border-width : 5px;
+    border-color : black;
+    border-style : solid;
+    border-bottom-color : rgb(70, 72, 77);
+    color : white;
+}

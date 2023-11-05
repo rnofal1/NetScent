@@ -35,8 +35,10 @@ SOURCES += \
     src/CustomCaptureTab.cpp \
     src/CustomCentralWidget.cpp \
     src/CustomMapTab.cpp \
+    src/CustomSettingsTab.cpp \
     src/CustomTabWidget.cpp \
     src/InfoPane.cpp \
+    src/KeyDetectedLabel.cpp \
     src/LoadingLabel.cpp \
     src/MainWindow.cpp \
     src/NetworkAdapter.cpp \
@@ -55,8 +57,10 @@ HEADERS += \
     include/CustomCaptureTab.h \
     include/CustomCentralWidget.h \
     include/CustomMapTab.h \
+    include/CustomSettingsTab.h \
     include/CustomTabWidget.h \
     include/InfoPane.h \
+    include/KeyDetectedLabel.h \
     include/LoadingLabel.h \
     include/MainWindow.h \
     include/NetworkAdapter.h \
@@ -78,7 +82,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     .gitignore \
-    README.md
+    README.md \
+    style/style.qss
 
 # Copy over files
 COPIES += copyFolders

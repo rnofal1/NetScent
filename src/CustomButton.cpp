@@ -3,26 +3,26 @@
  */
 
 
+//Standard Qt
+#include <QFile>
+
 //Local
 #include "CustomButton.h"
-#include "util.h"
-
 
 CustomButton::CustomButton(QWidget *parent) : QPushButton(parent), StyleWidget(this) {
-    add_style("Main", get_stylesheet_from_json("startStopButton", "Main"));
-    add_style("Alt", get_stylesheet_from_json("startStopButton", "Alt"));
+    enable();
 }
 
 void CustomButton::enable() {
     setEnabled(true);
     setToolTip("");
-    set_stylesheet_from_json(*this, "startStopButton", "Main");
+    set_style_property("state", "default");
 }
 
 void CustomButton::disable() {
     setDisabled(true);
     setToolTip("");
-    set_stylesheet_from_json(*this, "startStopButton", "Alt");
+    set_style_property("state", "disabled");
 }
 
 void CustomButton::enterEvent(QEnterEvent *ev) {
@@ -30,7 +30,7 @@ void CustomButton::enterEvent(QEnterEvent *ev) {
     if(!isEnabled()) {
         return;
     }
-    set_style("Alt");
+    set_style_property("state", "hover");
 }
 
 void CustomButton::leaveEvent(QEvent *ev) {
@@ -38,6 +38,6 @@ void CustomButton::leaveEvent(QEvent *ev) {
     if(!isEnabled()) {
         return;
     }
-    set_style("Main");
+    set_style_property("state", "default");
 }
 

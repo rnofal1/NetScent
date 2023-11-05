@@ -18,6 +18,8 @@ class InfoPane : public QTextBrowser, public StyleWidget {
     Q_OBJECT
 public:
     InfoPane(QWidget *parent = nullptr);
+    void set_active();
+    void set_inactive();
 };
 
 #endif // INFOPANE_H

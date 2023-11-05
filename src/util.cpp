@@ -117,28 +117,6 @@ float get_json_val_float(const nlohmann::json& json, const std::string& key) {
     }
 }
 
-std::string get_json_val(const std::vector<std::string>& nested_keys) {
-    std::ifstream file(STYLE_FILE);
-
-    if(file) {
-        nlohmann::json json = nlohmann::json::parse(file);
-        for(auto& key : nested_keys) {
-            if(!json.contains(key)) {
-                std::cout << "Invalid JSON section: " << key << "\n";
-            }
-            json = json[key]; //inserts a null value if key not present
-        }
-        file.close();
-        if(!json.is_null()) {
-            return std::string(json);
-        }
-    } else {
-        std::cout << "Style file not found; Dynamic style elements will not work\n";
-    }
-
-    return "";
-}
-
 //std::map<std::string, std::string> load_geo_info_from_file() {
 //    std::map<std::string, std::string> geo_info_map;
 

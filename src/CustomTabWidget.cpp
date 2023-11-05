@@ -6,14 +6,9 @@
 //Local
 #include "CustomTabWidget.h"
 #include "CustomMapTab.h"
-#include "util.h"
 
-#define MAP_INDEX 1
-#define MAP_TAB_NAME "mapTab"
+
 CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent), StyleWidget(this) {
-    add_style("Main", get_stylesheet_from_json("tabWidget", "Main"));
-    set_style("Main");
-
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(update_map_tab()));
 }
 

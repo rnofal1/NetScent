@@ -26,6 +26,7 @@
 #define US_CENTER_LONG -98.5795
 #define DEFAULT_ZOOM 3
 
+
 class CustomMapTab : public QWidget, public StyleWidget {
     Q_OBJECT
 public:

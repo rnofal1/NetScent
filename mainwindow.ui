@@ -212,8 +212,7 @@ color: rgb(23, 23, 23);</string>
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(87, 227, 137);
-color: rgb(23, 23, 23);</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>Start Capture</string>
@@ -272,7 +271,7 @@ color: rgb(23, 23, 23);</string>
         <item row="3" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QFrame" name="frame">
+           <widget class="QFrame" name="mapButtonsFrame">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -427,7 +426,7 @@ color: rgb(23, 23, 23);</string>
          </rect>
         </property>
        </widget>
-       <widget class="QPushButton" name="setApiKeyButton">
+       <widget class="CustomButton" name="setApiKeyButton">
         <property name="geometry">
          <rect>
           <x>350</x>
@@ -440,7 +439,7 @@ color: rgb(23, 23, 23);</string>
          <string>Set Key</string>
         </property>
        </widget>
-       <widget class="QLabel" name="keyDetectedLabel">
+       <widget class="KeyDetectedLabel" name="keyDetectedLabel">
         <property name="geometry">
          <rect>
           <x>440</x>
@@ -528,6 +527,11 @@ color: rgb(23, 23, 23);</string>
    <class>LoadingLabel</class>
    <extends>QLabel</extends>
    <header>LoadingLabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KeyDetectedLabel</class>
+   <extends>QLabel</extends>
+   <header>KeyDetectedLabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
