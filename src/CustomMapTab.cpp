@@ -35,17 +35,16 @@ void CustomMapTab::set_qml() {
     auto w_map_obj = quickWidgetMap->rootObject();
     connect(this, SIGNAL(set_map_center(QVariant,QVariant)), w_map_obj, SLOT(set_map_center(QVariant,QVariant)));
     connect(this, SIGNAL(set_map_zoom(QVariant)), w_map_obj, SLOT(set_map_zoom(QVariant)));
-    connect(this, SIGNAL(set_location_marker(QVariant,QVariant)), w_map_obj, SLOT(set_location_marker(QVariant,QVariant)));
+    connect(this, SIGNAL(set_location_marker(QVariant,QVariant,QVariant)), w_map_obj, SLOT(set_location_marker(QVariant,QVariant,QVariant)));
     connect(this, SIGNAL(remove_all_location_markers()), w_map_obj, SLOT(remove_all_location_markers()));
 
     auto mapClearButton = this->findChild<CustomButton*>("mapClearButton");
     Q_CHECK_PTR(mapClearButton);
     connect(mapClearButton, SIGNAL(clicked()), this, SLOT(clear_map()));
-
 }
 
 // Populate map with packet location and center on user location (if possible)
-void CustomMapTab::update_map(const int& point_lat, const float& point_long) {
+void CustomMapTab::update_map(const int& point_lat, const float& point_long, const std::string& loc_text) {
     // Initialize map if just entering view
     if(!map_active) {
         init_map();
@@ -55,7 +54,7 @@ void CustomMapTab::update_map(const int& point_lat, const float& point_long) {
     auto pair = std::make_pair(point_lat, point_long);
     if(!plotted_locs.count(pair)) {
         plotted_locs.insert(pair);
-        emit set_location_marker(point_lat, point_long);
+        emit set_location_marker(point_lat, point_long, QString::fromStdString(loc_text));
     }
 }
 

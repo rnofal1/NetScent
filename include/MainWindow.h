@@ -98,6 +98,7 @@ signals:
 private:
     static Ui::MainWindow *ui;
     static std::vector<Packet* > packets;
+
     std::string dummy_api_key;
 
     QString get_stylesheet();

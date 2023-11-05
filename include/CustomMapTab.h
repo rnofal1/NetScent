@@ -39,7 +39,7 @@ public:
     void init_map();
     void clear_pins();
 
-    void update_map(const int& point_lat, const float& point_long);
+    void update_map(const int& point_lat, const float& point_long, const std::string& loc_text);
 
 private:
     std::set<std::pair<float, float>> plotted_locs;
@@ -53,7 +53,7 @@ public slots:
 signals:
     void set_map_center(QVariant, QVariant);
     void set_map_zoom(QVariant);
-    void set_location_marker(QVariant, QVariant);
+    void set_location_marker(QVariant, QVariant, QVariant);
     void remove_all_location_markers();
 };
 

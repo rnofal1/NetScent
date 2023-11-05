@@ -100,7 +100,14 @@ std::string Packet::parse_geo_info_json(const nlohmann::json& json) {
     return json_info;
 }
 
-//ToDo: split this into two functions, one for src and one for dst (?)
+std::string Packet::get_dst_geo_info() {
+    return parse_geo_info_json(get_ip_geo_json_info(get_dst_ip()));
+}
+
+std::string Packet::get_src_geo_info() {
+    return parse_geo_info_json(get_ip_geo_json_info(get_src_ip()));
+}
+
 std::string Packet::get_geo_info() {
     nlohmann::json src_json = get_ip_geo_json_info(get_src_ip());
     nlohmann::json dst_json = get_ip_geo_json_info(get_dst_ip());

@@ -340,12 +340,9 @@ void MainWindow::refresh_button_clicked() {
 // Populate map with packet locations and center on user location (if possible)
 void MainWindow::update_map() {
     for(auto& packet : packets) {
-        if(!dynamic_cast<TCPPacket*>(packet)) {
-            continue;
-        }
         IPCoords coords = packet->get_dst_ip_coords();
         if(coords.known) {
-            ui->mapTab->update_map(coords.latitude, coords.longitude);
+            ui->mapTab->update_map(coords.latitude, coords.longitude, packet->get_dst_geo_info());
         }
     }
     emit all_packets_added_to_map();

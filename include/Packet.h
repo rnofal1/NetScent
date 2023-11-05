@@ -53,6 +53,8 @@ public:
 
     //Return a string describing geographical information regarding the sniffed Packet
     std::string get_geo_info();
+    std::string get_dst_geo_info();
+    std::string get_src_geo_info();
 
     IPCoords get_dst_ip_coords();
     IPCoords get_src_ip_coords();
