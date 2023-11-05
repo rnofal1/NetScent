@@ -36,7 +36,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="CustomCaptureTab" name="captureTab">
        <property name="styleSheet">
@@ -47,219 +47,274 @@ color: rgb(255, 255, 255);</string>
         <string>Capture</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="6">
-         <widget class="CustomButton" name="saveButton">
-          <property name="minimumSize">
-           <size>
-            <width>49</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>49</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(87, 227, 137);
-color: rgb(23, 23, 23);</string>
-          </property>
-          <property name="text">
-           <string>Save</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="5">
-         <widget class="CustomButton" name="packetClearButton">
-          <property name="minimumSize">
-           <size>
-            <width>49</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>49</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(87, 227, 137);
-color: rgb(23, 23, 23);</string>
-          </property>
-          <property name="text">
-           <string>Clear</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="10">
-         <layout class="QHBoxLayout" name="horizontalLayout">
+        <item row="2" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="PacketScrollArea" name="scrollArea">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QFrame" name="captureButtonFrame">
             <property name="minimumSize">
              <size>
-              <width>530</width>
+              <width>0</width>
               <height>0</height>
              </size>
             </property>
-            <property name="styleSheet">
-             <string notr="true"/>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>40</height>
+             </size>
             </property>
-            <property name="widgetResizable">
-             <bool>true</bool>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
             </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>528</width>
-               <height>18</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="contextMenuPolicy">
-              <enum>Qt::NoContextMenu</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout"/>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="CustomButton" name="startButton">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+               <property name="text">
+                <string>Start Capture</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="LoadingLabel" name="packetLoadingLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="CustomButton" name="stopButton">
+               <property name="minimumSize">
+                <size>
+                 <width>98</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>98</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+               </property>
+               <property name="text">
+                <string>Stop Capture</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLCDNumber" name="numPacketsLCD">
+               <property name="minimumSize">
+                <size>
+                 <width>80</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="ComboCheckBox" name="filterBox">
+               <property name="minimumSize">
+                <size>
+                 <width>89</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>89</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="CustomButton" name="packetClearButton">
+               <property name="minimumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+               </property>
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="CustomButton" name="saveButton">
+               <property name="minimumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+               </property>
+               <property name="text">
+                <string>Save</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
-           <widget class="InfoPane" name="infoPane">
-            <property name="maximumSize">
+           <widget class="QFrame" name="capturePacketFrame">
+            <property name="minimumSize">
              <size>
-              <width>275</width>
-              <height>16777215</height>
+              <width>100</width>
+              <height>100</height>
              </size>
             </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(0, 0, 0);</string>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
             </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="PacketScrollArea" name="scrollArea">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>530</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+               <property name="widgetResizable">
+                <bool>true</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               </property>
+               <widget class="QWidget" name="scrollAreaWidgetContents">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>528</width>
+                  <height>18</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="contextMenuPolicy">
+                 <enum>Qt::NoContextMenu</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout"/>
+               </widget>
+              </widget>
+             </item>
+             <item>
+              <widget class="InfoPane" name="infoPane">
+               <property name="maximumSize">
+                <size>
+                 <width>275</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(0, 0, 0);</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
-        </item>
-        <item row="0" column="1">
-         <widget class="CustomButton" name="stopButton">
-          <property name="minimumSize">
-           <size>
-            <width>98</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>98</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(87, 227, 137);
-color: rgb(23, 23, 23);</string>
-          </property>
-          <property name="text">
-           <string>Stop Capture</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <widget class="ComboCheckBox" name="filterBox">
-          <property name="minimumSize">
-           <size>
-            <width>89</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>89</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="CustomButton" name="startButton">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string>Start Capture</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="LoadingLabel" name="packetLoadingLabel">
-          <property name="minimumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QLCDNumber" name="numPacketsLCD">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(87, 227, 137);
-color: rgb(23, 23, 23);</string>
-          </property>
-         </widget>
         </item>
        </layout>
       </widget>
@@ -381,80 +436,128 @@ color: rgb(23, 23, 23);</string>
        <attribute name="title">
         <string>Settings</string>
        </attribute>
-       <widget class="QLabel" name="apiSettingLabel">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>30</y>
-          <width>151</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(54, 57, 62);</string>
-        </property>
-        <property name="text">
-         <string>Geolocation API Key:</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="apiLinkLabel">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>151</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Hint: https://ipgeolocation.io/</string>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="apiKeyText">
-        <property name="geometry">
-         <rect>
-          <x>170</x>
-          <y>30</y>
-          <width>171</width>
-          <height>21</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="CustomButton" name="setApiKeyButton">
-        <property name="geometry">
-         <rect>
-          <x>350</x>
-          <y>30</y>
-          <width>89</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Set Key</string>
-        </property>
-       </widget>
-       <widget class="KeyDetectedLabel" name="keyDetectedLabel">
-        <property name="geometry">
-         <rect>
-          <x>440</x>
-          <y>30</y>
-          <width>121</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(246, 97, 81);</string>
-        </property>
-        <property name="text">
-         <string> No key detected</string>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="1" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QFrame" name="apiSettingFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="2">
+              <widget class="QLineEdit" name="apiKeyText"/>
+             </item>
+             <item row="0" column="3">
+              <widget class="CustomButton" name="setApiKeyButton">
+               <property name="minimumSize">
+                <size>
+                 <width>60</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Set Key</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="KeyDetectedLabel" name="keyDetectedLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>90</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>90</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(246, 97, 81);</string>
+               </property>
+               <property name="text">
+                <string> No key detected</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="apiSettingLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>120</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>120</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(54, 57, 62);</string>
+               </property>
+               <property name="text">
+                <string>Geolocation API Key:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="apiLinkLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>145</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>145</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>8</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Hint: https://ipgeolocation.io/</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

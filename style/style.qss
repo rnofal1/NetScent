@@ -143,6 +143,19 @@ QFrame#mapButtonsFrame
 {
     border : none;
 }
+QFrame#captureButtonFrame
+{
+    border : none;
+}
+QFrame#capturePacketFrame
+{
+    border : none;
+}
+QFrame#apiSettingFrame
+{
+    border : none;
+}
+
 
 QTabBar
 {
