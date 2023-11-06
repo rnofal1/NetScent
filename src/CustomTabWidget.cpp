@@ -12,7 +12,7 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent), StyleWid
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(update_map_tab()));
 }
 
-// ToDo: only create qquickwidget on map tab visit
+// ToDo: only create qquickwidget on map tab visit (?)
 void CustomTabWidget::update_map_tab() {
     if(currentIndex() == MAP_INDEX) {
         CustomMapTab *mapTab = this->findChild<CustomMapTab *>(MAP_TAB_NAME);

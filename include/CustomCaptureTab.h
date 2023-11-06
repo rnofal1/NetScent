@@ -13,6 +13,7 @@
 //Local
 #include "StyleWidget.h"
 
+
 class CustomCaptureTab : public QWidget, public StyleWidget {
     Q_OBJECT
 public:

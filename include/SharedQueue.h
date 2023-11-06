@@ -14,6 +14,7 @@
 #include <QMutexLocker>
 #include <QSemaphore>
 
+
 template <typename T>
 class SharedQueue {
 public:

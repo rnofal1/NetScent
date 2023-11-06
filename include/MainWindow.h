@@ -27,8 +27,6 @@
 #include "StyleWidget.h"
 #include "SharedQueue.h"
 
-//Defines
-#define PACKET_LIMIT 10
 
 /* The MainWindow class is derived from the QMainWindow class, with the added functionality
  * of storing packet info
@@ -50,7 +48,7 @@ public:
 
     void set_widgets_style();
 
-    void connect_buttons();
+    void connect_signals_slots();
 
     void update_api_key_status();
 

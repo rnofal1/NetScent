@@ -6,4 +6,5 @@
 //Local
 #include "CustomCaptureTab.h"
 
+
 CustomCaptureTab::CustomCaptureTab(QWidget *parent) : QWidget(parent), StyleWidget(this) {}

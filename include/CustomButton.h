@@ -13,9 +13,6 @@
 #include "StyleWidget.h"
 
 
-/* The CustomButton class is derived from the QPushButton class, with added stylistic
- * functionality
- */
 class CustomButton : public QPushButton, public StyleWidget {
     Q_OBJECT
 public:

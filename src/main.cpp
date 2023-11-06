@@ -14,18 +14,21 @@
 #include "SharedQueue.h"
 
 //Defines
-#define PACKET_QUEUE_CAPACITY 10
+#define PACKET_QUEUE_CAPACITY 9999
+
 
 int main(int argc, char *argv[]) {
-    CustomApplication a(argc, argv);
+    CustomApplication app(argc, argv);
 
     SharedQueue<Packet*> packet_queue(PACKET_QUEUE_CAPACITY);
 
-    MainWindow w(&packet_queue);
-    w.show();
+    MainWindow main_window(&packet_queue);
+    main_window.show();
 
-    PacketCap packet_capturer(&w, &packet_queue);
-    QFuture<void> future = QtConcurrent::run([&packet_capturer] {packet_capturer.run_packet_cap();});
+    PacketCap packet_capturer(&main_window, &packet_queue);
+    QFuture<void> packet_cap_thread = QtConcurrent::run([&packet_capturer]
+                                                        {packet_capturer.run_packet_cap();
+                                                    });
 
-    return a.exec();
+    return app.exec();
 }

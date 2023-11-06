@@ -23,7 +23,7 @@ MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
 
     set_widgets_style();
 
-    connect_buttons();
+    connect_signals_slots();
 
     poll_queue_thread = QtConcurrent::run([this] {poll_queue();});
 }
@@ -68,7 +68,6 @@ void MainWindow::set_widgets_style() {
     ui->apiLinkLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ui->apiLinkLabel->setToolTip("Follow this link, create an account, and paste your API key at"
                                  " the right to unlock IP geolocation");
-    //set_stylesheet_from_json(*ui->apiLinkLabel, "apiLinkLabel", "Main");
 
     //Tabs Style
     ui->tabWidget->setCurrentIndex(0);
@@ -81,12 +80,11 @@ void MainWindow::set_widgets_style() {
 
     update_api_key_status();
 
-    ui->packetLoadingLabel->set_icon();
-
     set_child_stylesheets();
 }
 
-void MainWindow::connect_buttons() {
+void MainWindow::connect_signals_slots() {
+    //Buttons
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
@@ -94,33 +92,31 @@ void MainWindow::connect_buttons() {
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
     connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(refresh_button_clicked()));
 
-    //Filter checkmarks
+    //Packet filters
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
 
-    connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete())); //ToDo: move this?
-    connect(this, SIGNAL(new_packet_ready()), this, SLOT(display_next_packet())); //ToDo: move this?
+    //Geo map
+    connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete()));
+
+    //Shared queue
+    connect(this, SIGNAL(new_packet_ready()), this, SLOT(display_next_packet()));
 }
 
 // ToDo: consider condensing these
-// Paradigm: use Q_CHECK_PTR to check existence of stylistic elements in dev/debug mode
 void MainWindow::set_packet_loading_active() {
     auto packetLoadingLabel = ui->packetLoadingLabel;
-    Q_CHECK_PTR(packetLoadingLabel);
     packetLoadingLabel->set_status_active();
 }
 void MainWindow::set_packet_loading_inactive() {
     auto packetLoadingLabel = ui->packetLoadingLabel;
-    Q_CHECK_PTR(packetLoadingLabel);
     packetLoadingLabel->set_status_inactive();
 }
 void MainWindow::set_map_loading_active() {
     auto mapLoadingLabel = ui->mapLoadingLabel;
-    Q_CHECK_PTR(mapLoadingLabel);
     mapLoadingLabel->set_status_active();
 }
 void MainWindow::set_map_loading_inactive() {
     auto mapLoadingLabel = ui->mapLoadingLabel;
-    Q_CHECK_PTR(mapLoadingLabel);
     mapLoadingLabel->set_status_inactive();
 }
 
@@ -132,7 +128,7 @@ void MainWindow::poll_queue() {
         }
         QThread::msleep(500); //Prevents GUI from being inundated with too many packets
     }
-    qInfo() << "Polling halted";
+    qDebug() << "Polling halted";
 }
 
 void MainWindow::display_next_packet() {
@@ -148,7 +144,7 @@ void MainWindow::display_packet(Packet* packet) {
     InfoPane *infoPane = ui->infoPane;
     PacketLabel *label = new PacketLabel(packet, infoPane);
 
-    label->setText(QString::fromStdString(packet->get_info()));
+    label->setText(QString::fromStdString(packet->get_info())); //ToDo: consider initializing PacketLabel with this text
     ui->scrollArea->widget()->layout()->addWidget(label);
 
     add_line();
@@ -223,7 +219,7 @@ void MainWindow::set_api_button_clicked() {
             api_key_file << input_key << std::endl;
             api_key_file.close();
         } else {
-            std::cout << "API Key file write error" << std::endl;
+            qDebug() << "API Key file write error";
         }
     }
 
@@ -240,7 +236,7 @@ void MainWindow::update_api_key_status() {
         std::getline(api_key_file, key);
         api_key_file.close();
     } else {
-        std::cout << "API Key file read error\n";
+        qDebug() << "API Key file read error";
     }
 
     if(key.length() > 0) {
@@ -310,7 +306,7 @@ void MainWindow::refresh_button_clicked() {
     ui->mapClearButton->disable();
     ui->startButton->disable();
     set_map_loading_active();
-    QFuture<void> future = QtConcurrent::run([this] {update_map();});
+    QFuture<void> map_update_thread = QtConcurrent::run([this] {update_map();});
 }
 
 // Populate map with packet locations and center on user location (if possible)
@@ -338,7 +334,7 @@ std::string MainWindow::get_dir_path_from_user() {
         std::filesystem::create_directory(folder_path);
     } catch(...){
         auto err_msg = "ERROR: Could not create directory at path: " + folder_path;
-        qInfo() << err_msg;
+        qDebug() << err_msg;
         message_popup(err_msg);
         return "";
     }
@@ -369,7 +365,7 @@ std::string MainWindow::create_record_file_name() {
 bool MainWindow::write_all_packets_to_file(const std::string& path) {
     std::ofstream record_file(path);
     if(!record_file) {
-        qInfo() << "write_all_packets_to_file() error, could not write file: " << path;
+        qDebug() << "write_all_packets_to_file() error, could not write file: " << path;
         return false;
     }
 

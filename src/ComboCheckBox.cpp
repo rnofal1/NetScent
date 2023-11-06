@@ -11,23 +11,24 @@ ComboCheckBox::ComboCheckBox(QWidget *parent) : QComboBox(parent) {
     QStandardItem* title = new QStandardItem(QString("Filter"));
     model.appendRow(title);
 
-    QStandardItem* tcp = new QStandardItem(QString("TCP"));
-    tcp->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-    tcp->setData(Qt::Checked, Qt::CheckStateRole);
-    model.appendRow(tcp);
-
-    QStandardItem* udp = new QStandardItem(QString("UDP"));
-    udp->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-    udp->setData(Qt::Checked, Qt::CheckStateRole);
-    model.appendRow(udp);
-
-    QStandardItem* icmp = new QStandardItem(QString("ICMP"));
-    icmp->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-    icmp->setData(Qt::Checked, Qt::CheckStateRole);
-    model.appendRow(icmp);
+    std::vector<QString> filter_item_names = {"TCP", "UDP", "ICMP"};
+    add_filter_items(filter_item_names);
 
     this->setModel(&model);
 }
+
+void ComboCheckBox::add_single_filter_item(const QString& item_name) {
+    auto item = new QStandardItem(item_name);
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setData(Qt::Checked, Qt::CheckStateRole);
+    model.appendRow(item);
+}
+void ComboCheckBox::add_filter_items(const std::vector<QString> item_names) {
+    for(auto& name : item_names) {
+        add_single_filter_item(name);
+    }
+}
+
 
 bool ComboCheckBox::tcp_filter_enabled() {
     return filter_enabled("TCP");
@@ -48,10 +49,10 @@ QStandardItem* ComboCheckBox::find_item(const QString &name) {
     QList<QStandardItem *> matched_items = model.findItems(name);
 
     if(matched_items.empty()) {
-        std::cout << "No matching filter found for: " << name.toStdString() << "\n";
+        qDebug() << "No matching filter found for: " << name.toStdString() << "\n";
         return nullptr;
     } else if(matched_items.size() > 1) {
-        std::cout << "Too many matching filters found for: " << name.toStdString() << "\n";
+        qDebug() << "Too many matching filters found for: " << name.toStdString() << "\n";
         return nullptr;
     } else {
         return matched_items.first();

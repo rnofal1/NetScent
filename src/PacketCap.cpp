@@ -38,7 +38,7 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
      */
     if (!*device) {
         if (pcap_findalldevs(&devices, error_buff) == PCAP_ERROR) {
-            std::cerr << "pcap_findalldevs(): " << error_buff << "\n";
+            qDebug() << "pcap_findalldevs(): " << error_buff;
             return NULL;
         }
 
@@ -58,7 +58,7 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
      * with a network device. Returns 0 on success and PCAP_ERROR on failure
      */
     if (pcap_lookupnet(device, &src_ip, &netmask, error_buff) == PCAP_ERROR) {
-        std::cerr << "pcap_lookupnet(): " << error_buff << "\n";
+        qDebug() << "pcap_lookupnet(): " << error_buff;
         return NULL;
     }
 
@@ -69,7 +69,7 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
      */
     pcap_t* handle = pcap_open_live(device, BUFSIZ, promisc, PACKET_BUFF_TIMEOUT, error_buff);
     if (handle == NULL) {
-        std::cerr << "pcap_open_live(): " << error_buff << "\n";
+        qDebug() << "pcap_open_live(): " << error_buff;
         return NULL;
     }
 
@@ -79,7 +79,7 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
      * success, PCAP_ERROR on failure
      */
     if (pcap_compile(handle, &bpf, filter, 1, netmask) == PCAP_ERROR) {
-        std::cerr << "pcap_compile(): " << pcap_geterr(handle) << "\n";
+        qDebug() << "pcap_compile(): " << pcap_geterr(handle);
         return NULL;
     }
 
@@ -90,7 +90,7 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
      * created but not activated, and PCAP_ERROR on other errors.
      */
     if (pcap_setfilter(handle, &bpf) == PCAP_ERROR) {
-        std::cerr << "pcap_setfilter(): " << pcap_geterr(handle) << "\n";
+        qDebug() << "pcap_setfilter(): " << pcap_geterr(handle);
         return NULL;
     }
 
@@ -126,19 +126,19 @@ void PacketCap::packet_handler( u_char *user,
 
     switch (ip_header->ip_p) {
     case IPPROTO_TCP:
-        qInfo() << "In TCP packet cap\n";
+        qDebug() << "In TCP packet cap";
         packet_to_add = packet_cap_obj->create_tcp_packet(*ip_header, *(struct tcphdr*)packet_ptr);
         packet_cap_obj->enqueue_packet(packet_to_add);
         break;
 
     case IPPROTO_UDP:
-        qInfo() << "In UDP packet cap\n";
+        qDebug() << "In UDP packet cap";
         packet_to_add = packet_cap_obj->create_udp_packet(*ip_header, *(struct udphdr*)packet_ptr);
         packet_cap_obj->enqueue_packet(packet_to_add);
         break;
 
     case IPPROTO_ICMP:
-        qInfo() << "In ICMP packet cap\n";
+        qDebug() << "In ICMP packet cap";
         packet_to_add = packet_cap_obj->create_icmp_packet(*ip_header, *(struct icmp*)packet_ptr);
         packet_cap_obj->enqueue_packet(packet_to_add);
         break;
@@ -186,7 +186,7 @@ void PacketCap::run_packet_cap() {
                 main_window->clear_packets = false;
             }
 
-            qInfo() << "Starting packet capture...\n\n";
+            qDebug() << "Starting packet capture...\n";
 
             //Create packet capture handle.
             handle = create_pcap_handle(device, filter);
@@ -200,20 +200,20 @@ void PacketCap::run_packet_cap() {
                QThread::currentThread()->exit(1);
             }
 
-            qInfo() << "Initiating packet capture loop...\n\n";
+            qDebug() << "Initiating packet capture loop...\n";
 
             //This runs continuously until reaching one of our stop conditions
             if (pcap_loop(handle, max_packets, packet_handler, reinterpret_cast<u_char *>(this)) == PCAP_ERROR) {
-                qInfo() << "pcap_loop failed: " << pcap_geterr(handle) << "\n";
+                qDebug() << "pcap_loop failed: " << pcap_geterr(handle);
                 QThread::currentThread()->exit(1);
             }
 
             stop_capture(0);
-            qInfo() << "Packet capture halted.\n\n";
+            qDebug() << "Packet capture halted.\n";
         }
     }
 
-    qInfo() << "Program window closed.\n\n";
+    qDebug() << "Program window closed.\n";
     QThread::currentThread()->quit();
 }
 
@@ -228,9 +228,9 @@ void PacketCap::stop_capture(int signo) {
     struct pcap_stat stats;
 
     if (pcap_stats(handle, &stats) >= 0) {
-        std::cout << "\n" << num_packets << " packets captured\n"
+        qDebug() << "\n" << num_packets << " packets captured\n"
                   << stats.ps_recv << " packets received by filter\n"
-                  << stats.ps_drop << " packets dropped\n\n";
+                  << stats.ps_drop << " packets dropped\n";
     }
 
     pcap_close(handle);
@@ -250,7 +250,7 @@ void PacketCap::get_link_header_len(pcap_t* handle) {
 
     //Determine the datalink layer type.
     if(link_type == PCAP_ERROR_NOT_ACTIVATED) {
-        std::cout << "pcap_datalink(): " << pcap_geterr(handle) << "\n";
+        qDebug() << "pcap_datalink(): " << pcap_geterr(handle);
         return;
     }
 
@@ -268,7 +268,7 @@ void PacketCap::get_link_header_len(pcap_t* handle) {
         link_header_len = SIZE_PPP_HEADER;
         break;
     default:
-        std::cout << "Unsupported datalink(): " << link_type << "\n";
+        qDebug() << "Unsupported datalink(): " << link_type;
         link_header_len = 0;
     }
 }
@@ -294,7 +294,7 @@ std::vector<NetworkAdapter> PacketCap::get_network_adapters() {
     u_long out_buf_len = sizeof(IP_ADAPTER_INFO);
     net_adapter_info = (IP_ADAPTER_INFO *) MALLOC(sizeof(IP_ADAPTER_INFO));
     if (net_adapter_info == NULL) {
-        qInfo("Error allocating memory needed to call GetAdaptersinfo\n");
+        qDebug() << "Error allocating memory needed to call GetAdaptersinfo";
         return found_adapters;
     }
 
@@ -303,7 +303,7 @@ std::vector<NetworkAdapter> PacketCap::get_network_adapters() {
         FREE(net_adapter_info);
         net_adapter_info = (IP_ADAPTER_INFO *) MALLOC(out_buf_len);
         if (net_adapter_info == NULL) {
-            qInfo("Error allocating memory needed to call GetAdaptersinfo\n");
+            qDebug("Error allocating memory needed to call GetAdaptersinfo");
             return found_adapters;
         }
     }
@@ -316,7 +316,7 @@ std::vector<NetworkAdapter> PacketCap::get_network_adapters() {
             net_adapter = net_adapter->Next;
         }
     } else {
-        qInfo("GetAdaptersInfo failed with error: %d\n", adapter_call_ret_val);
+        qDebug("GetAdaptersInfo failed with error: %d", adapter_call_ret_val);
     }
 
     if (net_adapter_info) {
@@ -338,10 +338,11 @@ NetworkAdapter PacketCap::get_preferred_adapter() {
 }
 
 void PacketCap::print_network_adapter_info(const NetworkAdapter& adapter) {
-    qInfo() << adapter.get_all_info() << '\n';
+    qDebug() << adapter.get_all_info();
 }
 
 void PacketCap::print_all_adapter_info() {
-    auto adapter_print_func = std::bind(&PacketCap::print_network_adapter_info, this, std::placeholders::_1);
-    std::for_each(network_adapters.begin(), network_adapters.end(), adapter_print_func);
+    for(auto& adapter : network_adapters) {
+        print_network_adapter_info(adapter);
+    }
 }

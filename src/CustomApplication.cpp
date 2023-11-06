@@ -4,13 +4,15 @@
  */
 
 
+//Standard Qt
+#include <QIcon>
+
 //Local
 #include "CustomApplication.h"
-#include "StyleWidget.h"
 
 
 CustomApplication::CustomApplication(int &argc, char **argv)
                                     : QApplication(argc, argv) {
     setWindowIcon(QIcon(QString::fromStdString(ICON_PATH)));
-    setStyle("fusion");
+    setStyle(APP_STYLE);
 }

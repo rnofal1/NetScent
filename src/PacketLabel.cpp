@@ -32,11 +32,11 @@ void PacketLabel::enterEvent(QEnterEvent *ev) {
     set_style_property("active", true);
 
     if(info_pane == nullptr) {
-        qInfo() << "No info pane pointer in PacketLabel";
+        qDebug() << "No info pane pointer in PacketLabel";
         return;
     }
     if(packet == nullptr) {
-        qInfo() << "Packet in PacketLabel is nullptr";
+        qDebug() << "Packet in PacketLabel is nullptr";
         return;
     }
 

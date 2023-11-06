@@ -23,7 +23,7 @@ std::string get_geoloc_api_key() {
     if(api_key_file) {
         std::getline(api_key_file, ret_string);
     } else {
-        std::cout << "Geolocation API key not found\n";
+        qDebug() << "Geolocation API key not found";
     }
     api_key_file.close();
 
@@ -34,7 +34,7 @@ nlohmann::json curl_get_json(const std::string& request) {
     auto curl = curl_easy_init();
     nlohmann::json ret_json;
     if(!curl) {
-        qInfo() << "Could not initialize curl\n";
+         qDebug() << "Could not initialize curl";
         return ret_json;
     }
 
@@ -60,7 +60,7 @@ std::string get_json_val_string(const nlohmann::json& json, const std::string& k
     if (json.contains(key)) {
         return std::string(json[key]);
     } else {
-        //qInfo() << "Unknown json value\n";
+        qDebug() << "Unknown json value";
         return "Unknown";
     }
 }
@@ -70,7 +70,7 @@ float get_json_val_float(const nlohmann::json& json, const std::string& key) {
         float coord_f = std::stod(coord_str);
         return coord_f;
     } else {
-        //qInfo() << "Unknown json value\n";
+        qDebug() << "Unknown json value";
         return 0.0; // ToDo: better handling of unknown float
     }
 }

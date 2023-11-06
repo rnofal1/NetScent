@@ -34,6 +34,9 @@ public:
 
 private:
     QStandardItem* find_item(const QString &name);
+
+    void add_single_filter_item(const QString& item_name);
+    void add_filter_items(const std::vector<QString> item_names);
 };
 
 #endif // COMBOCHECKBOX_H

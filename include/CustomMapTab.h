@@ -37,6 +37,7 @@ public:
     void set_qml();
 
     void init_map();
+
     void clear_pins();
 
     void update_map(const int& point_lat, const float& point_long, const std::string& loc_text);

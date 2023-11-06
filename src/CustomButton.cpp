@@ -9,19 +9,18 @@
 //Local
 #include "CustomButton.h"
 
+
 CustomButton::CustomButton(QWidget *parent) : QPushButton(parent), StyleWidget(this) {
     enable();
 }
 
 void CustomButton::enable() {
     setEnabled(true);
-    setToolTip("");
     set_style_property("state", "default");
 }
 
 void CustomButton::disable() {
     setDisabled(true);
-    setToolTip("");
     set_style_property("state", "disabled");
 }
 

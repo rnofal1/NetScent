@@ -13,6 +13,7 @@
 
 //Defines
 #define ICON_PATH "icons/icon.png"
+#define APP_STYLE "fusion"
 
 class CustomApplication : public QApplication {
     Q_OBJECT
