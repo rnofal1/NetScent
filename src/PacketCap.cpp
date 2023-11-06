@@ -9,20 +9,15 @@
 #include "PacketCap.h"
 
 
-//Static variable declarations
-MainWindow* PacketCap::main_window = nullptr;
-QTextBrowser* PacketCap::infoPane = nullptr;
-pcap_t* PacketCap::handle = nullptr;
-int PacketCap::num_packets = 0;
-int PacketCap::link_header_len = 0;
+PacketCap::PacketCap(MainWindow* main_window, SharedQueue<Packet*>* packet_queue) :
+                                                        main_window(main_window),
+                                                        packet_queue(packet_queue),
+                                                        link_header_len(0),
+                                                        max_packets(0), //0 == -1 == INF for pcap_loop()
+                                                        num_packets(0) {
 
-
-PacketCap::PacketCap(MainWindow* main_window_init) {
-    main_window = main_window_init;
-    count = 0;
     *device = 0;
     *filter = 0;
-    infoPane = main_window->get_ui_pointer()->infoPane;
 }
 
 /* Creates a packet capture endpoint to receive packets described by a packet
@@ -102,17 +97,90 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
     return handle;
 }
 
-//ToDo: would prefer to have stop_capture(0) guaranteed to run on window close
-int PacketCap::run_packet_cap() {
-    //Binds stop_capture() as handler function to the following signals
-    signal(SIGINT, PacketCap::stop_capture);
-    signal(SIGTERM, PacketCap::stop_capture);
-    signal(SIGBREAK, PacketCap::stop_capture);
+
+/* Call-back function to parse and display the contents of each captured
+ * packet
+ *
+ */
+void PacketCap::packet_handler( u_char *user,
+                        const struct pcap_pkthdr *packet_header,
+                        const u_char *packet_ptr) {
+    PacketCap *packet_cap_obj = reinterpret_cast<PacketCap *>(user);
+    MainWindow *main_window_obj = packet_cap_obj->main_window;
+    if(!main_window_obj || main_window_obj->closed || !main_window_obj->run_capture || main_window_obj->clear_packets) {
+        pcap_breakloop(packet_cap_obj->handle);
+        return;
+    }
+
+    struct ip* ip_header;
+
+    // Skip the datalink layer header and get the IP header fields.
+    packet_ptr += packet_cap_obj->link_header_len;
+    ip_header = (struct ip*)(packet_ptr); //ToDo look into this cast
+
+    // Advance to the transport layer header then parse and display
+    // the fields based on the type of header: tcp, udp or icmp.
+    packet_ptr += 4*ip_header->ip_hl;
+
+    Packet* packet_to_add;
+
+    switch (ip_header->ip_p) {
+    case IPPROTO_TCP:
+        qInfo() << "In TCP packet cap\n";
+        packet_to_add = packet_cap_obj->create_tcp_packet(*ip_header, *(struct tcphdr*)packet_ptr);
+        packet_cap_obj->enqueue_packet(packet_to_add);
+        break;
+
+    case IPPROTO_UDP:
+        qInfo() << "In UDP packet cap\n";
+        packet_to_add = packet_cap_obj->create_udp_packet(*ip_header, *(struct udphdr*)packet_ptr);
+        packet_cap_obj->enqueue_packet(packet_to_add);
+        break;
+
+    case IPPROTO_ICMP:
+        qInfo() << "In ICMP packet cap\n";
+        packet_to_add = packet_cap_obj->create_icmp_packet(*ip_header, *(struct icmp*)packet_ptr);
+        packet_cap_obj->enqueue_packet(packet_to_add);
+        break;
+
+        //ToDo: do something about non-TCP/UDP/ICMP packets/headers
+        // default: ...
+    }
+}
+
+void PacketCap::enqueue_packet(Packet* packet) {
+    packet_queue->push(packet);
+}
+
+Packet* PacketCap::create_generic_packet(const struct ip& ip_header) {
+    Packet* packet = new Packet(ip_header, num_packets++);
+    return packet;
+}
+
+Packet* PacketCap::create_tcp_packet(const struct ip& ip_header, const struct tcphdr& tcp_header) {
+    TCPPacket* packet = new TCPPacket(ip_header, num_packets++, tcp_header);
+    return packet;
+}
+
+Packet* PacketCap::create_udp_packet(const struct ip& ip_header, const struct udphdr& udp_header) {
+    UDPPacket* packet = new UDPPacket(ip_header, num_packets++, udp_header);
+    return packet;
+}
+
+Packet* PacketCap::create_icmp_packet(const struct ip& ip_header, const struct icmp& icmp_header) {
+    ICMPPacket* packet = new ICMPPacket(ip_header, num_packets++, icmp_header);
+    return packet;
+}
+
+void PacketCap::run_packet_cap() {
+    signal(SIGINT, exit);
+    signal(SIGTERM, exit);
+    signal(SIGBREAK, exit);
 
     //Start the packet capture
     while(main_window && !main_window->closed) {
         if(main_window->run_capture){
-            //Reset packet count if necessary
+            //Reset num_packets if necessary
             if(main_window->clear_packets) {
                 num_packets = 0;
                 main_window->clear_packets = false;
@@ -123,21 +191,21 @@ int PacketCap::run_packet_cap() {
             //Create packet capture handle.
             handle = create_pcap_handle(device, filter);
             if (handle == NULL) {
-                return -1;
+                QThread::currentThread()->exit(1);
             }
 
             //Get the type of link layer.
             get_link_header_len(handle);
             if (link_header_len == 0) {
-                return -1;
+               QThread::currentThread()->exit(1);
             }
 
             qInfo() << "Initiating packet capture loop...\n\n";
 
             //This runs continuously until reaching one of our stop conditions
-            if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) == PCAP_ERROR) {
-                std::cerr << "pcap_loop failed: " << pcap_geterr(handle) << "\n";
-                return -1;
+            if (pcap_loop(handle, max_packets, packet_handler, reinterpret_cast<u_char *>(this)) == PCAP_ERROR) {
+                qInfo() << "pcap_loop failed: " << pcap_geterr(handle) << "\n";
+                QThread::currentThread()->exit(1);
             }
 
             stop_capture(0);
@@ -145,8 +213,30 @@ int PacketCap::run_packet_cap() {
         }
     }
 
-    std::cout << "Program window closed.\n\n";
-    return 0;
+    qInfo() << "Program window closed.\n\n";
+    QThread::currentThread()->quit();
+}
+
+/* Registered as the handler function for each of the signals SIGINT, SIGTERM,
+ * and SIGQUIT, which are raised when a process is interrupted. Also called
+ * when the program terminates normally after a specified number of packets
+ * are captured
+ */
+void PacketCap::stop_capture(int signo) {
+    Q_UNUSED(signo);
+
+    struct pcap_stat stats;
+
+    if (pcap_stats(handle, &stats) >= 0) {
+        std::cout << "\n" << num_packets << " packets captured\n"
+                  << stats.ps_recv << " packets received by filter\n"
+                  << stats.ps_drop << " packets dropped\n\n";
+    }
+
+    pcap_close(handle);
+
+    num_packets = 0;
+    packet_queue->clear();
 }
 
 /* Gets the link header type and size to be used during packet capture and
@@ -181,91 +271,6 @@ void PacketCap::get_link_header_len(pcap_t* handle) {
         std::cout << "Unsupported datalink(): " << link_type << "\n";
         link_header_len = 0;
     }
-}
-
-//ToDo: consider moving this around to follow normal templated function conventions
-template<typename T>
-void PacketCap::send_to_ui(const struct ip& ip_header, const T& network_protocol_header) {
-    QMetaObject::invokeMethod(main_window,  [=]()
-                    {
-                        main_window->add_packet(ip_header, network_protocol_header, num_packets++);
-                    });
-}
-
-//ToDo: would prefer this to be a single (templated) function
-void PacketCap::send_to_ui(const struct ip& ip_header) {
-    QMetaObject::invokeMethod(main_window,  [=]()
-                    {
-                        main_window->add_packet(ip_header, num_packets++);
-                    });
-}
-
-/* Call-back function to parse and display the contents of each captured
- * packet
- *
- */
-void PacketCap::packet_handler(u_char *user,
-                               const struct pcap_pkthdr *packet_header,
-                               const u_char *packet_ptr) {
-    Q_UNUSED(user); Q_UNUSED(packet_header);
-
-    if(!main_window || main_window->closed || !main_window->run_capture || main_window->clear_packets) {
-        pcap_breakloop(handle);
-    }
-
-
-    struct ip* ip_header;
-
-    // Skip the datalink layer header and get the IP header fields.
-    packet_ptr += link_header_len;
-    ip_header = (struct ip*)(packet_ptr); //ToDo look into this cast
-
-    // Advance to the transport layer header then parse and display
-    // the fields based on the type of header: tcp, udp or icmp.
-    packet_ptr += 4*ip_header->ip_hl;
-
-    switch (ip_header->ip_p) {
-    case IPPROTO_TCP:
-        std::cout << "In TCP packet cap\n";
-        send_to_ui(*ip_header, *(struct tcphdr*)packet_ptr);
-        break;
-
-    case IPPROTO_UDP:
-        std::cout << "In UDP packet cap\n";
-        send_to_ui(*ip_header, *(struct udphdr*)packet_ptr);
-        break;
-
-    case IPPROTO_ICMP:
-        std::cout << "In ICMP packet cap\n";
-        send_to_ui(*ip_header, *(struct icmp*)packet_ptr);
-        break;
-
-    //ToDo: do something about non-TCP/UDP/ICMP packets/headers
-    // default: ...
-    }
-}
-
-/* Registered as the handler function for each of the signals SIGINT, SIGTERM,
- * and SIGQUIT, which are raised when a process is interrupted. Also called
- * when the program terminates normally after a specified number of packets
- * are captured
- */
-void PacketCap::stop_capture(int signo) {
-    Q_UNUSED(signo);
-
-    struct pcap_stat stats;
-
-    if (pcap_stats(handle, &stats) >= 0) {
-        std::cout << "\n" << num_packets << " packets captured\n"
-                  << stats.ps_recv << " packets received by filter\n"
-                  << stats.ps_drop << " packets dropped\n\n";
-    }
-
-    pcap_close(handle);
-}
-
-void PacketCap::set_desired_num_packets(const char* desired_num_packets) {
-    count = atoi(desired_num_packets);
 }
 
 void PacketCap::set_device(const char* network_interface) {

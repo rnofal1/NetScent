@@ -69,6 +69,7 @@ HEADERS += \
     include/PacketLabel.h \
     include/PacketScrollArea.h \
     include/ProtocolHeaders.h \
+    include/SharedQueue.h \
     include/StyleWidget.h \
     include/util.h
 

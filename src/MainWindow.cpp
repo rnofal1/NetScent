@@ -10,30 +10,27 @@
 #include "util.h"
 #include "LoadingLabel.h"
 
-//Static variable definitions
-Ui::MainWindow *MainWindow::ui = nullptr;
-std::vector<Packet* > MainWindow::packets;
-bool MainWindow::clear_packets = false;
 
-MainWindow::MainWindow(QWidget *parent)
-                       : QMainWindow(parent),
+MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
+                        : QMainWindow(parent),
                         StyleWidget(this),
                         run_capture(false),
-                        closed(false) {
+                        closed(false),
+                        clear_packets(false),
+                        packet_queue(packet_queue){
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
     set_widgets_style();
 
     connect_buttons();
+
+    poll_queue_thread = QtConcurrent::run([this] {poll_queue();});
 }
 
 MainWindow::~MainWindow() {
-    if(ui->packetLoadingLabel->movie()) {
-        delete ui->packetLoadingLabel->movie();
-    }
+    poll_queue_thread.suspend();
     delete_packets();
-
     delete ui;
 }
 
@@ -101,6 +98,7 @@ void MainWindow::connect_buttons() {
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
 
     connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete())); //ToDo: move this?
+    connect(this, SIGNAL(new_packet_ready()), this, SLOT(display_next_packet())); //ToDo: move this?
 }
 
 // ToDo: consider condensing these
@@ -126,53 +124,25 @@ void MainWindow::set_map_loading_inactive() {
     mapLoadingLabel->set_status_inactive();
 }
 
-//ToDo: Dynamically instantiate different subclasses (in a single line/single function)?
-//ToDo: This just seems messy in general, consider changing
-//ToDo: Better way of handling clear_packets
-void MainWindow::add_packet(const struct ip& ip_header, const int& packet_num) {
-    if(MainWindow::clear_packets || packet_num > PACKET_LIMIT) {return;} //ToDo: Necessary for now due to timing between threads
-
-    Packet* packet = new Packet(ip_header, packet_num + 1);
-    packets.push_back(packet);
-    display_packet(packet);
-    QTextStream(stdout) << "Added Other Packet\n";
-}
-void MainWindow::add_packet(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num) {
-    if(MainWindow::clear_packets || packet_num > PACKET_LIMIT) {return;} //ToDo: Necessary for now due to timing between threads
-
-    TCPPacket* packet = new TCPPacket(ip_header, packet_num + 1, tcp_header);
-    packets.push_back(packet);
-
-    if(ui->filterBox->tcp_filter_enabled()) {
-        display_packet(packet);
+ //Continuously add elements from shared Packet queue
+void MainWindow::poll_queue() {
+    while(!closed) {
+        if(!packet_queue->is_empty()) {
+            emit new_packet_ready();
+        }
+        QThread::msleep(500); //Prevents GUI from being inundated with too many packets
     }
-
-    QTextStream(stdout) << "Added TCP\n";
+    qInfo() << "Polling halted";
 }
-void MainWindow::add_packet(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num) {
-    if(MainWindow::clear_packets || packet_num > PACKET_LIMIT) {return;} //ToDo: Necessary for now due to timing between threads
 
-    UDPPacket* packet = new UDPPacket(ip_header, packet_num + 1, udp_header);
-    packets.push_back(packet);
-
-    if(ui->filterBox->udp_filter_enabled()) {
-        display_packet(packet);
+void MainWindow::display_next_packet() {
+    Packet* next = packet_queue->pop();
+    if(next) {
+        packets.push_back(next);
+        display_packet(next);
     }
-
-    QTextStream(stdout) << "Added UDP\n";
 }
-void MainWindow::add_packet(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num) {
-    if(MainWindow::clear_packets || packet_num > PACKET_LIMIT) {return;} //ToDo: Necessary for now due to timing between threads
 
-    ICMPPacket* packet = new ICMPPacket(ip_header, packet_num + 1, icmp_header);
-    packets.push_back(packet);
-
-    if(ui->filterBox->icmp_filter_enabled()) {
-        display_packet(packet);
-    }
-
-    QTextStream(stdout) << "Added ICMP\n";
-}
 
 void MainWindow::display_packet(Packet* packet) {
     InfoPane *infoPane = ui->infoPane;
@@ -214,6 +184,12 @@ void MainWindow::stop_button_clicked() {
 
     if(!packets.empty()) {
         ui->saveButton->enable();
+    }
+
+    if(!packet_queue->is_empty()) {
+        Packet* next_packet = packet_queue->pop();
+        packets.push_back(next_packet);
+        display_packet(next_packet);
     }
 }
 

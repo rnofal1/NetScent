@@ -25,9 +25,10 @@
 #include "ui_mainwindow.h"
 #include "Packet.h"
 #include "StyleWidget.h"
+#include "SharedQueue.h"
 
 //Defines
-#define PACKET_LIMIT 999
+#define PACKET_LIMIT 10
 
 /* The MainWindow class is derived from the QMainWindow class, with the added functionality
  * of storing packet info
@@ -40,9 +41,9 @@ public:
     std::shared_ptr<std::map<std::string, std::string>> geo_cache_map;
     bool run_capture;
     bool closed;
-    static bool clear_packets;
+    bool clear_packets;
 
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent = nullptr);
     ~MainWindow();
     
     Ui::MainWindow* get_ui_pointer();
@@ -56,14 +57,9 @@ public:
     void set_packet_loading_active();
     void set_packet_loading_inactive();
 
-    static void add_packet(const struct ip& ip_header, const int& packet_num);
-    static void add_packet(const struct ip& ip_header, const struct tcphdr& tcp_header, const int& packet_num);
-    static void add_packet(const struct ip& ip_header, const struct udphdr& udp_header, const int& packet_num);
-    static void add_packet(const struct ip& ip_header, const struct icmp& icmp_header, const int& packet_num);
+    void display_packet(Packet* packet);
 
-    static void display_packet(Packet* packet);
-
-    static void add_line();
+    void add_line();
 
 protected:
     void closeEvent(QCloseEvent *ev) override;
@@ -92,14 +88,24 @@ private slots:
 
     void map_update_complete();
 
+    void display_next_packet();
+
 signals:
     void all_packets_added_to_map();
+    void new_packet_ready();
 
 private:
-    static Ui::MainWindow *ui;
-    static std::vector<Packet* > packets;
+    Ui::MainWindow *ui;
+
+    std::vector<Packet* > packets;
+
+    QFuture<void> poll_queue_thread;
+
+    SharedQueue<Packet*> *packet_queue;
 
     std::string dummy_api_key;
+
+    bool window_open;
 
     QString get_stylesheet();
     std::string get_dir_path_from_user();
@@ -116,6 +122,8 @@ private:
     void message_popup(const std::string& msg);
 
     void set_child_stylesheets();
+
+    void poll_queue(); //Continuously add elements from shared Packet queue
 };
 
 #endif // MAINWINDOW_H
