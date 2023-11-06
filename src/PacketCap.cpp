@@ -105,6 +105,7 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
 void PacketCap::packet_handler( u_char *user,
                         const struct pcap_pkthdr *packet_header,
                         const u_char *packet_ptr) {
+    Q_UNUSED(packet_header);
     PacketCap *packet_cap_obj = reinterpret_cast<PacketCap *>(user);
     MainWindow *main_window_obj = packet_cap_obj->main_window;
     if(!main_window_obj || main_window_obj->closed || !main_window_obj->run_capture || main_window_obj->clear_packets) {

@@ -1,34 +1,32 @@
-QT       += core gui location quickwidgets positioning concurrent
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-CONFIG += c++17
-CONFIG += file_copies
-
-CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
-
-CONFIG += embed_manifest_exe
-QMAKE_LFLAGS_WINDOWS += /MANIFESTUAC:"level='requireAdministrator'"
-
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += include
-INCLUDEPATH += "C:\CPPINCLUDE\nlohmann\json\single_include"
-INCLUDEPATH += "C:\CPPINCLUDE\curl-8.3.0\include"
-INCLUDEPATH += "C:\CPPINCLUDE\npcap-sdk-1.13\Include"
-INCLUDEPATH += "C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um"
-INCLUDEPATH += "C:\CPPINCLUDE\boost_1_82_0"
+QT       += core gui location quickwidgets positioning concurrent
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-LIBS += -L"C:\CPPINCLUDE\npcap-sdk-1.13\Lib\x64"
-LIBS += -lwpcap
-LIBS += -L"C:\CPPINCLUDE\curl-8.3.0\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\lib"
-LIBS += -llibcurl
-LIBS += -L"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22000.0\um\x64"
-LIBS += -lWS2_32
-LIBS += -liphlpapi
+CONFIG += c++17 file_copies embed_manifest_exe
 
+CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
+
+QMAKE_LFLAGS_WINDOWS += /MANIFESTUAC:"level='requireAdministrator'"
+
+INCLUDEPATH += include \
+            "C:\CPPINCLUDE\nlohmann\json\single_include" \
+            "C:\CPPINCLUDE\curl-8.3.0\include" \
+            "C:\CPPINCLUDE\npcap-sdk-1.13\Include" \
+            "C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um" \
+            "C:\CPPINCLUDE\boost_1_82_0" \
+
+LIBS += -L"C:\CPPINCLUDE\npcap-sdk-1.13\Lib\x64" \
+        -lwpcap \
+        -L"C:\CPPINCLUDE\curl-8.3.0\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\lib" \
+        -llibcurl \
+        -L"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22000.0\um\x64" \
+        -lWS2_32 \
+        -liphlpapi
+
+# Qt Creator auto-handles SOURCES most of the time
 SOURCES += \
     src/ComboCheckBox.cpp \
     src/CustomApplication.cpp \
@@ -51,6 +49,7 @@ SOURCES += \
     src/main.cpp \
     src/util.cpp
 
+# Qt Creator auto-handles HEADERS most of the time
 HEADERS += \
     include/ComboCheckBox.h \
     include/CustomApplication.h \
@@ -74,8 +73,12 @@ HEADERS += \
     include/StyleWidget.h \
     include/util.h
 
+# Qt Creator auto-handles FORMS most of the time
 FORMS += \
     mainwindow.ui
+
+RESOURCES += \
+    resources/Map.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -96,6 +99,3 @@ copyFolders.path = $$OUT_PWD
 COPIES += copyFiles
 copyFiles.files += $$files("C:\CPPINCLUDE\curl-8.3.0\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\lib\libcurl.dll")
 copyFiles.path = $$OUT_PWD
-
-RESOURCES += \
-    resources/Map.qrc
