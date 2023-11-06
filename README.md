@@ -1,3 +1,5 @@
+## NOTE: this version is deprecated. The current version can be found in the [windows branch](https://github.com/rnofal1/NetScent/tree/windows)
+
 # NetScent
 
 NetScent is a packet analyzer/sniffer designed to monitor local network traffic.  
