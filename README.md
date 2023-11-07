@@ -6,7 +6,7 @@ NetScent allows users to view a continuous stream of network information, includ
 
 This project is currently in an early, unfinished state, but I will continue adding features and fixes over time.
 
-![Screenshot from 2023-09-03 19-54-41](https://github.com/rnofal1/NetScent/assets/57466011/87ff2a84-aeb7-42a8-a6b4-6440f5320bc3)  
+![capture_tab_screenshot](https://github.com/rnofal1/NetScent/assets/57466011/ea9256a3-8dc1-484d-9aba-1753ff0524ae)  
 *main menu after capturing some packets*
 
 ![map_screenshot](https://github.com/rnofal1/NetScent/assets/57466011/a180cb33-ebe2-4be6-bf0d-f363d6e097c8)
