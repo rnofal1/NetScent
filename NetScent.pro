@@ -41,6 +41,7 @@ SOURCES += \
     src/LoadingLabel.cpp \
     src/MainWindow.cpp \
     src/NetworkAdapter.cpp \
+    src/NumDisplay.cpp \
     src/Packet.cpp \
     src/PacketCap.cpp \
     src/PacketLabel.cpp \
@@ -64,6 +65,7 @@ HEADERS += \
     include/LoadingLabel.h \
     include/MainWindow.h \
     include/NetworkAdapter.h \
+    include/NumDisplay.h \
     include/Packet.h \
     include/PacketCap.h \
     include/PacketLabel.h \

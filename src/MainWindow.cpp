@@ -2,6 +2,8 @@
  * Ramsey Nofal, 08/2023
  */
 
+
+//Standard Qt
 #include <QtConcurrent>
 
 //Local
@@ -29,7 +31,6 @@ MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
-    poll_queue_thread.suspend();
     delete_packets();
     delete ui;
 }
@@ -74,9 +75,6 @@ void MainWindow::set_widgets_style() {
 
     //Disable certain buttons
     ui->saveButton->disable();
-
-    //Num packets LCD Style
-    ui->numPacketsLCD->setSegmentStyle(QLCDNumber::Flat); //ToDo: move to stylesheet
 
     update_api_key_status();
 
@@ -149,7 +147,7 @@ void MainWindow::display_packet(Packet* packet) {
 
     add_line();
 
-    ui->numPacketsLCD->display((int) packets.size());
+    ui->numPacketsDisplay->set_num((int) packets.size());
 }
 
 //ToDo: create a custom line class (?)
@@ -206,7 +204,7 @@ void MainWindow::remove_existing_packets() {
     clear_packet_display();
     delete_packets();
     ui->tabWidget->clear_map();
-    ui->numPacketsLCD->display(0);
+    ui->numPacketsDisplay->set_num(0);
 }
 
 //ToDo: URGENT Handle api key(s) in a more sensible way
@@ -270,7 +268,8 @@ void MainWindow::save_to_file() {
 }
 
 
-//ToDo: make this more efficient; loop through all available filter options
+//ToDo: this is bad; make this more efficient; loop through all available filter options
+//ToDo: store indices + numbers of each type of packet as the packets come in (?)
 void MainWindow::add_valid_packets() {
     bool tcp_enabled = ui->filterBox->tcp_filter_enabled();
     bool udp_enabled = ui->filterBox->udp_filter_enabled();
@@ -356,7 +355,6 @@ std::string MainWindow::create_record_file_name() {
     record_path_preset.erase(std::remove(record_path_preset.begin(), record_path_preset.end(), '\n'), record_path_preset.end());
     std::replace(record_path_preset.begin(), record_path_preset.end(), ' ', '_');
     std::replace(record_path_preset.begin(), record_path_preset.end(), ':', '#');
-
 
     return record_path_preset;
 }

@@ -36,7 +36,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="CustomCaptureTab" name="captureTab">
        <property name="styleSheet">
@@ -138,22 +138,81 @@ color: rgb(23, 23, 23);</string>
               </widget>
              </item>
              <item>
-              <widget class="QLCDNumber" name="numPacketsLCD">
+              <widget class="QFrame" name="divider3">
+               <property name="minimumSize">
+                <size>
+                 <width>2</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>2</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="numPacketsLabel">
                <property name="minimumSize">
                 <size>
                  <width>80</width>
                  <height>25</height>
                 </size>
                </property>
-               <property name="maximumSize">
+               <property name="styleSheet">
+                <string notr="true">color : white;</string>
+               </property>
+               <property name="text">
+                <string>Packets:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="NumDisplay" name="numPacketsDisplay">
+               <property name="minimumSize">
                 <size>
-                 <width>80</width>
+                 <width>89</width>
                  <height>25</height>
                 </size>
                </property>
-               <property name="styleSheet">
-                <string notr="true">background-color: rgb(87, 227, 137);
-color: rgb(23, 23, 23);</string>
+               <property name="maximumSize">
+                <size>
+                 <width>89</width>
+                 <height>25</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="divider4">
+               <property name="minimumSize">
+                <size>
+                 <width>2</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>2</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
                </property>
               </widget>
              </item>
@@ -173,6 +232,28 @@ color: rgb(23, 23, 23);</string>
                </property>
                <property name="styleSheet">
                 <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="divider5">
+               <property name="minimumSize">
+                <size>
+                 <width>2</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>2</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
                </property>
               </widget>
              </item>
@@ -635,6 +716,11 @@ color: rgb(23, 23, 23);</string>
    <class>KeyDetectedLabel</class>
    <extends>QLabel</extends>
    <header>KeyDetectedLabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>NumDisplay</class>
+   <extends>QLineEdit</extends>
+   <header>NumDisplay.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

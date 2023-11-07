@@ -166,3 +166,14 @@ QTabBar
     border-bottom-color : rgb(70, 72, 77);
     color : white;
 }
+
+NumDisplay
+{
+    background-color : rgb(87, 227, 137);
+    qproperty-alignment : AlignRight;
+}
+
+QLabel#numPacketsLabel
+{
+    color : white;
+}
