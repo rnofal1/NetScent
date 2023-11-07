@@ -12,10 +12,8 @@ This project is currently in an early, unfinished state, but I will continue add
 ![map_screenshot](https://github.com/rnofal1/NetScent/assets/57466011/a180cb33-ebe2-4be6-bf0d-f363d6e097c8)
 *interactive ip geolocation map with a couple of pinged locations*
 
-
-![netscent_demo_new](https://github.com/rnofal1/NetScent/assets/57466011/388fe346-9f46-4b17-9938-64787ac4ae81)  
+![netscent_demo_video](https://github.com/rnofal1/NetScent/assets/57466011/e857b8ed-0bff-4269-b8a7-3e517d151bbc)  
 *small demo of the current UI*
-
 
 ## Purpose
 This is a personal project, its main purpose is as a platform for me to use and improve my programming and C/C++ skills. However, in service of that purpose I will try to make this program as usable, useful, accessible, and performant as possible.
