@@ -12,6 +12,9 @@ This project is currently in an early, unfinished state, but I will continue add
 ![map_screenshot](https://github.com/rnofal1/NetScent/assets/57466011/a180cb33-ebe2-4be6-bf0d-f363d6e097c8)
 *interactive ip geolocation map with a couple of pinged locations*
 
+![map_info_screenshot](https://github.com/rnofal1/NetScent/assets/57466011/27fe3ae8-1e6e-4118-a1e5-7b85c047e917)  
+*hovering over a map marker reveals some info*
+
 <video src="https://github.com/rnofal1/NetScent/assets/57466011/e857b8ed-0bff-4269-b8a7-3e517d151bbc" placeholder="https://github.com/rnofal1/NetScent/assets/57466011/e857b8ed-0bff-4269-b8a7-3e517d151bbc" autoplay loop controls muted title="NetScentDemo">
 Sorry, your browser doesn't support HTML 5 video.
 </video> 
