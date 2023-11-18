@@ -13,9 +13,9 @@ PacketLabel::PacketLabel(Packet* packet, InfoPane* info_pane_init, QWidget* pare
                         StyleWidget(this),
                         info_pane(info_pane_init),
                         packet(packet),
-                        packet_time(packet->get_time_added()),
-                        packet_ip_src(packet->get_src_ip()),
-                        packet_ip_dst(packet->get_dst_ip()),
+                        packet_time(packet->get_time_added().toStdString()),
+                        packet_ip_src(packet->get_src_ip().toStdString()),
+                        packet_ip_dst(packet->get_dst_ip().toStdString()),
                         packet_num(packet->get_num() + 1) { //Add 1 for display purposes
     set_style_property("active", false);
     geo_info = ""; //ToDo: might change this

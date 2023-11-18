@@ -55,9 +55,7 @@ public:
     void set_packet_loading_active();
     void set_packet_loading_inactive();
 
-    void display_packet(Packet* packet);
-
-    void add_line();
+    //void display_packet(Packet* packet);
 
 protected:
     void closeEvent(QCloseEvent *ev) override;
@@ -86,11 +84,15 @@ private slots:
 
     void map_update_complete();
 
-    void display_next_packet();
+    //void display_next_packet();
+
+    //void update_info_pane(const QModelIndex &index);
+    void update_info_pane(Packet* packet);
 
 signals:
     void all_packets_added_to_map();
     void new_packet_ready();
+    void ui_closed();
 
 private:
     Ui::MainWindow *ui;
@@ -103,6 +105,8 @@ private:
 
     std::string dummy_api_key;
 
+    int num_displayed_packets;
+
     bool window_open;
 
     QString get_stylesheet();
@@ -113,7 +117,7 @@ private:
     bool write_all_packets_to_file(const std::string& path);
 
     //Add packets to window based on filter settings
-    void add_valid_packets();
+    //void add_valid_packets();
 
     void delete_packets();
 
@@ -122,6 +126,8 @@ private:
     void set_child_stylesheets();
 
     void poll_queue(); //Continuously add elements from shared Packet queue
+
+    void init_packet_view();
 };
 
 #endif // MAINWINDOW_H

@@ -22,10 +22,29 @@ CustomCaptureTab
     color: rgb(255, 255, 255);
 }
 
-PacketScrollArea
+PacketTableView
 {
     background-color: rgb(54, 57, 62);
     color : rgb(255, 255, 255);
+}
+PacketTableView::item:selected
+{
+    background-color : rgb(87, 227, 137);
+    color : black;
+}
+QHeaderView::section
+{
+    background-color : rgb(87, 227, 137);
+    color : black;
+}
+QHeaderView {
+    background-color : rgb(87, 227, 137);
+    color : black;
+}
+QTableView QTableCornerButton::section
+{
+    background-color : rgb(87, 227, 137);
+    color : black;
 }
 
 QScrollBar

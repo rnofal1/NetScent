@@ -13,11 +13,15 @@
 #include <QQueue>
 #include <QMutexLocker>
 #include <QSemaphore>
+#include <QDebug>
 
+//Defines
+#define DEFAULT_CAP 9999
 
 template <typename T>
 class SharedQueue {
 public:
+    SharedQueue();
     SharedQueue(int capacity);
     void push(const T& val);
     T pop();
@@ -35,7 +39,14 @@ private:
 };
 
 template <typename T>
-SharedQueue<T>::SharedQueue(int capacity) : capacity(capacity), input_needs(capacity) {}
+SharedQueue<T>::SharedQueue() : capacity(DEFAULT_CAP), input_needs(DEFAULT_CAP){
+    qDebug() << "SharedQueue initialized with default capacity: " << DEFAULT_CAP;
+}
+
+template <typename T>
+SharedQueue<T>::SharedQueue(int capacity) : capacity(capacity), input_needs(capacity) {
+    qDebug() << "SharedQueue initialized with input capacity: " << capacity;
+}
 
 template <typename T>
 void SharedQueue<T>::push(const T& val) {

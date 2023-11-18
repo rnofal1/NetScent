@@ -17,6 +17,8 @@
 #include <cstdlib>
 #include <iostream>
 
+//Standard Qt
+#include <QString>
 
 //3rd-party
 #include <pcap/pcap.h> //libpcap library
@@ -33,6 +35,8 @@ struct IPCoords {
     float longitude;
 };
 
+enum PacketType {IP, TCP, UDP, ICMP};
+
 /* The Packet class stores ip info and provides public methods to access
  * this info
  *
@@ -45,21 +49,34 @@ public:
     virtual ~Packet();
 
     //Return a string containing miscellaneous Packet header information
-    virtual std::string get_info();
+    virtual QString get_info() const;
 
-    std::string get_src_ip();
-    std::string get_dst_ip();
-    std::string get_time_added();
+    virtual PacketType get_type() const;
+    virtual QString get_type_name() const;
+    virtual QString get_packet_spec_info() const; //Packet specific info
+
+
+    //Return a string containing miscellaneous ip header information
+    QString get_ip_info() const;
+
+    QString get_src_ip() const;
+    virtual QString get_src_port() const;
+
+    QString get_dst_ip() const;
+    virtual QString get_dst_port() const;
+
+    QString get_time_added() const;
 
     //Return a string describing geographical information regarding the sniffed Packet
     std::string get_geo_info();
-    std::string get_dst_geo_info();
-    std::string get_src_geo_info();
 
-    IPCoords get_dst_ip_coords();
-    IPCoords get_src_ip_coords();
+    std::string get_dst_geo_info() const;
+    std::string get_src_geo_info() const;
 
-    int get_num();
+    IPCoords get_dst_ip_coords() const;
+    IPCoords get_src_ip_coords() const;
+
+    int get_num() const;
 
 protected:
     struct ip ip_header;
@@ -67,17 +84,17 @@ protected:
     //Describes the time at which the Packet was sniffed
     std::time_t time_added;
 
+    //Storting geo_info minimizes API calls
+    std::string geo_info;
+
     //Describes the order at which the Packet was sniffed, relative to other Packets
     int num;
 
-    //Return a string containing miscellaneous ip header information
-    std::string get_ip_info();
+    nlohmann::json get_ip_geo_json_info(const std::string& ip_addr) const;
 
-    nlohmann::json get_ip_geo_json_info(const std::string& ip_addr);
+    IPCoords get_ip_coords(const std::string& ip_addr) const;
 
-    IPCoords get_ip_coords(const std::string& ip_addr);
-
-    std::string parse_geo_info_json(const nlohmann::json& json);
+    std::string parse_geo_info_json(const nlohmann::json& json) const;
 };
 
 
@@ -86,7 +103,13 @@ public:
     TCPPacket(const struct ip& ip_header, const int& num, const struct tcphdr& tcp_header);
 
     //Return a string containing miscellaneous TCPPacket header information
-    std::string get_info() override;
+    QString get_info() const override;
+
+    PacketType get_type() const override;
+    QString get_type_name() const override;
+    QString get_packet_spec_info() const override; //Packet specific info
+    QString get_src_port() const override;
+    QString get_dst_port() const override;
 
 private:
     struct tcphdr tcp_header;
@@ -98,7 +121,13 @@ public:
     UDPPacket(const struct ip& ip_header, const int& num, const struct udphdr& udp_header);
 
     //Return a string containing miscellaneous UDPPacket header information
-    std::string get_info() override;
+    QString get_info() const override;
+
+    PacketType get_type() const override;
+    QString get_type_name() const override;
+    QString get_packet_spec_info() const override; //Packet specific info
+    QString get_src_port() const override;
+    QString get_dst_port() const override;
 
 private:
     struct udphdr udp_header;
@@ -110,7 +139,13 @@ public:
     ICMPPacket(const struct ip& ip_header, const int& num, const struct icmp& icmp_header);
 
     //Return a string containing miscellaneous ICMPPacket header information
-    std::string get_info() override;
+    QString get_info() const override;
+
+    PacketType get_type() const override;
+    QString get_type_name() const override;
+    QString get_packet_spec_info() const override; //Packet specific info
+    QString get_src_port() const override;
+    QString get_dst_port() const override;
 
 private:
     struct icmp icmp_header;

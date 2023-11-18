@@ -335,49 +335,7 @@ color: rgb(23, 23, 23);</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="PacketScrollArea" name="scrollArea">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>530</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
-               <property name="widgetResizable">
-                <bool>true</bool>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-               </property>
-               <widget class="QWidget" name="scrollAreaWidgetContents">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>528</width>
-                  <height>18</height>
-                 </rect>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="contextMenuPolicy">
-                 <enum>Qt::NoContextMenu</enum>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout"/>
-               </widget>
-              </widget>
+              <widget class="PacketTableView" name="packetTableView"/>
              </item>
              <item>
               <widget class="InfoPane" name="infoPane">
@@ -684,12 +642,6 @@ color: rgb(23, 23, 23);</string>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PacketScrollArea</class>
-   <extends>QScrollArea</extends>
-   <header>PacketScrollArea.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>CustomTabWidget</class>
    <extends>QTabWidget</extends>
    <header>CustomTabWidget.h</header>
@@ -721,6 +673,11 @@ color: rgb(23, 23, 23);</string>
    <class>NumDisplay</class>
    <extends>QLineEdit</extends>
    <header>NumDisplay.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PacketTableView</class>
+   <extends>QTableView</extends>
+   <header>PacketTableView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

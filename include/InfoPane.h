@@ -12,6 +12,7 @@
 
 //Local
 #include "StyleWidget.h"
+#include "Packet.h"
 
 
 class InfoPane : public QTextBrowser, public StyleWidget {
@@ -20,6 +21,8 @@ public:
     InfoPane(QWidget *parent = nullptr);
     void set_active();
     void set_inactive();
+
+    void update_text(Packet* packet);
 };
 
 #endif // INFOPANE_H

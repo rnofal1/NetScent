@@ -45,7 +45,7 @@ SOURCES += \
     src/Packet.cpp \
     src/PacketCap.cpp \
     src/PacketLabel.cpp \
-    src/PacketScrollArea.cpp \
+    src/PacketTableView.cpp \
     src/StyleWidget.cpp \
     src/main.cpp \
     src/util.cpp
@@ -69,7 +69,7 @@ HEADERS += \
     include/Packet.h \
     include/PacketCap.h \
     include/PacketLabel.h \
-    include/PacketScrollArea.h \
+    include/PacketTableView.h \
     include/ProtocolHeaders.h \
     include/SharedQueue.h \
     include/StyleWidget.h \

@@ -22,6 +22,9 @@ public:
     NumDisplay(QWidget *parent = nullptr, int max_num = DEFAULT_DISP_MAX);
     void set_num(int new_num);
 
+private slots:
+    void set_num_slot(int new_num);
+
 private:
     int max_num;
 };

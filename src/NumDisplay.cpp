@@ -21,3 +21,7 @@ void NumDisplay::set_num(int new_num) {
         setText(QString::number(new_num));
     }
 }
+
+void NumDisplay::set_num_slot(int new_num) {
+    set_num(new_num);
+}

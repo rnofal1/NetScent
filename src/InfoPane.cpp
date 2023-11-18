@@ -20,3 +20,14 @@ void InfoPane::set_active() {
 void InfoPane::set_inactive() {
     set_style_property("active", false);
 }
+
+void InfoPane::update_text(Packet* packet) {
+    std::string set_text = "Packet #: ";
+    set_text += std::to_string(packet->get_num() + 1); //+1 for display purposes
+    set_text += "\nTime Added: ";
+    set_text += packet->get_time_added().toStdString();
+    set_text += "\n";
+    set_text += packet->get_geo_info();
+
+    setText(QString::fromStdString(set_text));
+}

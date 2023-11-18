@@ -7,6 +7,8 @@
 #include "Packet.h"
 #include "util.h"
 
+//ToDo: IMPORTANT. MINIMIZE std::string/QString type conversions
+
 Packet::Packet(const struct ip& ip_header, const int& num)
                : ip_header(ip_header),
                 time_added(std::time(nullptr)),
@@ -14,28 +16,39 @@ Packet::Packet(const struct ip& ip_header, const int& num)
 
 Packet::~Packet(){}
 
-std::string Packet::get_info() {
+QString Packet::get_info() const {
     return get_ip_info();
 }
 
-std::string Packet::get_src_ip() {
-    return std::string(inet_ntoa(ip_header.ip_src));
+PacketType Packet::get_type() const {
+    return PacketType::IP;
+}
+QString Packet::get_type_name() const {
+    return "IP";
 }
 
-std::string Packet::get_dst_ip() {
-    return std::string(inet_ntoa(ip_header.ip_dst));
+QString Packet::get_packet_spec_info() const {
+    return "";
 }
 
-std::string Packet::get_time_added() {
-    return std::asctime(std::localtime(&time_added));
+QString Packet::get_src_ip() const {
+    return QString::fromStdString(std::string(inet_ntoa(ip_header.ip_src)));
 }
 
-int Packet::get_num() {
+QString Packet::get_dst_ip() const {
+    return QString::fromStdString(std::string(inet_ntoa(ip_header.ip_dst)));
+}
+
+QString Packet::get_time_added() const {
+    return QString::fromStdString(std::asctime(std::localtime(&time_added)));
+}
+
+int Packet::get_num() const {
     return num;
 }
 
 //Return a string containing miscellaneous ip header information
-std::string Packet::get_ip_info() {
+QString Packet::get_ip_info() const {
     std::string ip_info =  "ID:";
     ip_info += std::to_string(ntohs(ip_header.ip_id));
     ip_info += " TOS:0x";
@@ -50,7 +63,7 @@ std::string Packet::get_ip_info() {
     ip_info += std::asctime(std::localtime(&time_added));
     ip_info += "\n";
 
-    return ip_info;
+    return QString::fromStdString(ip_info);
 }
 
 
@@ -63,14 +76,14 @@ std::string Packet::get_ip_info() {
  * ToDo: implement local ip location caching (for recently-inspected locations)
  * and/or switch to a local ip location database
  */
-nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) {
+nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) const {
     std::string key = get_geoloc_api_key();
     std::string get_url = "https://api.ipgeolocation.io/ipgeo?apiKey=" + key + "&ip="+ip_addr;
     return curl_get_json(get_url);
 }
 
 // ToDo: this could probably be a bit simpler
-IPCoords Packet::get_ip_coords(const std::string& ip_addr) {
+IPCoords Packet::get_ip_coords(const std::string& ip_addr) const {
     nlohmann::json loc_json = get_ip_geo_json_info(ip_addr);
     bool known_location = loc_json.contains("latitude"); //We known that if latitude exists, so will longitude
     float lati = 0.0;
@@ -84,38 +97,53 @@ IPCoords Packet::get_ip_coords(const std::string& ip_addr) {
     return {known_location, lati, longi};
 }
 
-IPCoords Packet::get_dst_ip_coords() {
-    return get_ip_coords(get_dst_ip());
+IPCoords Packet::get_dst_ip_coords() const {
+    return get_ip_coords(get_dst_ip().toStdString());
 }
-IPCoords Packet::get_src_ip_coords() {
-    return get_ip_coords(get_src_ip());
+IPCoords Packet::get_src_ip_coords() const {
+    return get_ip_coords(get_src_ip().toStdString());
 }
 
-std::string Packet::parse_geo_info_json(const nlohmann::json& json) {
-    std::string json_info = "IP: " +                  get_json_val_string(json, "ip")
-                            + "\nCountry: " +         get_json_val_string(json, "country_name")
+std::string Packet::parse_geo_info_json(const nlohmann::json& json) const {
+    std::string json_info = + "Country: " +         get_json_val_string(json, "country_name")
                             + "\nState/Province: " +  get_json_val_string(json, "state_prov")
                             + "\nCity: " +            get_json_val_string(json, "city")
                             + "\nOrganization: " +    get_json_val_string(json, "organization") + "\n\n";
     return json_info;
 }
 
-std::string Packet::get_dst_geo_info() {
-    return parse_geo_info_json(get_ip_geo_json_info(get_dst_ip()));
+std::string Packet::get_dst_geo_info() const{
+    return parse_geo_info_json(get_ip_geo_json_info(get_dst_ip().toStdString()));
 }
 
-std::string Packet::get_src_geo_info() {
-    return parse_geo_info_json(get_ip_geo_json_info(get_src_ip()));
+std::string Packet::get_src_geo_info() const {
+    return parse_geo_info_json(get_ip_geo_json_info(get_src_ip().toStdString()));
 }
 
 std::string Packet::get_geo_info() {
-    nlohmann::json src_json = get_ip_geo_json_info(get_src_ip());
-    nlohmann::json dst_json = get_ip_geo_json_info(get_dst_ip());
+    if(geo_info == "") {
+        std::string src_ip = get_src_ip().toStdString();
+        std::string dst_ip = get_dst_ip().toStdString();
+        nlohmann::json src_json = get_ip_geo_json_info(src_ip);
+        nlohmann::json dst_json = get_ip_geo_json_info(dst_ip);
 
-    std::string src_info =  "Source Geographical Info:\n" + parse_geo_info_json(src_json);
-    std::string dst_info =  "Destination Geographical Info:\n" + parse_geo_info_json(dst_json);
+        std::string src_info =  "Source Geographical Info:\nIP: "
+                                + src_ip + '\n'
+                                + parse_geo_info_json(src_json);
+        std::string dst_info =  "Destination Geographical Info:\nIP: "
+                               + dst_ip + '\n'
+                               + parse_geo_info_json(dst_json);
+        geo_info = src_info + dst_info;
+    }
 
-    return src_info + dst_info;
+    return geo_info;
+}
+
+QString Packet::get_src_port() const {
+    return "";
+}
+QString Packet::get_dst_port() const {
+    return "";
 }
 
 TCPPacket::TCPPacket(const struct ip& ip_header, const int& num, const struct tcphdr& tcp_header)
@@ -123,7 +151,8 @@ TCPPacket::TCPPacket(const struct ip& ip_header, const int& num, const struct tc
                     tcp_header(tcp_header){}
 
 //ToDo: change this function (and similar functions) to use a formatting function similar to sprintf?
-std::string TCPPacket::get_info() {
+//ToDo: probably some way to minimize type conversions to/from std::string
+QString TCPPacket::get_info() const {
     std::string tcp_info =  "TCP ";
     tcp_info += std::string(inet_ntoa(ip_header.ip_src));
 
@@ -135,8 +164,28 @@ std::string TCPPacket::get_info() {
     tcp_info += std::to_string(ntohs(tcp_header.th_dport));
     tcp_info += "\n";
 
-    tcp_info += get_ip_info();
+    tcp_info += get_ip_info().toStdString();
+    tcp_info += get_packet_spec_info().toStdString();
 
+    return QString::fromStdString(tcp_info);
+}
+
+PacketType TCPPacket::get_type() const {
+    return PacketType::TCP;
+}
+QString TCPPacket::get_type_name() const {
+    return "TCP";
+}
+
+QString TCPPacket::get_src_port() const {
+    return QString::fromStdString(std::to_string(ntohs(tcp_header.th_sport)));
+}
+QString TCPPacket::get_dst_port() const {
+    return QString::fromStdString(std::to_string(ntohs(tcp_header.th_dport)));
+}
+
+QString TCPPacket::get_packet_spec_info() const {
+    std::string tcp_info =  "";
     tcp_info += (tcp_header.th_flags & TH_URG ? 'U' : '*');
     tcp_info +=  (tcp_header.th_flags & TH_ACK ? 'A' : '*');
     tcp_info +=  (tcp_header.th_flags & TH_PUSH ? 'P' : '*');
@@ -153,15 +202,14 @@ std::string TCPPacket::get_info() {
     tcp_info += std::to_string(4*tcp_header.th_off);
     tcp_info += "\n";
 
-    return tcp_info;
+    return QString::fromStdString(tcp_info);
 }
-
 
 UDPPacket::UDPPacket(const struct ip& ip_header, const int& num, const struct udphdr& udp_header)
                     : Packet(ip_header, num),
                     udp_header(udp_header){}
 
-std::string UDPPacket::get_info() {
+QString UDPPacket::get_info() const {
     std::string udp_info =  "UDP ";
     udp_info += std::string(inet_ntoa(ip_header.ip_src));
     udp_info += ":";
@@ -172,9 +220,27 @@ std::string UDPPacket::get_info() {
     udp_info += std::to_string(ntohs(udp_header.uh_dport));
     udp_info += "\n";
 
-    udp_info += get_ip_info();
+    udp_info += get_ip_info().toStdString(); //ToDo: unnecessary conversions
 
-    return udp_info;
+    return QString::fromStdString(udp_info); //ToDo: unnecessary conversions
+}
+
+PacketType UDPPacket::get_type() const {
+    return PacketType::UDP;
+}
+QString UDPPacket::get_type_name() const {
+    return "UDP";
+}
+
+QString UDPPacket::get_packet_spec_info() const {
+    return "";
+}
+
+QString UDPPacket::get_src_port() const {
+    return QString::fromStdString(std::to_string(ntohs(udp_header.uh_sport)));
+}
+QString UDPPacket::get_dst_port() const {
+    return QString::fromStdString(std::to_string(ntohs(udp_header.uh_dport)));
 }
 
 
@@ -182,16 +248,35 @@ ICMPPacket::ICMPPacket(const struct ip& ip_header, const int& num, const struct 
                         : Packet(ip_header, num),
                         icmp_header(icmp_header){}
 
-std::string ICMPPacket::get_info() {
+QString ICMPPacket::get_info() const {
     std::string icmp_info = "ICMP ";
     icmp_info += std::string(inet_ntoa(ip_header.ip_src));
     icmp_info += " -> ";
     icmp_info += std::string(inet_ntoa(ip_header.ip_dst));
     icmp_info += "\n";
 
-    icmp_info += get_ip_info();
+    icmp_info += get_ip_info().toStdString();
+    icmp_info += get_packet_spec_info().toStdString();
 
-    icmp_info += "Type:";
+    return QString::fromStdString(icmp_info);
+}
+
+PacketType ICMPPacket::get_type() const {
+    return PacketType::ICMP;
+}
+QString ICMPPacket::get_type_name() const {
+    return "ICMP";
+}
+
+QString ICMPPacket::get_src_port() const {
+    return "";
+}
+QString ICMPPacket::get_dst_port() const {
+    return "";
+}
+
+QString ICMPPacket::get_packet_spec_info() const {
+    std::string icmp_info = "Type:";
     icmp_info += std::to_string(icmp_header.icmp_type);
     icmp_info += "Code:";
     icmp_info += std::to_string(icmp_header.icmp_code);
@@ -201,5 +286,5 @@ std::string ICMPPacket::get_info() {
     icmp_info += std::to_string(ntohs(icmp_header.icmp_hun.ih_idseq.icd_seq));
     icmp_info += "\n";
 
-    return icmp_info;
+    return QString::fromStdString(icmp_info);
 }

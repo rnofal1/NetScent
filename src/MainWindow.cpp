@@ -19,7 +19,8 @@ MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
                         run_capture(false),
                         closed(false),
                         clear_packets(false),
-                        packet_queue(packet_queue){
+                        packet_queue(packet_queue),
+                        num_displayed_packets(0) {
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
@@ -27,10 +28,11 @@ MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
 
     connect_signals_slots();
 
-    poll_queue_thread = QtConcurrent::run([this] {poll_queue();});
+    init_packet_view();
 }
 
 MainWindow::~MainWindow() {
+    emit ui_closed();
     delete_packets();
     delete ui;
 }
@@ -87,17 +89,29 @@ void MainWindow::connect_signals_slots() {
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
     connect(ui->packetClearButton, SIGNAL(clicked()), this, SLOT(remove_existing_packets()));
+    connect(ui->packetClearButton, SIGNAL(clicked()), ui->packetTableView, SLOT(clear_view()));
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
     connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(refresh_button_clicked()));
 
     //Packet filters
-    connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
+    //connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
+    connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), ui->packetTableView, SLOT(filters_changed(QStandardItem*)));
 
-    //Geo map
-    connect(this, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete()));
+
 
     //Shared queue
     connect(this, SIGNAL(new_packet_ready()), this, SLOT(display_next_packet()));
+
+    //Packet Table View
+    connect(this, SIGNAL(ui_closed()), ui->packetTableView, SLOT(set_ui_closed()));
+    connect(ui->packetTableView, SIGNAL(send_clicked_packet(Packet*)), this, SLOT(update_info_pane(Packet*)));
+    connect(ui->packetTableView, SIGNAL(num_packets_displayed_changed(int)), ui->numPacketsDisplay, SLOT(set_num_slot(int)));
+    connect(ui->packetTableView, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete()));
+}
+
+void MainWindow::init_packet_view() {
+    ui->packetTableView->set_packet_queue(packet_queue);
+    ui->packetTableView->start_queue_poll();
 }
 
 // ToDo: consider condensing these
@@ -124,43 +138,43 @@ void MainWindow::poll_queue() {
         if(!packet_queue->is_empty()) {
             emit new_packet_ready();
         }
-        QThread::msleep(500); //Prevents GUI from being inundated with too many packets
+        QThread::msleep(200); //Prevents GUI from being inundated with too many packets
     }
     qDebug() << "Polling halted";
 }
 
-void MainWindow::display_next_packet() {
-    Packet* next = packet_queue->pop();
-    if(next) {
-        packets.push_back(next);
-        display_packet(next);
-    }
-}
+//void MainWindow::display_next_packet() {
+//    Packet* next = packet_queue->pop();
+//    if(next) {
+//        packets.push_back(next);
+
+//        bool tcp_enabled = ui->filterBox->tcp_filter_enabled();
+//        bool udp_enabled = ui->filterBox->udp_filter_enabled();
+//        bool icmp_enabled = ui->filterBox->icmp_filter_enabled();
+//        if(tcp_enabled && dynamic_cast<TCPPacket*>(next)) {
+//            display_packet(next);
+//        } else if(udp_enabled && dynamic_cast<UDPPacket*>(next)) {
+//            display_packet(next);
+//        } else if(icmp_enabled && dynamic_cast<ICMPPacket*>(next)) {
+//            display_packet(next);
+//        }
+//    }
+//}
 
 
-void MainWindow::display_packet(Packet* packet) {
-    InfoPane *infoPane = ui->infoPane;
-    PacketLabel *label = new PacketLabel(packet, infoPane);
+//void MainWindow::display_packet(Packet* packet) {
+//    num_displayed_packets++;
+//    ui->numPacketsDisplay->set_num(num_displayed_packets);
 
-    label->setText(QString::fromStdString(packet->get_info())); //ToDo: consider initializing PacketLabel with this text
-    ui->scrollArea->widget()->layout()->addWidget(label);
+//    ui->packetTableView->add_row({packet->get_type_name(),
+//                                  packet->get_src_ip() + ":" + packet->get_src_port(),
+//                                  packet->get_dst_ip() + ":" + packet->get_dst_port(),
+//                                  packet->get_ip_info(),
+//                                  packet->get_time_added(),
+//                                  packet->get_packet_spec_info()});
 
-    add_line();
-
-    ui->numPacketsDisplay->set_num((int) packets.size());
-}
-
-//ToDo: create a custom line class (?)
-void MainWindow::add_line() {
-    QFrame *line = new QFrame();
-
-    line->setObjectName(QString::fromUtf8("scrollLine"));
-    line->setGeometry(QRect(320, 150, 118, 3));
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-
-    ui->scrollArea->widget()->layout()->addWidget(line);
-}
+//    ui->packetTableView->add_packet_index(packet->get_num());
+//}
 
 void MainWindow::closeEvent(QCloseEvent *ev) {
     Q_UNUSED(ev);
@@ -176,24 +190,21 @@ void MainWindow::stop_button_clicked() {
     set_packet_loading_inactive();
     run_capture = false;
 
-    if(!packets.empty()) {
+    if(ui->packetTableView->get_num_packets_displayed() > 0) {
         ui->saveButton->enable();
     }
 
-    if(!packet_queue->is_empty()) {
-        Packet* next_packet = packet_queue->pop();
-        packets.push_back(next_packet);
-        display_packet(next_packet);
-    }
+//    if(!packet_queue->is_empty()) {
+//        Packet* next_packet = packet_queue->pop();
+//        packets.push_back(next_packet);
+//        display_packet(next_packet);
+//    }
 }
 
 void MainWindow::clear_packet_display() {
-    while(PacketLabel* label = ui->scrollArea->findChild<PacketLabel*>()) {
-        delete label;
-    }
-    while(QFrame* line = ui->scrollArea->findChild<QFrame*>()) {
-        delete line;
-    }
+    num_displayed_packets = 0;
+
+    //ui->packetTableView->clear_view();
 
     ui->infoPane->clear();
     ui->infoPane->set_inactive();
@@ -205,6 +216,7 @@ void MainWindow::remove_existing_packets() {
     delete_packets();
     ui->tabWidget->clear_map();
     ui->numPacketsDisplay->set_num(0);
+    ui->saveButton->disable();
 }
 
 //ToDo: URGENT Handle api key(s) in a more sensible way
@@ -247,8 +259,8 @@ void MainWindow::update_api_key_status() {
 }
 
 void MainWindow::refresh_packet_window() {
-    clear_packet_display();
-    add_valid_packets();
+    //clear_packet_display();
+    //add_valid_packets();
 }
 
 //ToDo: give user more control over save file
@@ -260,7 +272,8 @@ void MainWindow::save_to_file() {
     std::string record_file_name = create_record_file_name();
     std::string full_path = initial_path + "/" + record_file_name;
 
-    if(write_all_packets_to_file(full_path)) {
+    bool write_success = ui->packetTableView->write_packets_to_file(full_path);
+    if(write_success) {
         message_popup("Packet record saved as: " + full_path);
     } else {
         message_popup("ERROR: record not saved");
@@ -270,21 +283,21 @@ void MainWindow::save_to_file() {
 
 //ToDo: this is bad; make this more efficient; loop through all available filter options
 //ToDo: store indices + numbers of each type of packet as the packets come in (?)
-void MainWindow::add_valid_packets() {
-    bool tcp_enabled = ui->filterBox->tcp_filter_enabled();
-    bool udp_enabled = ui->filterBox->udp_filter_enabled();
-    bool icmp_enabled = ui->filterBox->icmp_filter_enabled();
+//void MainWindow::add_valid_packets() {
+//    bool tcp_enabled = ui->filterBox->tcp_filter_enabled();
+//    bool udp_enabled = ui->filterBox->udp_filter_enabled();
+//    bool icmp_enabled = ui->filterBox->icmp_filter_enabled();
 
-    for(auto& packet : packets) {
-        if(tcp_enabled && dynamic_cast<TCPPacket*>(packet)) {
-            display_packet(packet);
-        } else if(udp_enabled && dynamic_cast<UDPPacket*>(packet)) {
-            display_packet(packet);
-        } else if(icmp_enabled && dynamic_cast<ICMPPacket*>(packet)) {
-            display_packet(packet);
-        }
-    }
-}
+//    for(auto& packet : packets) {
+//        if(tcp_enabled && dynamic_cast<TCPPacket*>(packet)) {
+//            display_packet(packet);
+//        } else if(udp_enabled && dynamic_cast<UDPPacket*>(packet)) {
+//            display_packet(packet);
+//        } else if(icmp_enabled && dynamic_cast<ICMPPacket*>(packet)) {
+//            display_packet(packet);
+//        }
+//    }
+//}
 
 void MainWindow::delete_packets() {
     std::for_each(packets.begin(), packets.end(), delete_ptr());
@@ -298,7 +311,6 @@ void MainWindow::message_popup(const std::string& msg) {
     msgBox.exec();
 }
 
-// ToDO: some success/failure error-checking
 void MainWindow::refresh_button_clicked() {
     stop_button_clicked();
     ui->packetClearButton->disable();
@@ -308,15 +320,8 @@ void MainWindow::refresh_button_clicked() {
     QFuture<void> map_update_thread = QtConcurrent::run([this] {update_map();});
 }
 
-// Populate map with packet locations and center on user location (if possible)
 void MainWindow::update_map() {
-    for(auto& packet : packets) {
-        IPCoords coords = packet->get_dst_ip_coords();
-        if(coords.known) {
-            ui->mapTab->update_map(coords.latitude, coords.longitude, packet->get_dst_geo_info());
-        }
-    }
-    emit all_packets_added_to_map();
+    ui->packetTableView->update_packet_map(ui->mapTab);
 }
 
 void MainWindow::map_update_complete() {
@@ -360,18 +365,23 @@ std::string MainWindow::create_record_file_name() {
 }
 
 //Return true on success, false otherwise
-bool MainWindow::write_all_packets_to_file(const std::string& path) {
-    std::ofstream record_file(path);
-    if(!record_file) {
-        qDebug() << "write_all_packets_to_file() error, could not write file: " << path;
-        return false;
-    }
+//bool MainWindow::write_all_packets_to_file(const std::string& path) {
+//    std::ofstream record_file(path);
+//    if(!record_file) {
+//        qDebug() << "write_all_packets_to_file() error, could not write file: " << path;
+//        return false;
+//    }
 
-    for(auto& packet : packets) {
-        record_file << packet->get_info() << "\n---------------\n";
-    }
+//    for(auto& packet : packets) {
+//        record_file << packet->get_info().toStdString() << "\n---------------\n";
+//    }
 
-    record_file << std::endl;
-    record_file.close();
-    return true;
+//    record_file << std::endl;
+//    record_file.close();
+//    return true;
+//}
+
+void MainWindow::update_info_pane(Packet* packet) {
+    ui->infoPane->set_active();
+    ui->infoPane->update_text(packet);
 }
