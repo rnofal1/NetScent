@@ -64,17 +64,6 @@ InfoPane[active=true]
     color : black;
 }
 
-PacketLabel[active=false]
-{
-    background-color : rgb(54, 57, 62);
-    color : white;
-}
-PacketLabel[active=true]
-{
-    background-color : grey;
-    color : white;
-}
-
 CustomButton[state="default"]
 {
     background-color : rgb(87, 227, 137);

@@ -8,7 +8,6 @@
 
 //Local
 #include "MainWindow.h"
-#include "PacketLabel.h"
 #include "util.h"
 #include "LoadingLabel.h"
 
