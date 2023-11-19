@@ -32,12 +32,14 @@ MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
+    qDebug() << "In MainWindow destructor";
     emit ui_closed();
     emit change_capture_state(false);
     map_update_thread.waitForFinished();
     if(ui != nullptr) {
         delete ui;
     }
+    qDebug() << "Leaving MainWindow destructor";
 }
 
 Ui::MainWindow* MainWindow::get_ui_pointer() {

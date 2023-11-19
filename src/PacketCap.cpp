@@ -12,7 +12,7 @@
 #include "PacketCap.h"
 
 
-PacketCap::PacketCap(MainWindow* main_window, SharedQueue<Packet*>* packet_queue) :
+PacketCap::PacketCap(QPointer<MainWindow>& main_window, SharedQueue<Packet*>* packet_queue) :
                                                         main_window(main_window),
                                                         packet_queue(packet_queue),
                                                         link_header_len(0),
@@ -43,12 +43,12 @@ void PacketCap::connect_signals_slots() {
             SLOT(device_changed_by_user(QString)));
 
     //main_window -> this
-    connect(main_window,
+    connect(main_window.data(),
             SIGNAL(ui_closed()), this,
             SLOT(ui_closed()));
 
     //main_window -> this
-    connect(main_window,
+    connect(main_window.data(),
             SIGNAL(change_capture_state(bool)), this,
             SLOT(change_capture_state(bool)));
 }
@@ -129,7 +129,7 @@ void PacketCap::packet_handler( u_char *user,
                         const u_char *packet_ptr) {
     Q_UNUSED(packet_header);
     PacketCap *packet_cap_obj = reinterpret_cast<PacketCap *>(user);
-    MainWindow *main_window_obj = packet_cap_obj->main_window;
+    QPointer<MainWindow> main_window_obj = packet_cap_obj->main_window;
     if(!main_window_obj || main_window_obj->closed || !main_window_obj->run_capture || main_window_obj->clear_packets) {
         pcap_breakloop(packet_cap_obj->handle);
         return;

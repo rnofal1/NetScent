@@ -12,6 +12,7 @@ CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 QMAKE_LFLAGS_WINDOWS += /MANIFESTUAC:"level='requireAdministrator'"
 
 INCLUDEPATH += include \
+            include/util \
             "C:\CPPINCLUDE\nlohmann\json\single_include" \
             "C:\CPPINCLUDE\curl-8.3.0\include" \
             "C:\CPPINCLUDE\npcap-sdk-1.13\Include" \
@@ -49,7 +50,7 @@ SOURCES += \
     src/PacketTableView.cpp \
     src/StyleWidget.cpp \
     src/main.cpp \
-    src/util.cpp
+    src/util/util.cpp
 
 # Qt Creator auto-handles HEADERS most of the time
 HEADERS += \
@@ -75,7 +76,7 @@ HEADERS += \
     include/ProtocolHeaders.h \
     include/SharedQueue.h \
     include/StyleWidget.h \
-    include/util.h
+    include/util/util.h
 
 # Qt Creator auto-handles FORMS most of the time
 FORMS += \

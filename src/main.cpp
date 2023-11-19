@@ -7,7 +7,6 @@
 
 //Standard Qt
 #include <QtConcurrent>
-#include <QScopedPointer>
 
 //Local
 #include "PacketCap.h"
@@ -20,18 +19,25 @@
 
 
 int main(int argc, char *argv[]) {
+    //Initilize the manager for the main Qt event loop and control flow
     QScopedPointer<CustomApplication> app(new CustomApplication(argc, argv));
 
+    //Create shared storage for intercepted network packets
     SharedQueue<Packet*> packet_queue(PACKET_QUEUE_CAPACITY);
 
-    MainWindow *main_window = new MainWindow(&packet_queue);
+    //Initialize the main framework for UI objects
+    QPointer<MainWindow> main_window(new MainWindow(&packet_queue));
     main_window->show();
 
+    //Initialize and run the process to capture network packets
     PacketCap packet_capturer(main_window, &packet_queue);
     QFuture<int> packet_cap_thread = QtConcurrent::run(&PacketCap::run_packet_cap, &packet_capturer);
 
+    //Run the Qt event loop
     int app_success = !app->exec();
+
+    //Wait for other thread(s) to complete
     int packet_cap_success = !thread_handler(packet_cap_thread);
-    qDebug() << "Outside" << app_success << packet_cap_success;
+
     return !(app_success && packet_cap_success);
 }

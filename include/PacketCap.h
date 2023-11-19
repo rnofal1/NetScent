@@ -35,7 +35,7 @@
 class PacketCap : public QObject {
     Q_OBJECT
 public:
-    PacketCap(MainWindow* main_window, SharedQueue<Packet*>* packet_queue);
+    PacketCap(QPointer<MainWindow>& main_window, SharedQueue<Packet*>* packet_queue);
 
     static void packet_handler( u_char *user,
                                const struct pcap_pkthdr *packet_header,
@@ -79,7 +79,7 @@ public:
     NetworkAdapter get_preferred_adapter();
 
 private:
-    MainWindow* main_window;
+    QPointer<MainWindow>& main_window;
 
     SharedQueue<Packet*> *packet_queue;
 
