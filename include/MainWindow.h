@@ -55,8 +55,6 @@ public:
     void set_packet_loading_active();
     void set_packet_loading_inactive();
 
-    //void display_packet(Packet* packet);
-
 protected:
     void closeEvent(QCloseEvent *ev) override;
 
@@ -68,8 +66,6 @@ private slots:
 
     void set_api_button_clicked();
 
-    void refresh_packet_window();
-
     void save_to_file();
 
     void update_map();
@@ -79,9 +75,6 @@ private slots:
 
     void map_update_complete();
 
-    //void display_next_packet();
-
-    //void update_info_pane(const QModelIndex &index);
     void update_info_pane(Packet* packet);
 
 signals:
@@ -95,13 +88,11 @@ private:
 
     std::vector<Packet* > packets;
 
-    QFuture<void> poll_queue_thread;
+    QFuture<void> map_update_thread;
 
     SharedQueue<Packet*> *packet_queue;
 
     std::string dummy_api_key;
-
-//    int num_displayed_packets;
 
     bool window_open;
 
@@ -111,9 +102,6 @@ private:
 
     //Return true on success, false otherwise
     bool write_all_packets_to_file(const std::string& path);
-
-    //Add packets to window based on filter settings
-    //void add_valid_packets();
 
     void delete_packets();
 

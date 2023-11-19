@@ -26,6 +26,8 @@ class PacketTableView : public QTableView, public StyleWidget {
     Q_OBJECT
 public:
     PacketTableView(QWidget *parent = nullptr);
+    ~PacketTableView();
+
     void add_row(const std::vector<QString>& data);
 
     void set_packet_queue(SharedQueue<Packet*> *packet_queue);

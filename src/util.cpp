@@ -16,6 +16,27 @@ static size_t writeFunction(void *ptr, size_t size, size_t nmemb, std::string* d
     return size * nmemb;
 }
 
+int thread_handler(QFuture<int>& future) {
+    qDebug() << "In thread handler";
+
+    future.waitForFinished();
+
+    auto future_result = future.then([](int result) {
+        //throw std::runtime_error("Error in thread handler");
+    }).onFailed([](const std::runtime_error &e) {
+        qDebug() << e.what();
+        return 1;
+    });
+
+    if(future.isValid()) {
+        qDebug() << "Future thread has valid result";
+        return future.result();
+    }
+
+    qDebug() << "Future thread has invalid result";
+    return 1;
+}
+
 std::string get_geoloc_api_key() {
     std::ifstream api_key_file(API_KEY_FILE);
     std::string ret_string;

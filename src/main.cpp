@@ -7,28 +7,31 @@
 
 //Standard Qt
 #include <QtConcurrent>
+#include <QScopedPointer>
 
 //Local
 #include "PacketCap.h"
 #include "CustomApplication.h"
 #include "SharedQueue.h"
+#include "util.h"
 
 //Defines
 #define PACKET_QUEUE_CAPACITY 9999
 
 
 int main(int argc, char *argv[]) {
-    CustomApplication app(argc, argv);
+    QScopedPointer<CustomApplication> app(new CustomApplication(argc, argv));
 
     SharedQueue<Packet*> packet_queue(PACKET_QUEUE_CAPACITY);
 
-    MainWindow main_window(&packet_queue);
-    main_window.show();
+    MainWindow *main_window = new MainWindow(&packet_queue);
+    main_window->show();
 
-    PacketCap packet_capturer(&main_window, &packet_queue);
-    QFuture<void> packet_cap_thread = QtConcurrent::run([&packet_capturer]
-                                                        {packet_capturer.run_packet_cap();
-                                                    });
+    PacketCap packet_capturer(main_window, &packet_queue);
+    QFuture<int> packet_cap_thread = QtConcurrent::run(&PacketCap::run_packet_cap, &packet_capturer);
 
-    return app.exec();
+    int app_success = !app->exec();
+    int packet_cap_success = !thread_handler(packet_cap_thread);
+    qDebug() << "Outside" << app_success << packet_cap_success;
+    return !(app_success && packet_cap_success);
 }

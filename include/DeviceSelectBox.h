@@ -31,13 +31,17 @@ signals:
 
 private slots:
     void add_items(const std::vector<std::string>& items);
-    void add_item_pairs(const std::vector<std::pair<std::string, std::string>>& item_pairs);
+    void add_item_pairs(const std::vector<std::pair<std::string, std::string>>& item_pairs); //<description, name>
     void user_picked_index(const int& index);
     void packet_cap_picked_adapter(const QString& device_name);
 
 private:
     void add_single_device_item(const QString& item_name);
-    void add_paired_device_item(const QString& description, const QString& name);
+    void add_paired_device_item(const QString& description, const QString& name); //<description, name>
+
+    void create_model();
+    void create_view();
+
     void connect_signals_slots();
 };
 

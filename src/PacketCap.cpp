@@ -68,24 +68,10 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
      * no devices are found (success) and PCAP_ERROR if 1 or more devices are
      * found (failure). On failure, error_buff is filled appropriately
      */
-    if (!*device) {
+    if (!*device) { //Will only run the very first time (when no devices yet detected)
         if(set_preferred_device() == false) {
             return NULL;
         }
-//        if (pcap_findalldevs(&devices, error_buff) == PCAP_ERROR) {
-//            qDebug() << "pcap_findalldevs(): " << error_buff;
-//            return NULL;
-//        }
-
-
-//        network_adapters = get_network_adapters();
-//        auto adapter_name = get_preferred_adapter().get_name();
-
-//        while(devices && std::string(devices->name).find(adapter_name) == std::string::npos) {
-//            devices = devices->next;
-//        }
-
-        //strncpy(device, devices->name, DEFAULT_CHAR_BUFF);
     }
 
     /* Get network device source IP address and netmask
@@ -209,7 +195,7 @@ Packet* PacketCap::create_icmp_packet(const struct ip& ip_header, const struct i
     return packet;
 }
 
-void PacketCap::run_packet_cap() {
+int PacketCap::run_packet_cap() {
     signal(SIGINT, exit);
     signal(SIGTERM, exit);
     signal(SIGBREAK, exit);
@@ -228,13 +214,15 @@ void PacketCap::run_packet_cap() {
             //Create packet capture handle.
             handle = create_pcap_handle(device, filter);
             if (handle == NULL) {
-                QThread::currentThread()->exit(1);
+                //QThread::currentThread()->exit(1);
+                return 1;
             }
 
             //Get the type of link layer.
             get_link_header_len(handle);
             if (link_header_len == 0) {
-               QThread::currentThread()->exit(1);
+               //QThread::currentThread()->exit(1);
+                return 1;
             }
 
             qDebug() << "Initiating packet capture loop...\n";
@@ -243,7 +231,8 @@ void PacketCap::run_packet_cap() {
             in_pcap_loop = true;
             if (pcap_loop(handle, max_packets, packet_handler, reinterpret_cast<u_char *>(this)) == PCAP_ERROR) {
                 qDebug() << "pcap_loop failed: " << pcap_geterr(handle);
-                QThread::currentThread()->exit(1);
+                //QThread::currentThread()->exit(1);
+                return 1;
             }
             in_pcap_loop = false;
 
@@ -252,8 +241,9 @@ void PacketCap::run_packet_cap() {
         }
     }
 
-    qDebug() << "Program window closed.\n";
-    QThread::currentThread()->quit();
+    qDebug() << "PacketCap: Program window closed.\n";
+    //QThread::currentThread()->quit();
+    return 0;
 }
 
 /* Registered as the handler function for each of the signals SIGINT, SIGTERM,
@@ -457,7 +447,7 @@ void PacketCap::device_changed_by_user(const QString& device_name) {
 void PacketCap::ui_closed() {
     ui_open = false;
     if(in_pcap_loop && handle != NULL) {
-        QFuture<void> break_loop_thread = QtConcurrent::run([this] { pcap_breakloop(handle);});
+        pcap_breakloop(handle);
     }
     qDebug() << "ui_open changed to: false";
 }
@@ -465,7 +455,7 @@ void PacketCap::ui_closed() {
 void PacketCap::change_capture_state(const bool& capture_enabled) {
     run_capture = capture_enabled;
     if(!run_capture && in_pcap_loop && handle != NULL) {
-        QFuture<void> break_loop_thread = QtConcurrent::run([this] { pcap_breakloop(handle);});
+        pcap_breakloop(handle);
     }
     qDebug() << "run_capture changed to: " << (run_capture ? "true" : "false");
 }

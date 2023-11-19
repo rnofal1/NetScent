@@ -28,6 +28,17 @@ PacketTableView::PacketTableView(QWidget *parent):
     connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(clicked_packet(QModelIndex)));
 }
 
+//ToDo: use thread handler
+PacketTableView::~PacketTableView() {
+    qDebug() << "In PacketTableView destructor";
+    poll_queue_thread.waitForFinished();
+    ui_update_thread.waitForFinished();
+
+    if(model != nullptr) {
+        delete model;
+    }
+}
+
 void PacketTableView::config_model() {
     int index = 0;
     for(auto& header : model_col_headers) {
@@ -252,6 +263,9 @@ int PacketTableView::get_num_packets_displayed() {
 void PacketTableView::update_packet_map(CustomMapTab* mapTab) {
    packet_update_enabled = false; //Pause updates
    for(auto& packet : packets) {
+        if(ui_closed) {
+            return;
+        }
         IPCoords coords = packet->get_dst_ip_coords();
         if(coords.known) {
             mapTab->update_map(coords.latitude, coords.longitude, packet->get_dst_geo_info());

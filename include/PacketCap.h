@@ -49,7 +49,7 @@ public:
 
     void set_filter(const int optind, const int argc, char** argv);
 
-    void run_packet_cap();
+    int run_packet_cap();
 
     void stop_capture(int signo);
 

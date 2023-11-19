@@ -16,6 +16,7 @@
 
 //Standard Qt
 #include <QWidget>
+#include <QFuture>
 
 //3rd-party
 #include <nlohmann/json.hpp>
@@ -35,6 +36,8 @@ struct delete_ptr { // Helper function to ease cleanup of container
         delete p;
     }
 };
+
+int thread_handler(QFuture<int>& future);
 
 std::string get_geoloc_api_key();
 
