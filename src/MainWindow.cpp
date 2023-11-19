@@ -19,8 +19,7 @@ MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
                         run_capture(false),
                         closed(false),
                         clear_packets(false),
-                        packet_queue(packet_queue),
-                        num_displayed_packets(0) {
+                        packet_queue(packet_queue) {
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
@@ -88,19 +87,18 @@ void MainWindow::connect_signals_slots() {
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
-    connect(ui->packetClearButton, SIGNAL(clicked()), this, SLOT(remove_existing_packets()));
+    connect(ui->packetClearButton, SIGNAL(clicked()), this, SLOT(clear_button_clicked()));
     connect(ui->packetClearButton, SIGNAL(clicked()), ui->packetTableView, SLOT(clear_view()));
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
     connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(refresh_button_clicked()));
 
     //Packet filters
-    //connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(refresh_packet_window()));
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), ui->packetTableView, SLOT(filters_changed(QStandardItem*)));
 
+    //Device select
+    connect(ui->deviceSelect, SIGNAL(activated(int)), this, SLOT(clear_button_clicked()));
+    connect(ui->deviceSelect, SIGNAL(activated(int)), ui->packetTableView, SLOT(clear_view()));
 
-
-    //Shared queue
-    connect(this, SIGNAL(new_packet_ready()), this, SLOT(display_next_packet()));
 
     //Packet Table View
     connect(this, SIGNAL(ui_closed()), ui->packetTableView, SLOT(set_ui_closed()));
@@ -185,10 +183,12 @@ void MainWindow::start_button_clicked() {
     ui->saveButton->disable();
     set_packet_loading_active();
     run_capture = true;
+    emit change_capture_state(run_capture);
 }
 void MainWindow::stop_button_clicked() {
     set_packet_loading_inactive();
     run_capture = false;
+    emit change_capture_state(run_capture);
 
     if(ui->packetTableView->get_num_packets_displayed() > 0) {
         ui->saveButton->enable();
@@ -201,19 +201,20 @@ void MainWindow::stop_button_clicked() {
 //    }
 }
 
-void MainWindow::clear_packet_display() {
-    num_displayed_packets = 0;
+void MainWindow::clear_button_clicked() {
+    remove_existing_packets();
+}
 
-    //ui->packetTableView->clear_view();
-
+void MainWindow::clear_info_pane() {
     ui->infoPane->clear();
     ui->infoPane->set_inactive();
 }
 void MainWindow::remove_existing_packets() {
     stop_button_clicked();
     clear_packets = true;
-    clear_packet_display();
+    clear_info_pane();
     delete_packets();
+
     ui->tabWidget->clear_map();
     ui->numPacketsDisplay->set_num(0);
     ui->saveButton->disable();

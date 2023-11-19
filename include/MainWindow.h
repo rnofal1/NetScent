@@ -64,12 +64,7 @@ private slots:
     void start_button_clicked();
     void stop_button_clicked();
     void refresh_button_clicked();
-
-    //Only hide packets while retaining packet array
-    void clear_packet_display();
-
-    //Remove visible packets and wipe packet array
-    void remove_existing_packets();
+    void clear_button_clicked();
 
     void set_api_button_clicked();
 
@@ -93,6 +88,7 @@ signals:
     void all_packets_added_to_map();
     void new_packet_ready();
     void ui_closed();
+    void change_capture_state(const bool& capture_enabled);
 
 private:
     Ui::MainWindow *ui;
@@ -105,7 +101,7 @@ private:
 
     std::string dummy_api_key;
 
-    int num_displayed_packets;
+//    int num_displayed_packets;
 
     bool window_open;
 
@@ -128,6 +124,11 @@ private:
     void poll_queue(); //Continuously add elements from shared Packet queue
 
     void init_packet_view();
+
+    //Remove visible packets and wipe packet array
+    void remove_existing_packets();
+
+    void clear_info_pane();
 };
 
 #endif // MAINWINDOW_H

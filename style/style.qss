@@ -136,13 +136,23 @@ QLCDNumber
     color: rgb(23, 23, 23);
 }
 
-ComboCheckBox#filterBox
+PacketFilterCheckBox#filterBox
+{
+    background-color : rgb(54, 57, 62);
+    color : white;
+}
+PacketFilterCheckBox QAbstractItemView
 {
     background-color : rgb(54, 57, 62);
     color : white;
 }
 
-ComboCheckBox QAbstractItemView
+DeviceSelectBox#deviceSelect
+{
+    background-color : rgb(54, 57, 62);
+    color : white;
+}
+DeviceSelectBox QAbstractItemView
 {
     background-color : rgb(54, 57, 62);
     color : white;
@@ -174,6 +184,10 @@ QFrame#apiSettingFrame
 {
     border : none;
 }
+QFrame#adapterFrame
+{
+    border : none;
+}
 
 
 QTabBar
@@ -193,6 +207,10 @@ NumDisplay
 }
 
 QLabel#numPacketsLabel
+{
+    color : white;
+}
+QLabel#adapterLabel
 {
     color : white;
 }

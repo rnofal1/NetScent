@@ -32,7 +32,8 @@
  *  Implementation heavily derived from:
  *  https://vichargrave.github.io/programming/develop-a-packet-sniffer-with-libpcap/
  */
-class PacketCap {
+class PacketCap : public QObject {
+    Q_OBJECT
 public:
     PacketCap(MainWindow* main_window, SharedQueue<Packet*>* packet_queue);
 
@@ -40,7 +41,7 @@ public:
                                const struct pcap_pkthdr *packet_header,
                                const u_char *packet_ptr);
 
-    void set_device(const char* network_interface);
+    void connect_signals_slots();
 
     void print_network_adapter_info(const NetworkAdapter& adapter); //Necessary due to printing within Qt debug
 
@@ -55,6 +56,13 @@ public:
     void get_link_header_len(pcap_t* handle);
 
     void enqueue_packet(Packet* packet);
+
+    void update_adapter_list(bool emit_change = false);
+
+    bool set_device_list();
+    bool find_device(const std::string& device_name);
+    bool set_preferred_device();
+    bool set_device(const std::string& device_name);
 
     pcap_t* create_pcap_handle(char* device, char* filter, int promisc);
 
@@ -78,6 +86,7 @@ private:
     std::vector<NetworkAdapter> network_adapters;
 
     pcap_t* handle; //Packet capture channel identifier (used in all pcap calls)
+    pcap_if_t* devices;
 
     int link_header_len; //Offset to skip over datalink layer header to get to packet IP header
     int max_packets; //Number of packets at which to end packet capture
@@ -86,6 +95,20 @@ private:
 
     char device[DEFAULT_CHAR_BUFF];
     char filter[DEFAULT_CHAR_BUFF];
+
+    bool ui_open;
+    bool run_capture;
+    bool in_pcap_loop;
+
+signals:
+    //<description, name> pair for each device
+    void new_devices_found(const std::vector<std::pair<std::string, std::string>>& device_list);
+    void device_set(const QString& device_name);
+
+private slots:
+    void device_changed_by_user(const QString& device_name);
+    void ui_closed();
+    void change_capture_state(const bool& capture_enabled);
 };
 
 

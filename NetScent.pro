@@ -28,7 +28,6 @@ LIBS += -L"C:\CPPINCLUDE\npcap-sdk-1.13\Lib\x64" \
 
 # Qt Creator auto-handles SOURCES most of the time
 SOURCES += \
-    src/ComboCheckBox.cpp \
     src/CustomApplication.cpp \
     src/CustomButton.cpp \
     src/CustomCaptureTab.cpp \
@@ -36,6 +35,7 @@ SOURCES += \
     src/CustomMapTab.cpp \
     src/CustomSettingsTab.cpp \
     src/CustomTabWidget.cpp \
+    src/DeviceSelectBox.cpp \
     src/InfoPane.cpp \
     src/KeyDetectedLabel.cpp \
     src/LoadingLabel.cpp \
@@ -44,6 +44,7 @@ SOURCES += \
     src/NumDisplay.cpp \
     src/Packet.cpp \
     src/PacketCap.cpp \
+    src/PacketFilterCheckBox.cpp \
     src/PacketLabel.cpp \
     src/PacketTableView.cpp \
     src/StyleWidget.cpp \
@@ -52,7 +53,6 @@ SOURCES += \
 
 # Qt Creator auto-handles HEADERS most of the time
 HEADERS += \
-    include/ComboCheckBox.h \
     include/CustomApplication.h \
     include/CustomButton.h \
     include/CustomCaptureTab.h \
@@ -60,6 +60,7 @@ HEADERS += \
     include/CustomMapTab.h \
     include/CustomSettingsTab.h \
     include/CustomTabWidget.h \
+    include/DeviceSelectBox.h \
     include/InfoPane.h \
     include/KeyDetectedLabel.h \
     include/LoadingLabel.h \
@@ -68,6 +69,7 @@ HEADERS += \
     include/NumDisplay.h \
     include/Packet.h \
     include/PacketCap.h \
+    include/PacketFilterCheckBox.h \
     include/PacketLabel.h \
     include/PacketTableView.h \
     include/ProtocolHeaders.h \

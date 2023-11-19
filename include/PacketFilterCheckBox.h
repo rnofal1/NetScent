@@ -1,10 +1,10 @@
-/* This file contains declarations for the ComboCheckBox class (derived from QComboBox)
+/* This file contains declarations for the PacketFilterCheckBox class (derived from QComboBox)
  * Ramsey Nofal, 08/2023
  */
 
 
-#ifndef COMBOCHECKBOX_H
-#define COMBOCHECKBOX_H
+#ifndef PACKETFILTERCHECKBOX_H
+#define PACKETFILTERCHECKBOX_H
 
 
 //Standard C++
@@ -17,12 +17,12 @@
 #include <QList>
 
 
-class ComboCheckBox : public QComboBox {
+class PacketFilterCheckBox : public QComboBox {
     Q_OBJECT
 public:
     QStandardItemModel model;
 
-    ComboCheckBox(QWidget *parent = nullptr);
+    PacketFilterCheckBox(QWidget *parent = nullptr);
 
     //Filter checking has two interfaces
     bool tcp_filter_enabled();
@@ -39,4 +39,4 @@ private:
     void add_filter_items(const std::vector<QString> item_names);
 };
 
-#endif // COMBOCHECKBOX_H
+#endif // PACKETFILTERCHECKBOX_H

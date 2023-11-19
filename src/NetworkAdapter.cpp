@@ -192,6 +192,10 @@ std::string NetworkAdapter::get_name() {
     return name;
 }
 
+std::string NetworkAdapter::get_desc() {
+    return desc;
+}
+
 void NetworkAdapter::print_all_info() {
     std::cout << get_all_info() << std::endl;
 }

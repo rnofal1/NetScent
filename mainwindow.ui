@@ -36,7 +36,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="CustomCaptureTab" name="captureTab">
        <property name="styleSheet">
@@ -217,7 +217,7 @@ color: rgb(23, 23, 23);</string>
               </widget>
              </item>
              <item>
-              <widget class="ComboCheckBox" name="filterBox">
+              <widget class="PacketFilterCheckBox" name="filterBox">
                <property name="minimumSize">
                 <size>
                  <width>89</width>
@@ -487,50 +487,6 @@ color: rgb(23, 23, 23);</string>
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="2">
-              <widget class="QLineEdit" name="apiKeyText"/>
-             </item>
-             <item row="0" column="3">
-              <widget class="CustomButton" name="setApiKeyButton">
-               <property name="minimumSize">
-                <size>
-                 <width>60</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>60</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Set Key</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
-              <widget class="KeyDetectedLabel" name="keyDetectedLabel">
-               <property name="minimumSize">
-                <size>
-                 <width>90</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>90</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">background-color: rgb(246, 97, 81);</string>
-               </property>
-               <property name="text">
-                <string> No key detected</string>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="0">
               <widget class="QLabel" name="apiSettingLabel">
                <property name="minimumSize">
@@ -578,7 +534,72 @@ color: rgb(23, 23, 23);</string>
                </property>
               </widget>
              </item>
-             <item row="2" column="2">
+             <item row="0" column="2">
+              <widget class="QLineEdit" name="apiKeyText"/>
+             </item>
+             <item row="0" column="3">
+              <widget class="CustomButton" name="setApiKeyButton">
+               <property name="minimumSize">
+                <size>
+                 <width>60</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Set Key</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="KeyDetectedLabel" name="keyDetectedLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>90</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>90</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(246, 97, 81);</string>
+               </property>
+               <property name="text">
+                <string> No key detected</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="adapterFrame">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="1">
+              <widget class="DeviceSelectBox" name="deviceSelect"/>
+             </item>
+             <item row="1" column="2">
               <spacer name="verticalSpacer">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -586,10 +607,23 @@ color: rgb(23, 23, 23);</string>
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>20</width>
-                 <height>40</height>
+                 <height>269</height>
                 </size>
                </property>
               </spacer>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="adapterLabel">
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Network Adapter:</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -624,11 +658,6 @@ color: rgb(23, 23, 23);</string>
    <class>CustomButton</class>
    <extends>QPushButton</extends>
    <header>CustomButton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ComboCheckBox</class>
-   <extends>QComboBox</extends>
-   <header>ComboCheckBox.h</header>
   </customwidget>
   <customwidget>
    <class>InfoPane</class>
@@ -678,6 +707,16 @@ color: rgb(23, 23, 23);</string>
    <class>PacketTableView</class>
    <extends>QTableView</extends>
    <header>PacketTableView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PacketFilterCheckBox</class>
+   <extends>QComboBox</extends>
+   <header>PacketFilterCheckBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DeviceSelectBox</class>
+   <extends>QComboBox</extends>
+   <header>DeviceSelectBox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

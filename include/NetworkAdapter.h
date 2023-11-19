@@ -38,6 +38,7 @@ public:
 
     std::string get_gateway();
     std::string get_name();
+    std::string get_desc();
     std::string get_all_info() const;
 
     void print_all_info();

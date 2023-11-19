@@ -5,6 +5,9 @@
  */
 
 
+//Standard Qt
+#include <QtConcurrent>
+
 //Local
 #include "PacketCap.h"
 
@@ -14,17 +17,46 @@ PacketCap::PacketCap(MainWindow* main_window, SharedQueue<Packet*>* packet_queue
                                                         packet_queue(packet_queue),
                                                         link_header_len(0),
                                                         max_packets(0), //0 == -1 == INF for pcap_loop()
-                                                        num_packets(0) {
-
+                                                        num_packets(0),
+                                                        ui_open(true),
+                                                        run_capture(false),
+                                                        in_pcap_loop(false){
     *device = 0;
     *filter = 0;
+    connect_signals_slots();
+}
+
+void PacketCap::connect_signals_slots() {
+    //this -> device select
+    connect(this, SIGNAL(new_devices_found(std::vector<std::pair<std::string, std::string>>)),
+            main_window->get_ui_pointer()->deviceSelect,
+            SLOT(add_item_pairs(std::vector<std::pair<std::string, std::string>>)));
+
+    //this -> device select
+    connect(this, SIGNAL(device_set(QString)),
+            main_window->get_ui_pointer()->deviceSelect,
+            SLOT(packet_cap_picked_adapter(QString)));
+
+    //device select -> this
+    connect(main_window->get_ui_pointer()->deviceSelect,
+            SIGNAL(user_picked_device(QString)), this,
+            SLOT(device_changed_by_user(QString)));
+
+    //main_window -> this
+    connect(main_window,
+            SIGNAL(ui_closed()), this,
+            SLOT(ui_closed()));
+
+    //main_window -> this
+    connect(main_window,
+            SIGNAL(change_capture_state(bool)), this,
+            SLOT(change_capture_state(bool)));
 }
 
 /* Creates a packet capture endpoint to receive packets described by a packet
  * capture filter
  */
 pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 1) {
-    pcap_if_t* devices = NULL; //List of devices
     struct bpf_program bpf; //https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
     bpf_u_int32 netmask;
     bpf_u_int32 src_ip;
@@ -37,19 +69,23 @@ pcap_t* PacketCap::create_pcap_handle(char* device, char* filter, int promisc = 
      * found (failure). On failure, error_buff is filled appropriately
      */
     if (!*device) {
-        if (pcap_findalldevs(&devices, error_buff) == PCAP_ERROR) {
-            qDebug() << "pcap_findalldevs(): " << error_buff;
+        if(set_preferred_device() == false) {
             return NULL;
         }
+//        if (pcap_findalldevs(&devices, error_buff) == PCAP_ERROR) {
+//            qDebug() << "pcap_findalldevs(): " << error_buff;
+//            return NULL;
+//        }
 
-        network_adapters = get_network_adapters();
-        auto adapter_name = get_preferred_adapter().get_name();
 
-        while(devices && std::string(devices->name).find(adapter_name) == std::string::npos) {
-            devices = devices->next;
-        }
+//        network_adapters = get_network_adapters();
+//        auto adapter_name = get_preferred_adapter().get_name();
 
-        strncpy(device, devices->name, DEFAULT_CHAR_BUFF);
+//        while(devices && std::string(devices->name).find(adapter_name) == std::string::npos) {
+//            devices = devices->next;
+//        }
+
+        //strncpy(device, devices->name, DEFAULT_CHAR_BUFF);
     }
 
     /* Get network device source IP address and netmask
@@ -179,8 +215,8 @@ void PacketCap::run_packet_cap() {
     signal(SIGBREAK, exit);
 
     //Start the packet capture
-    while(main_window && !main_window->closed) {
-        if(main_window->run_capture){
+    while(ui_open) {
+        if(run_capture){
             //Reset num_packets if necessary
             if(main_window->clear_packets) {
                 num_packets = 0;
@@ -204,10 +240,12 @@ void PacketCap::run_packet_cap() {
             qDebug() << "Initiating packet capture loop...\n";
 
             //This runs continuously until reaching one of our stop conditions
+            in_pcap_loop = true;
             if (pcap_loop(handle, max_packets, packet_handler, reinterpret_cast<u_char *>(this)) == PCAP_ERROR) {
                 qDebug() << "pcap_loop failed: " << pcap_geterr(handle);
                 QThread::currentThread()->exit(1);
             }
+            in_pcap_loop = false;
 
             stop_capture(0);
             qDebug() << "Packet capture halted.\n";
@@ -274,14 +312,73 @@ void PacketCap::get_link_header_len(pcap_t* handle) {
     }
 }
 
-void PacketCap::set_device(const char* network_interface) {
-    strncpy(device, network_interface, DEFAULT_CHAR_BUFF);
+//Devices is a linked-list; return true on success, false otherwise
+bool PacketCap::set_device_list() {
+    devices = NULL; //List of devices
+    char error_buff[PCAP_ERRBUF_SIZE];
+    if (pcap_findalldevs(&devices, error_buff) == PCAP_ERROR) {
+        qDebug() << "pcap_findalldevs(): " << error_buff;
+        return false;
+    }
+    return true;
+}
+
+//Devices is a linked-list, loop through until device found
+bool PacketCap::find_device(const std::string& device_name) {
+    if(set_device_list() == false) {
+        return false;
+    }
+
+    while(devices && std::string(devices->name).find(device_name) == std::string::npos) {
+        devices = devices->next;
+    }
+
+    if(!devices) {
+        qDebug() << "Device not found: " << device_name;
+        return false;
+    }
+
+    return true;
+}
+
+bool PacketCap::set_preferred_device() {
+    update_adapter_list(true);
+    std::string adapter_name = get_preferred_adapter().get_name();
+
+    if(set_device(adapter_name)) {
+        QString qt_adapter_name = QString::fromStdString(adapter_name);
+        emit device_set(qt_adapter_name);
+        return true;
+    }
+    return false;
+}
+
+bool PacketCap::set_device(const std::string& device_name) {
+    if(find_device(device_name) == false) {
+        return false;
+    }
+
+    strncpy(device, devices->name, DEFAULT_CHAR_BUFF);
+    return true;
 }
 
 void PacketCap::set_filter(const int optind, const int argc, char** argv) {
     for (int i = optind; i < argc; i++) {
         strcat(filter, argv[i]);
         strcat(filter, " ");
+    }
+}
+
+void PacketCap::update_adapter_list(bool emit_change) {
+    network_adapters = get_network_adapters();
+
+    if(emit_change) {
+        std::vector<std::pair<std::string, std::string>> adapter_list; //<description, name> pair for each device
+        for(auto& adapter: network_adapters) {
+            auto desc_name = std::make_pair(adapter.get_desc(), adapter.get_name());
+            adapter_list.push_back(desc_name);
+        }
+        emit new_devices_found(adapter_list);
     }
 }
 
@@ -346,4 +443,29 @@ void PacketCap::print_all_adapter_info() {
     for(auto& adapter : network_adapters) {
         print_network_adapter_info(adapter);
     }
+}
+
+void PacketCap::device_changed_by_user(const QString& device_name) {
+    qDebug() << "In: PacketCap::device_changed_by_user()";
+    if(set_device(device_name.toStdString())) {
+        qDebug() << "Device switched to: " << device_name;
+    } else {
+        qDebug() << "Could not switch to device: " << device_name;
+    }
+}
+
+void PacketCap::ui_closed() {
+    ui_open = false;
+    if(in_pcap_loop && handle != NULL) {
+        QFuture<void> break_loop_thread = QtConcurrent::run([this] { pcap_breakloop(handle);});
+    }
+    qDebug() << "ui_open changed to: false";
+}
+
+void PacketCap::change_capture_state(const bool& capture_enabled) {
+    run_capture = capture_enabled;
+    if(!run_capture && in_pcap_loop && handle != NULL) {
+        QFuture<void> break_loop_thread = QtConcurrent::run([this] { pcap_breakloop(handle);});
+    }
+    qDebug() << "run_capture changed to: " << (run_capture ? "true" : "false");
 }
