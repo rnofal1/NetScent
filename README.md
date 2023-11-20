@@ -27,8 +27,8 @@ This is a personal project, its main purpose is as a platform for me to use and 
 
 ## How to Use
 1. Ensure that you have an updated version of Windows 10 or 11 installed*
-2. Download and unzip the latest (Windows) [release](https://github.com/rnofal1/NetScent/releases/tag/v0.0.3(WIN)) (**NetScent_Release_WIN_v0.0.3.zip**)
-3. Open the new `NetScent_Release_WIN_v0.0.3` folder
+2. Download and unzip the latest (Windows) [release](https://github.com/rnofal1/NetScent/releases/tag/v0.0.4(WIN)) (**NetScent_Release_WIN_v0.0.4.zip**)
+3. Open the new `NetScent_Release_WIN_v0.0.4` folder
 4. Right-click `NetScent.exe`
 5. Click `Run as administrator`
 6. Click `Yes`
