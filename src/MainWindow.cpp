@@ -5,6 +5,7 @@
 
 /* Standard Qt */
 #include <QtConcurrent>
+#include <QDir>
 
 /* Local */
 #include "MainWindow.h"
@@ -269,6 +270,9 @@ void MainWindow::map_update_complete() {
 
 QString MainWindow::get_dir_path_from_user() {
     QString folder_path = get_cwd() + "/Records";
+    if(!QDir(folder_path).exists()) {
+        QDir().mkdir(folder_path);
+    }
 
     QString path = QFileDialog::getExistingDirectory(this,
                                                          tr("Choose Save Folder"),
