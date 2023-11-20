@@ -3,10 +3,10 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include "qquickwidget.h"
 
-//Local
+/* Local */
 #include "CustomMapTab.h"
 #include "CustomButton.h"
 
@@ -29,22 +29,33 @@ void CustomMapTab::set_qml() {
     auto quickWidgetMap = this->findChild<QQuickWidget*>("quickWidgetMap");
     Q_CHECK_PTR(quickWidgetMap);
 
-    quickWidgetMap->setSource(QUrl(QStringLiteral("qrc:/QmlMap.qml"))); //Tie this object to the QML
+    //Tie quickWidgetMap object to the QML
+    quickWidgetMap->setSource(QUrl(QStringLiteral("qrc:/QmlMap.qml")));
+
     quickWidgetMap->show();
 
-    auto w_map_obj = quickWidgetMap->rootObject();
+    w_map_obj = quickWidgetMap->rootObject();
+
+    //We only need to connect signals/slots once map + qml is initialized
+    connect_signals_slots();
+}
+
+void CustomMapTab::connect_signals_slots() {
+    //this --> QML
+    Q_CHECK_PTR(w_map_obj);
     connect(this, SIGNAL(set_map_center(QVariant,QVariant)), w_map_obj, SLOT(set_map_center(QVariant,QVariant)));
     connect(this, SIGNAL(set_map_zoom(QVariant)), w_map_obj, SLOT(set_map_zoom(QVariant)));
     connect(this, SIGNAL(set_location_marker(QVariant,QVariant,QVariant)), w_map_obj, SLOT(set_location_marker(QVariant,QVariant,QVariant)));
     connect(this, SIGNAL(remove_all_location_markers()), w_map_obj, SLOT(remove_all_location_markers()));
 
+    //Map clear button --> this
     auto mapClearButton = this->findChild<CustomButton*>("mapClearButton");
     Q_CHECK_PTR(mapClearButton);
     connect(mapClearButton, SIGNAL(clicked()), this, SLOT(clear_map()));
 }
 
 // Populate map with packet location and center on user location (if possible)
-void CustomMapTab::update_map(const int& point_lat, const float& point_long, const std::string& loc_text) {
+void CustomMapTab::update_map(const int& point_lat, const float& point_long, const QString& loc_text) {
     // Initialize map if just entering view
     if(!map_active) {
         init_map();
@@ -54,7 +65,7 @@ void CustomMapTab::update_map(const int& point_lat, const float& point_long, con
     auto pair = std::make_pair(point_lat, point_long);
     if(!plotted_locs.count(pair)) {
         plotted_locs.insert(pair);
-        emit set_location_marker(point_lat, point_long, QString::fromStdString(loc_text));
+        emit set_location_marker(point_lat, point_long, loc_text);
     }
 }
 

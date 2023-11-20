@@ -3,11 +3,11 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QTreeView>
 #include <QHeaderView>
 
-//Local
+/* Local */
 #include "DeviceSelectBox.h"
 
 
@@ -26,7 +26,10 @@ void DeviceSelectBox::create_view() {
     view = new QTreeView(this);
     view->setHeaderHidden(true);
     view->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    //Remove the little dropdown arrows
     view->setRootIsDecorated(false);
+
     this->setView(view);
 }
 
@@ -45,6 +48,7 @@ void DeviceSelectBox::add_items(const std::vector<std::string>& items) {
     }
 }
 
+//Network devices have a human-readable description and an actual name
 void DeviceSelectBox::add_paired_device_item(const QString& description, const QString& name) {
     auto desc_item = new QStandardItem(description);
     auto name_item = new QStandardItem(name);
@@ -53,7 +57,8 @@ void DeviceSelectBox::add_paired_device_item(const QString& description, const Q
     model->appendRow(desc_item);
 }
 
-void DeviceSelectBox::add_item_pairs(const std::vector<std::pair<std::string, std::string>>& item_pairs) {//<description, name>
+//Pairs represent: <description, name> (Network devices have a human-readable description and an actual name)
+void DeviceSelectBox::add_item_pairs(const std::vector<std::pair<std::string, std::string>>& item_pairs) {
     for(auto& pair : item_pairs) {
         add_paired_device_item(QString::fromStdString(pair.first), QString::fromStdString(pair.second));
     }
@@ -64,10 +69,14 @@ void DeviceSelectBox::user_picked_index(const int& index) {
     QStandardItem* device_desc_item = model->item(index, 0); //Holds the human-readable description
     QStandardItem* device_name_item = device_desc_item->child(0, 0); //Holds the actual name
     QString device_name = device_name_item->text();
+
     qInfo() << "User picked network adapter at index: " << index << " With Name: " << device_name;
+
+    //Tell anyone listening that the user chose device with device_name
     emit user_picked_device(device_name);
 }
 
+//If PacketCap picked a device/adapter (e.g. on startup), set that device as active
 void DeviceSelectBox::packet_cap_picked_adapter(const QString& device_name) {
     qInfo() << "PacketCap selected device: " << device_name;
     for (int row = 0; row < model->rowCount(); ++row) {

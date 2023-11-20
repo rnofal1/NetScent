@@ -7,16 +7,17 @@
 #define CUSTOMSETTINGSTAB_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QWidget>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 
 
 class CustomSettingsTab : public QWidget, public StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     CustomSettingsTab(QWidget *parent = nullptr);
 };
 

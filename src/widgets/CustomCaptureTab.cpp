@@ -3,7 +3,7 @@
  */
 
 
-//Local
+/* Local */
 #include "CustomCaptureTab.h"
 
 

@@ -4,10 +4,10 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QIcon>
 
-//Local
+/* Local */
 #include "CustomApplication.h"
 
 

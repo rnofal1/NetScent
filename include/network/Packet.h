@@ -7,7 +7,7 @@
 #define PACKETS_H
 
 
-//Standard C/C++
+/* Standard C/C++ */
 #include <stdio.h>
 #include <string>
 #include <stdlib.h>
@@ -17,14 +17,14 @@
 #include <cstdlib>
 #include <iostream>
 
-//Standard Qt
+/* Standard Qt */
 #include <QString>
 
-//3rd-party
+/* 3rd-party */
 #include <pcap/pcap.h> //libpcap library
 #include <nlohmann/json.hpp>
 
-//Local
+/* Local */
 #include "ProtocolHeaders.h"
 
 
@@ -45,6 +45,7 @@ enum PacketType {IP, TCP, UDP, ICMP};
  */
 class Packet {
 public:
+    /* Functions */
     Packet(const struct ip& ip_header, const int& num);
     virtual ~Packet();
 
@@ -54,7 +55,6 @@ public:
     virtual PacketType get_type() const;
     virtual QString get_type_name() const;
     virtual QString get_packet_spec_info() const; //Packet specific info
-
 
     //Return a string containing miscellaneous ip header information
     QString get_ip_info() const;
@@ -68,10 +68,10 @@ public:
     QString get_time_added() const;
 
     //Return a string describing geographical information regarding the sniffed Packet
-    std::string get_geo_info();
+    QString get_geo_info();
 
-    std::string get_dst_geo_info() const;
-    std::string get_src_geo_info() const;
+    QString get_dst_geo_info() const;
+    QString get_src_geo_info() const;
 
     IPCoords get_dst_ip_coords() const;
     IPCoords get_src_ip_coords() const;
@@ -79,27 +79,30 @@ public:
     int get_num() const;
 
 protected:
+    /* Variables */
     struct ip ip_header;
 
     //Describes the time at which the Packet was sniffed
     std::time_t time_added;
 
-    //Storting geo_info minimizes API calls
-    std::string geo_info;
+    //Storing geo_info minimizes API calls
+    QString geo_info;
 
     //Describes the order at which the Packet was sniffed, relative to other Packets
     int num;
 
-    nlohmann::json get_ip_geo_json_info(const std::string& ip_addr) const;
+    /* Functions */
+    nlohmann::json get_ip_geo_json_info(const QString& ip_addr) const;
 
-    IPCoords get_ip_coords(const std::string& ip_addr) const;
+    IPCoords get_ip_coords(const QString& ip_addr) const;
 
-    std::string parse_geo_info_json(const nlohmann::json& json) const;
+    QString parse_geo_info_json(const nlohmann::json& json) const;
 };
 
 
 class TCPPacket : public Packet {
 public:
+    /* Functions */
     TCPPacket(const struct ip& ip_header, const int& num, const struct tcphdr& tcp_header);
 
     //Return a string containing miscellaneous TCPPacket header information
@@ -112,12 +115,14 @@ public:
     QString get_dst_port() const override;
 
 private:
+    /* Variables */
     struct tcphdr tcp_header;
 };
 
 
 class UDPPacket : public Packet {
 public:
+    /* Functions */
     UDPPacket(const struct ip& ip_header, const int& num, const struct udphdr& udp_header);
 
     //Return a string containing miscellaneous UDPPacket header information
@@ -130,12 +135,14 @@ public:
     QString get_dst_port() const override;
 
 private:
+    /* Variables */
     struct udphdr udp_header;
 };
 
 
 class ICMPPacket : public Packet {
 public:
+    /* Functions */
     ICMPPacket(const struct ip& ip_header, const int& num, const struct icmp& icmp_header);
 
     //Return a string containing miscellaneous ICMPPacket header information
@@ -148,6 +155,7 @@ public:
     QString get_dst_port() const override;
 
 private:
+    /* Variables */
     struct icmp icmp_header;
 };
 

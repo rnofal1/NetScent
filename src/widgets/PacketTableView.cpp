@@ -3,11 +3,11 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QtConcurrent>
 #include <QModelIndex>
 
-//Local
+/* Local */
 #include "PacketTableView.h"
 #include "util.h"
 
@@ -15,22 +15,21 @@
 PacketTableView::PacketTableView(QWidget *parent):
                                 QTableView(parent),
                                 StyleWidget(this),
-                                packet_update_enabled(true),
-                                ui_closed(false),
                                 num_packets_total(0),
-                                num_packets_to_display(0){
+                                num_packets_to_display(0),
+                                packet_update_enabled(true),
+                                ui_closed(false) {
     model = new QStandardItemModel();
     this->setModel(model);
 
     config_model();
-    config_mode_options();
+    config_model_options();
 
     connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(clicked_packet(QModelIndex)));
 }
 
 //ToDo: use thread handler
 PacketTableView::~PacketTableView() {
-    qDebug() << "In PacketTableView destructor";
     poll_queue_thread.waitForFinished();
     ui_update_thread.waitForFinished();
 
@@ -46,7 +45,7 @@ void PacketTableView::config_model() {
     }
 }
 
-void PacketTableView::config_mode_options() {
+void PacketTableView::config_model_options() {
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
@@ -83,24 +82,8 @@ void PacketTableView::clear_view() {
     num_packets_total = 0;
     num_packets_to_display = 0;
 
-    //table_to_real_packet_index.clear();
-
     config_model();
 }
-
-//void PacketTableView::add_packet_index(const int& num) {
-//    table_to_real_packet_index.push_back(num);
-
-//}
-//int PacketTableView::get_packet_num_from_row(const int& row) {
-//    //We want this to be non-blocking
-//    if(row >= table_to_real_packet_index.size()) {
-//        qDebug() << "Invalid row or incorrect mapping in PacketTableView::get_packet_index_from_row()";
-//        return 0;
-//    }
-
-//    return table_to_real_packet_index[row];
-//}
 
 /* Note: packet_queue and poll_queue_thread could/should be set in the PacketTableView constructor.
  * However, QtCreator auto-generates the construction of the PacketTableView within ui_mainwindow.h, limiting
@@ -231,27 +214,21 @@ void PacketTableView::update_ui_loop() {
 
 void PacketTableView::clicked_packet(const QModelIndex &index) {
    int row_in_table = index.row();
-   qDebug() << "here";
    emit send_clicked_packet(packets[row_in_table]);
 }
 
-bool PacketTableView::write_packets_to_file(const std::string& path) {
-   packet_update_enabled = false; //Pause updates
-   std::ofstream record_file(path);
-   if(!record_file) {
-        qDebug() << "write_all_packets_to_file() error, could not write file: " << path;
-        packet_update_enabled = true; //Unpause updates
-        return false;
-   }
+bool PacketTableView::write_packets_to_file(const QString& path) {
+    packet_update_enabled = false; //Pause updates
 
-   for(auto& packet : packets) {
-        record_file << packet->get_info().toStdString() << "\n---------------\n";
-   }
+    QString packet_info_text = "";
+    for(auto& packet : packets) {
+        packet_info_text += packet->get_info();
+        packet_info_text += "\n---------------\n";
+    }
+    packet_update_enabled = true; //Unpause updates
+    packet_info_text += "\n";
 
-   record_file << std::endl;
-   record_file.close();
-   packet_update_enabled = true; //Unpause updates
-   return true;
+    return write_to_file(path, packet_info_text, QFile::Append);;
 }
 
 int PacketTableView::get_num_packets_displayed() {
@@ -262,6 +239,7 @@ int PacketTableView::get_num_packets_displayed() {
 // Populate map with packet locations and center on user location (if possible)
 void PacketTableView::update_packet_map(CustomMapTab* mapTab) {
    packet_update_enabled = false; //Pause updates
+
    for(auto& packet : packets) {
         if(ui_closed) {
             return;
@@ -272,5 +250,6 @@ void PacketTableView::update_packet_map(CustomMapTab* mapTab) {
         }
    }
    emit all_packets_added_to_map();
+
    packet_update_enabled = true; //Unpause updates
 }

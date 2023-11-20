@@ -7,14 +7,14 @@
 #define STYLEWIDGET_H
 
 
-//Standard C++
+/* Standard C/C++ */
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
 #include <stdlib.h>
 #include <map>
 
-//Standard Qt
+/* Standard Qt */
 #include <QString>
 #include <QWidget>
 
@@ -27,12 +27,14 @@
  */
 class StyleWidget {
 public:
+    /* Functions */
     StyleWidget(QWidget* widget = nullptr);
 
     void reset_style();
     void set_style_property(const char* name, const QVariant &value);
 
 protected:
+    /* Variables */
     QWidget* this_widget;
 };
 

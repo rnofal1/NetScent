@@ -7,10 +7,10 @@
 #define PACKETFILTERCHECKBOX_H
 
 
-//Standard C++
+/* Standard C/C++ */
 #include <iostream>
 
-//Standard Qt
+/* Standard Qt */
 #include <QComboBox>
 #include <QStandardItemModel>
 #include <QLabel>
@@ -20,8 +20,10 @@
 class PacketFilterCheckBox : public QComboBox {
     Q_OBJECT
 public:
+    /* Variables */
     QStandardItemModel model;
 
+    /* Functions */
     PacketFilterCheckBox(QWidget *parent = nullptr);
 
     //Filter checking has two interfaces
@@ -33,10 +35,12 @@ public:
     bool filter_enabled(const QString& name);
 
 private:
+    /* Functions */
     QStandardItem* find_item(const QString &name);
 
-    void add_single_filter_item(const QString& item_name);
-    void add_filter_items(const std::vector<QString> item_names);
+    void create_title(const QString& title);
+    void create_dropdown_items(const std::vector<QString>& dropdown_item_names);
+    void create_single_dropdown_item(const QString& item_name);
 };
 
 #endif // PACKETFILTERCHECKBOX_H

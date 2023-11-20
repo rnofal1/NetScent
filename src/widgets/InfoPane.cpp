@@ -3,10 +3,10 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QStyle>
 
-//Local
+/* Local */
 #include "InfoPane.h"
 
 
@@ -22,12 +22,12 @@ void InfoPane::set_inactive() {
 }
 
 void InfoPane::update_text(Packet* packet) {
-    std::string set_text = "Packet #: ";
-    set_text += std::to_string(packet->get_num() + 1); //+1 for display purposes
+    QString set_text = "Packet #: ";
+    set_text += QString::number(packet->get_num() + 1); //+1 for display purposes
     set_text += "\nTime Added: ";
-    set_text += packet->get_time_added().toStdString();
+    set_text += packet->get_time_added();
     set_text += "\n";
     set_text += packet->get_geo_info();
 
-    setText(QString::fromStdString(set_text));
+    setText(set_text);
 }

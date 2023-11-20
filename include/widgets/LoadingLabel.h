@@ -7,16 +7,17 @@
 #define LOADINGLABEL_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QLabel>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 
 
 class LoadingLabel : public QLabel, public StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     LoadingLabel(QWidget* parent = nullptr);
 
     void set_icon();

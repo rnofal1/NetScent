@@ -7,16 +7,17 @@
 #define CUSTOMCAPTURETAB_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QWidget>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 
 
 class CustomCaptureTab : public QWidget, public StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     CustomCaptureTab(QWidget *parent = nullptr);
 };
 

@@ -7,7 +7,6 @@ Item {
     property double latitude: 48.8566; //Random default value
     property double longitude: 2.3522; //Random default value
     property Component location_marker: loc_marker
-    property Component location_info_text: loc_info_text
 
     MapView {
         id: mapview

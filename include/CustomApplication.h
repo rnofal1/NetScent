@@ -8,16 +8,18 @@
 #define CUSTOMAPPLICATION_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QApplication>
 
-//Defines
+/* Defines */
 #define ICON_PATH "icons/icon.png"
 #define APP_STYLE "fusion"
+
 
 class CustomApplication : public QApplication {
     Q_OBJECT
 public:
+    /* Functions */
     CustomApplication(int &argc, char **argv);
 };
 

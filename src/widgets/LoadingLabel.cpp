@@ -3,10 +3,10 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QMovie>
 
-//Local
+/* Local */
 #include "LoadingLabel.h"
 #include "util.h"
 

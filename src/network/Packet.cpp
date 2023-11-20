@@ -3,11 +3,10 @@
  */
 
 
-//Local
+/* Local */
 #include "Packet.h"
 #include "util.h"
 
-//ToDo: IMPORTANT. MINIMIZE std::string/QString type conversions
 
 Packet::Packet(const struct ip& ip_header, const int& num)
                : ip_header(ip_header),
@@ -76,14 +75,14 @@ QString Packet::get_ip_info() const {
  * ToDo: implement local ip location caching (for recently-inspected locations)
  * and/or switch to a local ip location database
  */
-nlohmann::json Packet::get_ip_geo_json_info(const std::string& ip_addr) const {
-    std::string key = get_geoloc_api_key();
-    std::string get_url = "https://api.ipgeolocation.io/ipgeo?apiKey=" + key + "&ip="+ip_addr;
+nlohmann::json Packet::get_ip_geo_json_info(const QString& ip_addr) const {
+    QString key = get_geoloc_api_key();
+    QString get_url = "https://api.ipgeolocation.io/ipgeo?apiKey=" + key + "&ip=" + ip_addr;
     return curl_get_json(get_url);
 }
 
 // ToDo: this could probably be a bit simpler
-IPCoords Packet::get_ip_coords(const std::string& ip_addr) const {
+IPCoords Packet::get_ip_coords(const QString& ip_addr) const {
     nlohmann::json loc_json = get_ip_geo_json_info(ip_addr);
     bool known_location = loc_json.contains("latitude"); //We known that if latitude exists, so will longitude
     float lati = 0.0;
@@ -98,39 +97,39 @@ IPCoords Packet::get_ip_coords(const std::string& ip_addr) const {
 }
 
 IPCoords Packet::get_dst_ip_coords() const {
-    return get_ip_coords(get_dst_ip().toStdString());
+    return get_ip_coords(get_dst_ip());
 }
 IPCoords Packet::get_src_ip_coords() const {
-    return get_ip_coords(get_src_ip().toStdString());
+    return get_ip_coords(get_src_ip());
 }
 
-std::string Packet::parse_geo_info_json(const nlohmann::json& json) const {
-    std::string json_info = + "Country: " +         get_json_val_string(json, "country_name")
-                            + "\nState/Province: " +  get_json_val_string(json, "state_prov")
-                            + "\nCity: " +            get_json_val_string(json, "city")
-                            + "\nOrganization: " +    get_json_val_string(json, "organization") + "\n\n";
+QString Packet::parse_geo_info_json(const nlohmann::json& json) const {
+    QString json_info = + "Country: " +           get_json_val_string(json, "country_name")
+                        + "\nState/Province: " +  get_json_val_string(json, "state_prov")
+                        + "\nCity: " +            get_json_val_string(json, "city")
+                        + "\nOrganization: " +    get_json_val_string(json, "organization") + "\n\n";
     return json_info;
 }
 
-std::string Packet::get_dst_geo_info() const{
-    return parse_geo_info_json(get_ip_geo_json_info(get_dst_ip().toStdString()));
+QString Packet::get_dst_geo_info() const{
+    return parse_geo_info_json(get_ip_geo_json_info(get_dst_ip()));
 }
 
-std::string Packet::get_src_geo_info() const {
-    return parse_geo_info_json(get_ip_geo_json_info(get_src_ip().toStdString()));
+QString Packet::get_src_geo_info() const {
+    return parse_geo_info_json(get_ip_geo_json_info(get_src_ip()));
 }
 
-std::string Packet::get_geo_info() {
+QString Packet::get_geo_info() {
     if(geo_info == "") {
-        std::string src_ip = get_src_ip().toStdString();
-        std::string dst_ip = get_dst_ip().toStdString();
+        QString src_ip = get_src_ip();
+        QString dst_ip = get_dst_ip();
         nlohmann::json src_json = get_ip_geo_json_info(src_ip);
         nlohmann::json dst_json = get_ip_geo_json_info(dst_ip);
 
-        std::string src_info =  "Source Geographical Info:\nIP: "
+        QString src_info =  "Source Geographical Info:\nIP: "
                                 + src_ip + '\n'
                                 + parse_geo_info_json(src_json);
-        std::string dst_info =  "Destination Geographical Info:\nIP: "
+        QString dst_info =  "Destination Geographical Info:\nIP: "
                                + dst_ip + '\n'
                                + parse_geo_info_json(dst_json);
         geo_info = src_info + dst_info;

@@ -4,9 +4,18 @@
  */
 
 
-//Local
+/* Standard Qt */
+#include <QDebug>
+
+/* Local */
 #include "NetworkAdapter.h"
 
+/* ToDo: this class has some long, ugly functions,
+ * consider condensing them.
+ *
+ * Pros: will be more readable
+ * Cons: won't adhere as closely to the existing Win32 methods/documentation
+ */
 NetworkAdapter::NetworkAdapter(const std::string& name,
                                const std::string& desc,
                                const std::string& phys_addr,
@@ -105,12 +114,12 @@ NetworkAdapter::NetworkAdapter(const PIP_ADAPTER_INFO& net_adapter)
         //time_lease_obtained
         error = _localtime32_s(&newtime, (__time32_t*) &net_adapter->LeaseObtained);
         if(error) {
-            std::cout << "Invalid Argument to _localtime32_s\n";
+            qDebug() << "Invalid Argument to _localtime32_s\n";
         } else {
             // Convert to an ASCII representation
             error = asctime_s(buffer, 32, &newtime);
             if(error) {
-                std::cout << "Invalid Argument to asctime_s\n";
+                qDebug() << "Invalid Argument to asctime_s\n";
             } else {
                 // asctime_s returns the string terminated by \n\0
                 time_lease_obtained = buffer;
@@ -120,12 +129,12 @@ NetworkAdapter::NetworkAdapter(const PIP_ADAPTER_INFO& net_adapter)
         //time_lease_expires
         error = _localtime32_s(&newtime, (__time32_t*) &net_adapter->LeaseExpires);
         if(error) {
-             std::cout << "Invalid Argument to _localtime32_s\n";
+             qDebug() << "Invalid Argument to _localtime32_s\n";
         } else {
              // Convert to an ASCII representation
              error = asctime_s(buffer, 32, &newtime);
              if(error) {
-                std::cout << "Invalid Argument to asctime_s\n";
+                qDebug() << "Invalid Argument to asctime_s\n";
              } else {
                 // asctime_s returns the string terminated by \n\0
                 time_lease_expires = buffer;
@@ -133,7 +142,7 @@ NetworkAdapter::NetworkAdapter(const PIP_ADAPTER_INFO& net_adapter)
         }
 
     } else {
-        std::cout << "\tDHCP Enabled: No\n";
+        qDebug() << "\tDHCP Enabled: No\n";
         dhcp_enabled = false;
     }
 
@@ -197,5 +206,5 @@ std::string NetworkAdapter::get_desc() {
 }
 
 void NetworkAdapter::print_all_info() {
-    std::cout << get_all_info() << std::endl;
+    qDebug() << get_all_info();
 }

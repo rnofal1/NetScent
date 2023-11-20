@@ -3,10 +3,10 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QFile>
 
-//Local
+/* Local */
 #include "CustomButton.h"
 
 

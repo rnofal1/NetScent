@@ -3,33 +3,34 @@
  */
 
 
-//Local
+/* Local */
 #include "PacketFilterCheckBox.h"
 
 
 //ToDo: There is some redundancy between this class and DeviceSelectBox
 PacketFilterCheckBox::PacketFilterCheckBox(QWidget *parent) : QComboBox(parent) {
-    QStandardItem* title = new QStandardItem(QString("Filter"));
-    model.appendRow(title);
-
-    std::vector<QString> filter_item_names = {"TCP", "UDP", "ICMP"};
-    add_filter_items(filter_item_names);
-
+    create_title("Filter");
+    create_dropdown_items({"TCP", "UDP", "ICMP"});
     this->setModel(&model);
 }
 
-void PacketFilterCheckBox::add_single_filter_item(const QString& item_name) {
+void PacketFilterCheckBox::create_title(const QString& title) {
+    QStandardItem* title_item = new QStandardItem(title);
+    model.appendRow(title_item);
+}
+
+void PacketFilterCheckBox::create_dropdown_items(const std::vector<QString>& dropdown_item_names) {
+    for(auto& name : dropdown_item_names) {
+        create_single_dropdown_item(name);
+    }
+}
+
+void PacketFilterCheckBox::create_single_dropdown_item(const QString& item_name) {
     auto item = new QStandardItem(item_name);
     item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     item->setData(Qt::Checked, Qt::CheckStateRole);
     model.appendRow(item);
 }
-void PacketFilterCheckBox::add_filter_items(const std::vector<QString> item_names) {
-    for(auto& name : item_names) {
-        add_single_filter_item(name);
-    }
-}
-
 
 bool PacketFilterCheckBox::tcp_filter_enabled() {
     return filter_enabled("TCP");

@@ -7,26 +7,31 @@
 #define NUMDISPLAY_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QLineEdit>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 
-//Defines
+/* Defines */
 #define DEFAULT_DISP_MAX 9999
+
 
 class NumDisplay : public QLineEdit, public StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     NumDisplay(QWidget *parent = nullptr, int max_num = DEFAULT_DISP_MAX);
     void set_num(int new_num);
+
+private:
+    /* Variables */
+    int max_num;
 
 private slots:
     void set_num_slot(int new_num);
 
-private:
-    int max_num;
+
 };
 
 #endif // NUMDISPLAY_H

@@ -9,14 +9,15 @@
 #define SHAREDQUEUE_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QQueue>
 #include <QMutexLocker>
 #include <QSemaphore>
 #include <QDebug>
 
-//Defines
+/* Defines */
 #define DEFAULT_CAP 9999
+
 
 template <typename T>
 class SharedQueue {

@@ -5,16 +5,16 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QtConcurrent>
 
-//Local
+/* Local */
 #include "PacketCap.h"
 #include "CustomApplication.h"
 #include "SharedQueue.h"
 #include "util.h"
 
-//Defines
+/* Defines */
 #define PACKET_QUEUE_CAPACITY 9999
 
 

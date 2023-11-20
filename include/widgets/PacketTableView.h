@@ -3,19 +3,17 @@
  */
 
 
-#ifndef PACKETSCROLLAREA_H
-#define PACKETSCROLLAREA_H
+#ifndef PACKETTABLEVIEW_H
+#define PACKETTABLEVIEW_H
 
 
-//Standard Qt
-//#include <QScrollArea>
-//#include <QScrollBar>
+/* Standard Qt */
 #include <QThread>
 #include <QFuture>
 #include <QTableView>
 #include <QStandardItemModel>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 #include "InfoPane.h"
 #include "SharedQueue.h"
@@ -25,6 +23,7 @@
 class PacketTableView : public QTableView, public StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     PacketTableView(QWidget *parent = nullptr);
     ~PacketTableView();
 
@@ -33,7 +32,7 @@ public:
     void set_packet_queue(SharedQueue<Packet*> *packet_queue);
     void start_queue_poll();
 
-    bool write_packets_to_file(const std::string& path);
+    bool write_packets_to_file(const QString& path);
 
     int get_num_packets_displayed();
 
@@ -41,38 +40,8 @@ public:
     // Populate map with packet locations and center on user location (if possible)
     void update_packet_map(CustomMapTab* mapTab);
 
-private slots:
-    void clear_view();
-    void set_ui_closed();
-    void filters_changed(QStandardItem* filter_item);
-    void clicked_packet(const QModelIndex &index); //To relay clicked() signal + packet info without modifying clicked()
-
-
-signals:
-    void num_packets_displayed_changed(int num_packets);
-    void send_clicked_packet(Packet* packet); //To relay clicked() signal + packet info without modifying clicked()
-    void all_packets_added_to_map();
-
 private:
-    bool packet_update_enabled;
-
-    bool ui_closed;
-
-    std::map<PacketType, bool> types_enabled = {
-        {PacketType::TCP, true},
-        {PacketType::UDP, true},
-        {PacketType::ICMP, true},
-        {PacketType::IP, true}
-    };
-
-    std::vector<int> tcp_indices;
-    std::vector<int> udp_indices;
-    std::vector<int> icmp_indices;
-    std::vector<int> ip_indices; //not used (yet)
-
-    int num_packets_total;
-    int num_packets_to_display;
-
+    /* Variables */
     QStandardItemModel* model; //ToDo: consider using a QAbstractTableModel
 
     InfoPane* info_pane;
@@ -94,8 +63,27 @@ private:
         "Misc Info"
     };
 
+    std::vector<int> tcp_indices;
+    std::vector<int> udp_indices;
+    std::vector<int> icmp_indices;
+    std::vector<int> ip_indices; //not used (yet)
+
+    std::map<PacketType, bool> types_enabled = {
+        {PacketType::TCP, true},
+        {PacketType::UDP, true},
+        {PacketType::ICMP, true},
+        {PacketType::IP, true}
+    };
+
+    int num_packets_total;
+    int num_packets_to_display;
+
+    bool packet_update_enabled;
+    bool ui_closed;
+
+    /* Functions */
     void config_model();
-    void config_mode_options();
+    void config_model_options();
 
     void poll_queue();
 
@@ -106,6 +94,22 @@ private:
     void set_row_visibility_by_index(const std::vector<int>& indices, bool visible);
 
     void update_ui_loop();
+
+signals:
+    void num_packets_displayed_changed(int num_packets);
+
+    //To relay clicked() signal + packet info without modifying clicked()
+    void send_clicked_packet(Packet* packet);
+
+    void all_packets_added_to_map();
+
+private slots:
+    void clear_view();
+    void set_ui_closed();
+    void filters_changed(QStandardItem* filter_item);
+
+    //To relay clicked() signal + packet info without modifying clicked()
+    void clicked_packet(const QModelIndex &index);
 };
 
-#endif // PACKETSCROLLAREA_H
+#endif // PACKETTABLEVIEW_H

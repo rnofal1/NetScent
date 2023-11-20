@@ -6,22 +6,24 @@
 #ifndef CUSTOMBUTTON_H
 #define CUSTOMBUTTON_H
 
-//Standard Qt
+/* Standard Qt */
 #include <QPushButton>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 
 
 class CustomButton : public QPushButton, public StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     CustomButton(QWidget *parent = nullptr);
 
     void enable();
     void disable();
 
 protected:
+    /* Functions */
     void enterEvent(QEnterEvent *ev) override;
     void leaveEvent(QEvent *ev) override;
 };

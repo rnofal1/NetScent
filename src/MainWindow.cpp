@@ -3,10 +3,10 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QtConcurrent>
 
-//Local
+/* Local */
 #include "MainWindow.h"
 #include "util.h"
 #include "LoadingLabel.h"
@@ -16,11 +16,11 @@ MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
                         : QMainWindow(parent),
                         StyleWidget(this),
                         run_capture(false),
-                        closed(false),
-                        clear_packets(false),
                         packet_queue(packet_queue) {
     ui = new Ui::MainWindow();
     ui->setupUi(this);
+
+    //Force destructor to run when user closes window
     setAttribute(Qt::WA_DeleteOnClose);
 
     set_widgets_style();
@@ -31,32 +31,33 @@ MainWindow::MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
-    qDebug() << "In MainWindow destructor";
     emit ui_closed();
     emit change_capture_state(false);
+
     map_update_thread.waitForFinished();
+
     if(ui != nullptr) {
         delete ui;
     }
-    qDebug() << "Leaving MainWindow destructor";
 }
 
 Ui::MainWindow* MainWindow::get_ui_pointer() {
     return this->ui;
 }
 
+//Read style sheet from file and return as a string
 QString MainWindow::get_stylesheet() {
-    QFile styleFile(STYLE_FILE);
-    styleFile.open(QFile::ReadOnly);
-    QString style(styleFile.readAll());
-    styleFile.close();
-    return style;
+    return read_from_file(STYLE_FILE_PATH);
 }
 
-//ToDo: all children should inherit the MainWindow stylesheet, but it seems like they don't (this shouldn't be necessary)
-void MainWindow::set_child_stylesheets() {
+void MainWindow::set_stylesheets() {
     QString style = get_stylesheet();
+
+    //Set own style sheet
     setStyleSheet(style);
+
+    //Set child style sheets
+    //ToDo: all children should inherit the MainWindow stylesheet, but it seems like they don't (this shouldn't be necessary)
     QList<QWidget*> children = findChildren<QWidget*>();
     for(auto& child : children) {
         auto child_style = dynamic_cast<StyleWidget*>(child);
@@ -70,25 +71,32 @@ void MainWindow::set_child_stylesheets() {
     this->ensurePolished();
 }
 
+//ToDo: some of this can be set in a style sheet (but should it?)
 void MainWindow::set_widgets_style() {
     //ApiLinkLabel Style
     ui->apiLinkLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     ui->apiLinkLabel->setToolTip("Follow this link, create an account, and paste your API key at"
                                  " the right to unlock IP geolocation");
 
-    //Tabs Style
+    //Make sure we start on the 0th/leftmost tab
     ui->tabWidget->setCurrentIndex(0);
 
-    //Disable certain buttons
+    //Disable certain button(s)
     ui->saveButton->disable();
 
+    //Detect if there exists an api key
     update_api_key_status();
 
-    set_child_stylesheets();
+    set_stylesheets();
 }
 
+/* Some of these connections can be set within the children themselves (or split into separate functions),
+ * but it seems easier to make this (mostly) centralized.
+ *
+ * ToDo: a little messy
+ */
 void MainWindow::connect_signals_slots() {
-    //Buttons
+    //Buttons --> X
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(start_button_clicked()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stop_button_clicked()));
     connect(ui->setApiKeyButton, SIGNAL(clicked()), this, SLOT(set_api_button_clicked()));
@@ -97,21 +105,29 @@ void MainWindow::connect_signals_slots() {
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
     connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(refresh_button_clicked()));
 
-    //Packet filters
+    //Packet filter dropdown --> X
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), ui->packetTableView, SLOT(filters_changed(QStandardItem*)));
 
-    //Device select
+    //Device select dropdown --> X
     connect(ui->deviceSelect, SIGNAL(activated(int)), this, SLOT(clear_button_clicked()));
     connect(ui->deviceSelect, SIGNAL(activated(int)), ui->packetTableView, SLOT(clear_view()));
 
 
-    //Packet Table View
-    connect(this, SIGNAL(ui_closed()), ui->packetTableView, SLOT(set_ui_closed()));
+    //Packet table view -- > X
     connect(ui->packetTableView, SIGNAL(send_clicked_packet(Packet*)), this, SLOT(update_info_pane(Packet*)));
     connect(ui->packetTableView, SIGNAL(num_packets_displayed_changed(int)), ui->numPacketsDisplay, SLOT(set_num_slot(int)));
     connect(ui->packetTableView, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete()));
+
+    //MainWindow (this) --> X
+    connect(this, SIGNAL(ui_closed()), ui->packetTableView, SLOT(set_ui_closed()));
 }
 
+/* Gives the packet table view access to the packet queue (which is shared with PacketCap).
+ * Starts the packet view's update loop.
+ *
+ * We could (should?) do this one level up, but this fits better with the idea of MainWindow
+ * being the central arbitrator between most of our UI elements.
+ */
 void MainWindow::init_packet_view() {
     ui->packetTableView->set_packet_queue(packet_queue);
     ui->packetTableView->start_queue_poll();
@@ -119,49 +135,34 @@ void MainWindow::init_packet_view() {
 
 // ToDo: consider condensing these
 void MainWindow::set_packet_loading_active() {
-    auto packetLoadingLabel = ui->packetLoadingLabel;
-    packetLoadingLabel->set_status_active();
+    ui->packetLoadingLabel->set_status_active();
 }
 void MainWindow::set_packet_loading_inactive() {
-    auto packetLoadingLabel = ui->packetLoadingLabel;
-    packetLoadingLabel->set_status_inactive();
+    ui->packetLoadingLabel->set_status_inactive();
 }
 void MainWindow::set_map_loading_active() {
-    auto mapLoadingLabel = ui->mapLoadingLabel;
-    mapLoadingLabel->set_status_active();
+    ui->mapLoadingLabel->set_status_active();
 }
 void MainWindow::set_map_loading_inactive() {
-    auto mapLoadingLabel = ui->mapLoadingLabel;
-    mapLoadingLabel->set_status_inactive();
-}
-
- //Continuously add elements from shared Packet queue
-void MainWindow::poll_queue() {
-    while(!closed) {
-        if(!packet_queue->is_empty()) {
-            emit new_packet_ready();
-        }
-        QThread::msleep(200); //Prevents GUI from being inundated with too many packets
-    }
-    qDebug() << "Polling halted";
-}
-
-void MainWindow::closeEvent(QCloseEvent *ev) {
-    Q_UNUSED(ev);
-    closed = true;
+    ui->mapLoadingLabel->set_status_inactive();
 }
 
 void MainWindow::start_button_clicked() {
+    //Disable saving if packets are being read
     ui->saveButton->disable();
+
     set_packet_loading_active();
+
     run_capture = true;
     emit change_capture_state(run_capture);
 }
 void MainWindow::stop_button_clicked() {
     set_packet_loading_inactive();
+
     run_capture = false;
     emit change_capture_state(run_capture);
 
+    //Enable saving only if we have packets available
     if(ui->packetTableView->get_num_packets_displayed() > 0) { //ToDo: a little inefficient
         ui->saveButton->enable();
     }
@@ -176,26 +177,26 @@ void MainWindow::clear_info_pane() {
     ui->infoPane->set_inactive();
 }
 void MainWindow::remove_existing_packets() {
+    //We don't want to read packets while we're clearing existing packets (personal pref)
     stop_button_clicked();
-    clear_packets = true;
+
+    //Tell anyone listening that we have cleared the existing packets
+    emit packets_cleared();
+
     clear_info_pane();
-    delete_packets();
 
     ui->tabWidget->clear_map();
+
     ui->numPacketsDisplay->set_num(0);
+
     ui->saveButton->disable();
 }
 
-//ToDo: URGENT Handle api key(s) in a more sensible way
 void MainWindow::set_api_button_clicked() {
-    std::string input_key = ui->apiKeyText->text().toStdString();
+    QString input_key = ui->apiKeyText->text();
 
     if(input_key != dummy_api_key) {
-        std::fstream api_key_file(API_KEY_FILE, std::fstream::out | std::fstream::trunc);
-        if(api_key_file) {
-            api_key_file << input_key << std::endl;
-            api_key_file.close();
-        } else {
+        if(!write_to_file(API_KEY_FILE_PATH, input_key, QFile::Truncate)) {
             qDebug() << "API Key file write error";
         }
     }
@@ -206,19 +207,13 @@ void MainWindow::set_api_button_clicked() {
 //ToDo: URGENT Handle api key(s) in a more sensible way
 //ToDo: just use the function in util
 void MainWindow::update_api_key_status() {
-    std::fstream api_key_file(API_KEY_FILE, std::fstream::in | std::fstream::app);
-    std::string key;
+    QString key = read_from_file(API_KEY_FILE_PATH);
+    qDebug() << "Read key: " << key;
 
-    if(api_key_file) {
-        std::getline(api_key_file, key);
-        api_key_file.close();
-    } else {
-        qDebug() << "API Key file read error";
-    }
-
+    //Hide key with '*' characters, set key detected label
     if(key.length() > 0) {
-        dummy_api_key = std::string(key.length(), '*');
-        ui->apiKeyText->setText(QString::fromStdString(dummy_api_key));
+        dummy_api_key = QString(key.length(), '*');
+        ui->apiKeyText->setText(dummy_api_key);
         ui->keyDetectedLabel->set_key_detected(true);
     } else {
         ui->keyDetectedLabel->set_key_detected(false);
@@ -227,12 +222,12 @@ void MainWindow::update_api_key_status() {
 
 //ToDo: give user more control over save file
 void MainWindow::save_to_file() {
-    std::string initial_path = get_dir_path_from_user();
+    QString initial_path = get_dir_path_from_user();
     if(initial_path == "") {
         return;
     }
-    std::string record_file_name = create_record_file_name();
-    std::string full_path = initial_path + "/" + record_file_name;
+    QString record_file_name = create_record_file_name();
+    QString full_path = initial_path + "/" + record_file_name;
 
     bool write_success = ui->packetTableView->write_packets_to_file(full_path);
     if(write_success) {
@@ -242,25 +237,21 @@ void MainWindow::save_to_file() {
     }
 }
 
-void MainWindow::delete_packets() {
-    std::for_each(packets.begin(), packets.end(), delete_ptr());
-    packets.clear();
-}
-
-void MainWindow::message_popup(const std::string& msg) {
+void MainWindow::message_popup(const QString& msg) {
     QMessageBox msgBox;
 
-    msgBox.setText(QString::fromStdString(msg));
+    msgBox.setText(msg);
     msgBox.exec();
 }
 
 void MainWindow::refresh_button_clicked() {
     stop_button_clicked();
+
     ui->packetClearButton->disable();
     ui->mapClearButton->disable();
     ui->startButton->disable();
+
     set_map_loading_active();
-//    map_update_thread = QtConcurrent::run([this] {update_map();});
     update_map();
 }
 
@@ -270,32 +261,24 @@ void MainWindow::update_map() {
 
 void MainWindow::map_update_complete() {
     set_map_loading_inactive();
+
     ui->packetClearButton->enable();
     ui->mapClearButton->enable();
     ui->startButton->enable();
 }
 
-std::string MainWindow::get_dir_path_from_user() {
-    std::string folder_path = get_cwd() + "/Records";
-
-    try {
-        std::filesystem::create_directory(folder_path);
-    } catch(...){
-        auto err_msg = "ERROR: Could not create directory at path: " + folder_path;
-        qDebug() << err_msg;
-        message_popup(err_msg);
-        return "";
-    }
+QString MainWindow::get_dir_path_from_user() {
+    QString folder_path = get_cwd() + "/Records";
 
     QString path = QFileDialog::getExistingDirectory(this,
                                                          tr("Choose Save Folder"),
-                                                         QString::fromStdString(folder_path),
+                                                         folder_path,
                                                          QFileDialog::ShowDirsOnly
                                                          );
-    return path.toStdString();
+    return path;
 }
 
-std::string MainWindow::create_record_file_name() {
+QString MainWindow::create_record_file_name() {
     std::time_t time_saved = std::time(nullptr);
 
     std::string record_path_preset ="PacketRecord_";
@@ -305,7 +288,7 @@ std::string MainWindow::create_record_file_name() {
     std::replace(record_path_preset.begin(), record_path_preset.end(), ' ', '_');
     std::replace(record_path_preset.begin(), record_path_preset.end(), ':', '#');
 
-    return record_path_preset;
+    return QString::fromStdString(record_path_preset);
 }
 
 void MainWindow::update_info_pane(Packet* packet) {

@@ -7,10 +7,10 @@
 #define INFOPANE_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QTextBrowser>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 #include "Packet.h"
 
@@ -18,6 +18,7 @@
 class InfoPane : public QTextBrowser, public StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     InfoPane(QWidget *parent = nullptr);
     void set_active();
     void set_inactive();

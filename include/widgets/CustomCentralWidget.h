@@ -7,16 +7,17 @@
 #define CUSTOMCENTRALWIDGET_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QWidget>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 
 
 class CustomCentralWidget : public QWidget, StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     CustomCentralWidget(QWidget *parent = nullptr);
 };
 

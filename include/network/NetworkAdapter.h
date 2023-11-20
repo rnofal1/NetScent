@@ -7,17 +7,28 @@
 #ifndef NETWORKADAPTER_H
 #define NETWORKADAPTER_H
 
-//Standard C/C++
+
+/* Standard C/C++ */
 #include <sstream>
 #include <iostream>
 
-//3rd-Party
+/* 3rd-Party */
 #include <winsock2.h>
 #include <iphlpapi.h> //https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/
 
+
+/* The NetworkAdapter class stores info about a physical network device and provides
+ * methods to access that info. Its purpose is simply to provide a more intuitive interface
+ * than the built-in Windows (Win32) adapter info functions.
+ *
+ * Its construction is derived from:
+ * https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadaptersinfo
+ *
+ */
 class NetworkAdapter {
 public:
-    NetworkAdapter(const std::string& name,
+    /* Functions */
+    NetworkAdapter( const std::string& name,
                     const std::string& desc,
                     const std::string& phys_addr,
                     const std::string& type,
@@ -44,6 +55,7 @@ public:
     void print_all_info();
 
 private:
+    /* Variables */
     std::string name;
     std::string desc;
     std::string phys_addr;

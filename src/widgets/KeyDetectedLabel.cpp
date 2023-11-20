@@ -3,10 +3,10 @@
  */
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QStyle>
 
-//Local
+/* Local */
 #include "KeyDetectedLabel.h"
 
 

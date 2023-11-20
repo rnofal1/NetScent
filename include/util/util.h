@@ -7,30 +7,35 @@
 #define UTIL_H
 
 
-//Standard C/C++
+/* Standard C/C++ */
 #include <fstream>
 #include <iostream>
 #include <filesystem>
 #include <optional>
 #include <filesystem>
 
-//Standard Qt
+/* Standard Qt */
 #include <QWidget>
 #include <QFuture>
+#include <QString>
+#include <QFile>
+#include <QFileInfo>
 
-//3rd-party
+/* 3rd-party */
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
 
-//Defines
-#define API_KEY_FILE "api_key.txt"
-#define GEO_INFO_FILE "geo_info.txt"
-#define STYLE_FILE "style/style.qss"
+/* Defines */
+#define API_KEY_FILE_PATH "api_key.txt"
+#define GEO_INFO_FILE_PATH "geo_info.txt"
+#define STYLE_FILE_PATH "style/style.qss"
 #define WINDOW_ICON "icons/icon.png"
 #define STATIC_ICON "icons/icon_globe.png"
 #define MOVING_ICON "icons/icon_globe_loading.gif"
 
-struct delete_ptr { // Helper function to ease cleanup of container
+
+//Helper function to ease cleanup of container
+struct delete_ptr {
     template <typename P>
     void operator () (P p) {
         delete p;
@@ -39,14 +44,20 @@ struct delete_ptr { // Helper function to ease cleanup of container
 
 int thread_handler(QFuture<int>& future);
 
-std::string get_geoloc_api_key();
+QString get_geoloc_api_key();
 
-nlohmann::json curl_get_json(const std::string& request);
+nlohmann::json curl_get_json(const QString& request);
 
-std::string get_json_val_string(const nlohmann::json& json, const std::string& key);
-float get_json_val_float(const nlohmann::json& json, const std::string& key);
-std::string get_json_val(const std::vector<std::string>& nested_keys);
+QString get_json_val_string(const nlohmann::json& json, const QString& key);
+float get_json_val_float(const nlohmann::json& json, const QString& key);
 
-std::string get_cwd();
+QString get_cwd();
+
+//mode = QFile::Append to add or mode = QFile::Truncate to erase then write
+bool write_to_file(const QString& file_path, const QString& content, const QIODeviceBase::OpenModeFlag& mode);
+
+QString read_from_file(const QString& file_path);
+
+bool file_exists(const QString& file_path);
 
 #endif // UTIL_H

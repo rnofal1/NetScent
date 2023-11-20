@@ -7,13 +7,13 @@
 #define CUSTOMTABWIDGET_H
 
 
-//Standard Qt
+/* Standard Qt */
 #include <QTabWidget>
 
-//Local
+/* Local */
 #include "StyleWidget.h"
 
-//Defines
+/* Defines */
 #define MAP_INDEX 1
 #define MAP_TAB_NAME "mapTab"
 
@@ -21,7 +21,11 @@
 class CustomTabWidget : public QTabWidget, public StyleWidget {
     Q_OBJECT
 public:
+    /* Functions */
     CustomTabWidget(QWidget *parent = nullptr);
+
+    void connect_signals_slots();
+
     void clear_map();
 
 private slots:

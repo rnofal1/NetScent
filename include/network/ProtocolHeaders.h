@@ -6,16 +6,18 @@
  * Ramsey Nofal, 08/2023
  */
 
+
 #ifndef HEADERS_H
 #define HEADERS_H
 
-//Standard C/C++
+
+/* Standard C/C++ */
 #include <stdint.h>
 #include <winsock2.h>
 #include <windows.h>
 
 
-/* IPv4 header */
+// IPv4 header
 struct iphdr
 {
     unsigned int ihl:4;
@@ -32,7 +34,7 @@ struct iphdr
     uint32_t daddr;
 };
 
-// IPv4 header, from: https://www.binarytides.com/code-packet-sniffer-c-winpcap/
+// IPv4 expanded header, from: https://www.binarytides.com/code-packet-sniffer-c-winpcap/
 struct ip {
     unsigned char ip_hl:4; // 4-bit header length (in 32-bit words) normally=5 (Means 20 Bytes may be 24 also)
     unsigned char ip_version :4; // 4-bit IPv4 version
