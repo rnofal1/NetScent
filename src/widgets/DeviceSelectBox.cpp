@@ -70,7 +70,7 @@ void DeviceSelectBox::user_picked_index(const int& index) {
     QStandardItem* device_name_item = device_desc_item->child(0, 0); //Holds the actual name
     QString device_name = device_name_item->text();
 
-    qInfo() << "User picked network adapter at index: " << index << " With Name: " << device_name;
+    qDebug() << "User picked network adapter at index: " << index << " With Name: " << device_name;
 
     //Tell anyone listening that the user chose device with device_name
     emit user_picked_device(device_name);
@@ -78,7 +78,7 @@ void DeviceSelectBox::user_picked_index(const int& index) {
 
 //If PacketCap picked a device/adapter (e.g. on startup), set that device as active
 void DeviceSelectBox::packet_cap_picked_adapter(const QString& device_name) {
-    qInfo() << "PacketCap selected device: " << device_name;
+    qDebug() << "PacketCap selected device: " << device_name;
     for (int row = 0; row < model->rowCount(); ++row) {
         QStandardItem* device_desc_item = model->item(row, 0); //Holds the human-readable description
         QStandardItem* device_name_item = device_desc_item->child(0, 0); //Holds the actual name
