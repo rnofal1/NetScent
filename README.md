@@ -1,12 +1,13 @@
 # NetScent
 
-NetScent is a packet analyzer/sniffer designed to monitor local network traffic.  
+NetScent is a packet sniffer designed to monitor and analyze local network traffic.  
 
-NetScent allows users to view a continuous stream of network information, including source and destination IP addresses and approximate geographic locations, for devices involved in the exchange of intercepted packets.
+NetScent allows users to view a continuous stream of network information from packets intercepted on their network adapter. This information includes IP addresses, packet types, and packet-specific data. NetScent can also determine approximate geographical and organizational data for intercepted (public) IP addresses, which it can plot on a Google Maps-style display.
 
-This project is currently in an early, unfinished state, but I will continue adding features and fixes over time.
 
-![capture_tab_screenshot](https://github.com/rnofal1/NetScent/assets/57466011/ea9256a3-8dc1-484d-9aba-1753ff0524ae)  
+This project is currently in an early, unfinished state, but I will continue adding features and fixes over time.  
+
+![NetScentMainMenu](https://github.com/rnofal1/NetScent/assets/57466011/8dfe5a26-9c06-4507-bb5d-1db9ce60036d)  
 *main menu after capturing some packets*
 
 ![map_screenshot](https://github.com/rnofal1/NetScent/assets/57466011/a180cb33-ebe2-4be6-bf0d-f363d6e097c8)
