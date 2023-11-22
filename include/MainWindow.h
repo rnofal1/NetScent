@@ -42,8 +42,12 @@ public:
 
     /* Functions */
     MainWindow(SharedQueue<Packet*> *packet_queue, QWidget *parent = nullptr);
+
+    //RoT
     ~MainWindow();
-    
+    MainWindow(const MainWindow&) = delete;
+    MainWindow& operator= (const MainWindow&) = delete;
+
     Ui::MainWindow* get_ui_pointer();
 
     void set_widgets_style();

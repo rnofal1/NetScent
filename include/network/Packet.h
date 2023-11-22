@@ -47,7 +47,11 @@ class Packet {
 public:
     /* Functions */
     Packet(const struct ip& ip_header, const int& num);
+
+    //RoT
     virtual ~Packet();
+    Packet(const Packet&) = delete;
+    Packet& operator= (const Packet&) = delete;
 
     //Return a string containing miscellaneous Packet header information
     virtual QString get_info() const;

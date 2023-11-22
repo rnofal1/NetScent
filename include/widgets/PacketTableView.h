@@ -25,7 +25,11 @@ class PacketTableView : public QTableView, public StyleWidget {
 public:
     /* Functions */
     PacketTableView(QWidget *parent = nullptr);
+
+    //RoT
     ~PacketTableView();
+    PacketTableView(const PacketTableView&) = delete;
+    PacketTableView& operator= (const PacketTableView&) = delete;
 
     void add_row(const std::vector<QString>& data);
 
