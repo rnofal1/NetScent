@@ -13,18 +13,26 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent), StyleWid
 }
 
 void CustomTabWidget::connect_signals_slots() {
-    connect(this, SIGNAL(currentChanged(int)), this, SLOT(update_map_tab()));
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(gen_map()));
 }
 
-/* update_map_tab() is an optimization: we only want to initialize the map when the map tab is visited
+//ASTAR
+/* gen_map() is an optimization: we only want to initialize the map when the map tab is visited
  * (not on startup) to save some resources
  *
  * ToDo: only create qquickwidget on map tab visit (?)
  */
-void CustomTabWidget::update_map_tab() {
-    if(currentIndex() == MAP_INDEX) {
-        CustomMapTab *mapTab = this->findChild<CustomMapTab *>(MAP_TAB_NAME);
-        if(mapTab && !mapTab->is_map_active()) {
+void CustomTabWidget::gen_map() {
+    int curr_index = currentIndex();
+    if(curr_index == MAP_INDEX || curr_index == ASTAR_INDEX) {
+        QString tab_name = curr_index == MAP_INDEX ? MAP_TAB_NAME : ASTAR_TAB_NAME;
+        qDebug() << tab_name;
+        CustomMapTab *mapTab = this->findChild<CustomMapTab *>(tab_name);
+        if(mapTab == nullptr) {
+            qDebug() << "Could not find " << tab_name << " in CustomTabWidget::gen_map()";
+            return;
+        }
+        if(!mapTab->is_map_active()) {
             mapTab->init_map();
         }
     }

@@ -65,6 +65,8 @@ private:
 
     QFuture<void> map_update_thread;
 
+    QFuture<void> map_update_thread_astar; //ASTAR
+
     SharedQueue<Packet*> *packet_queue;
 
     QString dummy_api_key;
@@ -114,6 +116,7 @@ private slots:
     void start_button_clicked();
     void stop_button_clicked();
     void refresh_button_clicked();
+    void refresh_button_clicked_astar(); //ASTAR
     void clear_button_clicked();
     void set_api_button_clicked();
 
@@ -127,6 +130,15 @@ private slots:
     void set_map_loading_inactive();
 
     void map_update_complete();
+
+    //ASTAR ---- START
+    void update_map_astar();
+
+    void set_map_loading_active_astar();
+    void set_map_loading_inactive_astar();
+
+    void map_update_complete_astar();
+    //ASTAR ---- END
 
     //Tell the info pane to populate its text with info from a packet
     void update_info_pane(Packet* packet);

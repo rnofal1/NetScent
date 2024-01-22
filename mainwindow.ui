@@ -36,7 +36,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="CustomCaptureTab" name="captureTab">
        <property name="styleSheet">
@@ -626,6 +626,143 @@ color: rgb(23, 23, 23);</string>
               </widget>
              </item>
             </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="CustomMapTab" name="astarTab">
+       <attribute name="title">
+        <string>AStar (demo)</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QFrame" name="astarButtonsFrame">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="CustomButton" name="astarRefreshButton">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+               </property>
+               <property name="text">
+                <string>Refresh</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="LoadingLabel" name="astarLoadingLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="CustomButton" name="astarClearButton">
+               <property name="minimumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+               </property>
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="CustomButton" name="populateButton">
+               <property name="minimumSize">
+                <size>
+                 <width>49</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(87, 227, 137);
+color: rgb(23, 23, 23);</string>
+               </property>
+               <property name="text">
+                <string>Populate</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QQuickWidget" name="quickWidgetMap_2">
+            <property name="resizeMode">
+             <enum>QQuickWidget::SizeRootObjectToView</enum>
+            </property>
            </widget>
           </item>
          </layout>

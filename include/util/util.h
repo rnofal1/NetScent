@@ -46,10 +46,13 @@ int thread_handler(QFuture<int>& future);
 
 QString get_geoloc_api_key();
 
+std::string curl_get_string(const QString& request);
 nlohmann::json curl_get_json(const QString& request);
 
 QString get_json_val_string(const nlohmann::json& json, const QString& key);
 float get_json_val_float(const nlohmann::json& json, const QString& key);
+
+QString get_my_public_ip();
 
 QString get_cwd();
 
@@ -59,5 +62,11 @@ bool write_to_file(const QString& file_path, const QString& content, const QIODe
 QString read_from_file(const QString& file_path);
 
 bool file_exists(const QString& file_path);
+
+nlohmann::json get_ip_geo_json_info(const QString& ip_addr);
+std::pair<double, double> get_ip_coords(const QString& ip_addr);
+
+//ASTAR
+std::pair<double, double> get_my_lat_lon();
 
 #endif // UTIL_H

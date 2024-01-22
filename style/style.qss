@@ -161,6 +161,10 @@ QFrame#mapButtonsFrame
 {
     border : none;
 }
+QFrame#astarButtonsFrame
+{
+    border : none;
+}
 QFrame#captureButtonFrame
 {
     border : none;

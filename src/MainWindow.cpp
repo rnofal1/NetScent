@@ -36,6 +36,7 @@ MainWindow::~MainWindow() {
     emit change_capture_state(false);
 
     map_update_thread.waitForFinished();
+    map_update_thread_astar.waitForFinished(); //ASTAR
 
     if(ui != nullptr) {
         delete ui;
@@ -105,6 +106,8 @@ void MainWindow::connect_signals_slots() {
     connect(ui->packetClearButton, SIGNAL(clicked()), ui->packetTableView, SLOT(clear_view()));
     connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(save_to_file()));
     connect(ui->mapRefreshButton, SIGNAL(clicked()), this, SLOT(refresh_button_clicked()));
+    connect(ui->astarRefreshButton, SIGNAL(clicked()), this, SLOT(refresh_button_clicked_astar())); //ASTAR
+
 
     //Packet filter dropdown --> X
     connect(&ui->filterBox->model, SIGNAL(itemChanged(QStandardItem*)), ui->packetTableView, SLOT(filters_changed(QStandardItem*)));
@@ -118,6 +121,7 @@ void MainWindow::connect_signals_slots() {
     connect(ui->packetTableView, SIGNAL(send_clicked_packet(Packet*)), this, SLOT(update_info_pane(Packet*)));
     connect(ui->packetTableView, SIGNAL(num_packets_displayed_changed(int)), ui->numPacketsDisplay, SLOT(set_num_slot(int)));
     connect(ui->packetTableView, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete()));
+    connect(ui->packetTableView, SIGNAL(all_packets_added_to_map()), this, SLOT(map_update_complete_astar())); //ASTAR
 
     //MainWindow (this) --> X
     connect(this, SIGNAL(ui_closed()), ui->packetTableView, SLOT(set_ui_closed()));
@@ -146,6 +150,14 @@ void MainWindow::set_map_loading_active() {
 }
 void MainWindow::set_map_loading_inactive() {
     ui->mapLoadingLabel->set_status_inactive();
+}
+
+//ASTAR
+void MainWindow::set_map_loading_active_astar() {
+    ui->astarLoadingLabel->set_status_active();
+}
+void MainWindow::set_map_loading_inactive_astar() {
+    ui->astarLoadingLabel->set_status_inactive();
 }
 
 void MainWindow::start_button_clicked() {
@@ -256,8 +268,25 @@ void MainWindow::refresh_button_clicked() {
     update_map();
 }
 
+//ASTAR
+void MainWindow::refresh_button_clicked_astar() {
+    stop_button_clicked();
+
+    ui->packetClearButton->disable();
+    ui->astarClearButton->disable();
+    ui->startButton->disable();
+
+    set_map_loading_active_astar();
+    update_map_astar();
+}
+
 void MainWindow::update_map() {
     map_update_thread = QtConcurrent::run([this] {ui->packetTableView->update_packet_map(ui->mapTab);});
+}
+
+//ASTAR
+void MainWindow::update_map_astar() {
+    map_update_thread_astar = QtConcurrent::run([this] {ui->packetTableView->update_packet_map(ui->astarTab);});
 }
 
 void MainWindow::map_update_complete() {
@@ -265,6 +294,15 @@ void MainWindow::map_update_complete() {
 
     ui->packetClearButton->enable();
     ui->mapClearButton->enable();
+    ui->startButton->enable();
+}
+
+//ASTAR
+void MainWindow::map_update_complete_astar() {
+    set_map_loading_inactive_astar();
+
+    ui->packetClearButton->enable();
+    ui->astarClearButton->enable();
     ui->startButton->enable();
 }
 

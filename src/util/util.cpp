@@ -39,12 +39,11 @@ QString get_geoloc_api_key() {
     return read_from_file(QString::fromStdString(API_KEY_FILE_PATH));
 }
 
-nlohmann::json curl_get_json(const QString& request) {
+std::string curl_get_string(const QString& request) {
     auto curl = curl_easy_init();
-    nlohmann::json ret_json;
     if(!curl) {
-         qDebug() << "Could not initialize curl";
-        return ret_json;
+        qDebug() << "Could not initialize curl";
+        return "";
     }
 
     std::string request_string = request.toStdString();
@@ -57,11 +56,13 @@ nlohmann::json curl_get_json(const QString& request) {
 
     //Execute curl call
     curl_easy_perform(curl);
-
-    ret_json = nlohmann::json::parse(response_string);
-
     curl_easy_cleanup(curl);
 
+    return response_string;
+}
+
+nlohmann::json curl_get_json(const QString& request) {
+    nlohmann::json ret_json = nlohmann::json::parse(curl_get_string(request));
     return ret_json;
 }
 
@@ -84,6 +85,13 @@ float get_json_val_float(const nlohmann::json& json, const QString& key) {
         qDebug() << "Unknown json value in get_json_val_float(): " << key;
         return 0.0; // ToDo: better handling of unknown float
     }
+}
+
+QString get_my_public_ip() {
+    QString ip_request = "http://myexternalip.com/raw";
+    QString public_ip = QString::fromStdString(curl_get_string(ip_request));
+    qDebug() << "Public ip: " << public_ip;
+    return public_ip;
 }
 
 QString get_cwd() {
@@ -142,4 +150,36 @@ bool file_exists(const QString& file_path) {
     } else {
         return false;
     }
+}
+
+// ToDo: redundancy with the function in Packet
+nlohmann::json get_ip_geo_json_info(const QString& ip_addr) {
+    QString key = get_geoloc_api_key();
+    QString get_url = "https://api.ipgeolocation.io/ipgeo?apiKey=" + key + "&ip=" + ip_addr;
+    return curl_get_json(get_url);
+}
+
+// ToDo: redundancy with the function in Packet
+std::pair<double, double> get_ip_coords(const QString& ip_addr) {
+    nlohmann::json loc_json = get_ip_geo_json_info(ip_addr);
+    bool known_location = loc_json.contains("latitude"); //We known that if latitude exists, so will longitude
+    double lati = 0.0;
+    double longi = 0.0;
+
+    if(known_location) {
+        lati = get_json_val_float(loc_json, "latitude");
+        longi = get_json_val_float(loc_json, "longitude");
+    } else {
+        qDebug() << "Unknown location for ip: " << ip_addr;
+    }
+
+    return {lati, longi};
+}
+
+//ASTAR
+std::pair<double, double> get_my_lat_lon() {
+    QString my_public_ip = get_my_public_ip();
+    auto my_ip_coords = get_ip_coords(my_public_ip);
+    qDebug() << "My latitude: " << my_ip_coords.first << " My longitude: " << my_ip_coords.second;
+    return my_ip_coords;
 }

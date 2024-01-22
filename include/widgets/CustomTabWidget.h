@@ -15,7 +15,9 @@
 
 /* Defines */
 #define MAP_INDEX 1
+#define ASTAR_INDEX 3
 #define MAP_TAB_NAME "mapTab"
+#define ASTAR_TAB_NAME "astarTab"
 
 
 class CustomTabWidget : public QTabWidget, public StyleWidget {
@@ -29,7 +31,7 @@ public:
     void clear_map();
 
 private slots:
-    void update_map_tab();
+    void gen_map();
 };
 
 

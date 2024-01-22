@@ -30,10 +30,12 @@ LIBS += -L"C:\CPPINCLUDE\npcap-sdk-1.13\Lib\x64" \                              
         -liphlpapi
 
 # Recursively add all .cpp files to sources
-SOURCES += $$files("*.cpp", true)
+SOURCES += $$files("*.cpp", true) \
+    src/util/AStar.cpp
 
 # Recursively add all .h files to headers
-HEADERS += $$files("*.h", true)
+HEADERS += $$files("*.h", true) \
+    include/util/AStar.h
 
 # Qt Creator auto-handles FORMS most of the time
 FORMS += \

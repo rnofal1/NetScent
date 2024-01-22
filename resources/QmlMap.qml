@@ -7,6 +7,8 @@ Item {
     property double latitude: 48.8566; //Random default value
     property double longitude: 2.3522; //Random default value
     property Component location_marker: loc_marker
+    property Component poly_line: pol_line
+    property MapPolyline the_path
 
     MapView {
         id: mapview
@@ -34,8 +36,35 @@ Item {
         mapview.map.addMapItem(item)
     }
 
+    //Signal to C++
+    signal hoveredCoordsSignal(lat: double, lon: double, name: string)
+    //From C++
+    function show_path(shortest_path) {
+        the_path = poly_line.createObject(window)
+        the_path.path = shortest_path
+        mapview.map.addMapItem(the_path)
+    }
+
     function remove_all_location_markers() {
         mapview.map.clearMapItems()
+    }
+
+    function add_path(path) {
+        var new_path = poly_line.createObject(window)
+        new_path.path = path
+        new_path.line.color = 'red'
+        mapview.map.addMapItem(new_path)
+    }
+
+    Component {
+        id: pol_line
+        MapPolyline {
+            id:edge
+            line.width: 3
+            line.color: 'green'
+            path: [
+            ]
+        }
     }
 
     Component {
@@ -75,11 +104,13 @@ Item {
                             imagePane.visible = true
                             markerImg.anchorPoint.x = image.width
                             markerImg.anchorPoint.y = image.height
+                            hoveredCoordsSignal(markerImg.coordinate.latitude, markerImg.coordinate.longitude, markerImg.item_text)
                         } else {
                             image.scale = 1
                             imagePane.visible = false
                             markerImg.anchorPoint.x = image.width/2
                             markerImg.anchorPoint.y = image.height/2
+                            mapview.map.removeMapItem(the_path)
                         }
                     }
                 }
